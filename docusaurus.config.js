@@ -19,7 +19,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          activeBasePath: 'docs',
+          docId: 'docs',
           position: 'left',
           label: 'Docs',
         },
