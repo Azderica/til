@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
     <channel>
-        <title>Today that I read this Book Blog</title>
+        <title>Log that Today I Learned Blog</title>
         <link>https://Azderica.github.io/blog</link>
-        <description>Today that I read this Book Blog</description>
+        <description>Log that Today I Learned Blog</description>
         <lastBuildDate>Thu, 30 May 2019 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
