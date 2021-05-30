@@ -1,6 +1,6 @@
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'Today that I read this Book',
+  title: 'Log that Today I Learned',
   tagline: '책 기록',
   url: 'https://Azderica.github.io',
   baseUrl: '/til/',
@@ -26,12 +26,12 @@ module.exports = {
         {
           href: 'https://Azderica.github.io',
           label: 'Blog',
-          position: 'right',
+          position: 'left',
         },
         {
           href: 'https://github.com/Azderica',
           label: 'GitHub',
-          position: 'right',
+          position: 'left',
         },
       ],
     },

@@ -121,3 +121,150 @@
 <br/>
 
 ## DI와 서비스 로케이터
+
+로버트 C 마틴은 소프트웨어를 2개의 영역으로 구분해서 설명합니다.
+
+- 고수준 정책 및 저수준 구현을 포함한 어플리케이션 영역
+- 어플리케이션이 동작하도록 각 객체들을 연결해 주는 메인 영역
+
+여기서 메인 영역에서 객체를 연결하기 위해 사용되는 방법으로 DI가 있습니다.
+
+메인 영역은 다음의 작업을 수행합니다. (즉, 해당 책임을 가집니다)
+
+- 어플리케이션 영역에서 사용될 객체를 생성합니다.
+- 각 객체 간의 의존 관계를 설정합니다.
+- 어플리케이션을 실행합니다.
+
+서비스 로케이터 방식은 로케이터를 통해 필요로 하는 객체를 직접 찾는 방식이지만, 단점이 많아 외부에서 객체를 주입해주는 DI(Dependency Injection) 방식을 사용하는 것이 중요합니다.
+
+### DI을 이용한 의존 객체 사용
+
+사용할 객체를 직접 생성할 경우, 아래 코드처럼 콘크리트 클래스에 대한 의존이 발생하게 됩니다. 이는 의존 역전 원칙을 위반하게 되고, 결과적으로 확장 폐쇄 원칙을 위반하게 됩니다.
+
+이를 해결하는 방법은 DI(Dependency Injection, 의존성 주입)입니다. **DI는 필요한 객체를 직접 생성하거나 찾지 않고 외부에서 넣어주는 방식**입니다.
+
+DI를 적용하려면 객체를 전달받을 수 있는 방법을 제공해야하는데, 이 방법으로는 2가지 방법이 있습니다.
+
+- 생성자 방식
+- 설정 메서드 방식
+
+#### 생성자 방식
+
+생성자 방식은 생성자를 통해서 의존 객체를 전달받는 방식입니다.
+
+```java
+public class JobCLI {
+  private JobQueue jobQueue;
+
+  public JobCLI(JobQueue jobQueue) {
+    this.jobQueue = jobQueue;
+  }
+
+  ...
+}
+```
+
+- 일반적으로 좀 더 선호되는 방식입니다.
+- 객체를 생성하는 시점에서 필요한 모든 의존 객체를 준비할 수 있습니다.
+- 객체를 생성하는 시점에서 의존 객체가 정상적인지를 확인할 수 있습니다.
+
+#### 설정 메서드 방식
+
+설정 메서드 방식은 메서드를 이용해서 의존 객체를 전달받습니다.
+
+```java
+public class Worker {
+  private JobQueue jobQueue;
+
+  public void setJobQueue(JobQueue jobQueue) {
+    this.jobQueue = jobQueue;
+  }
+
+  ...
+}
+```
+
+- 객체를 생성한 이후에 의존 객체를 설정할 수 있기 때문에, 어던 이유로 인해 의존할 객체가 나중에 생성되는 경우에는 설정 메서드 방식을 사용해야합니다.
+- 의존 객체가 많은 경우, 설정 메서드 방식은 메서드 이름을 통해 어떤 의존 객체가 설정되는지 쉽게 알 수 있습니다.
+
+#### 스프링 프레임워크
+
+스프링 프레임워크는 생성자 방식과 설정 메서드 방식을 모두 지원합니다.
+
+- 생성자 방식, `<constructor-arg>`
+- 설정 메서드 방식, `<property>`
+
+### 서비스 로케이터를 이용한 의존 객체 사용
+
+프로그램 개발 환경이나 사용하는 프레임워크의 제약으로 인해 DI 패턴을 적용할 수 없는 경우가 있습니다. (ex. 안드로이드)
+
+```java
+public class MainActivity extends Activity {
+  private SomeService someService;
+
+  // 안드로이드 프레임워크가 실행해주지 않음, DI할 수 없음
+  public void setSomeService(SomeService someService) {
+    this.someService = someService;
+  }
+
+  // 안드로이드 프레임워크에 의해 실행됨.
+  @Override
+  public void onCreate(...) {...}
+}
+```
+
+이러한 경우, 서비스 로케이터를 사용합니다.
+
+서비스 로케이터는 **애플리케이션에서 필요로 하는 객체를 제공하는 책임**을 갖습니다. 서비스 로케이터는 애플리케이션 영역의 객체에서 직접 접근합니다.
+
+#### 객체 등록 방식의 서비스 로케이터 구현
+
+일반적으로 서비스 로케이터를 구현하는 쉬운 방법은 다음과 같습니다.
+
+- 서비스 로케이터를 생성할 때 사용할 객체를 전달합니다.
+- 서비스 로케이터 인스턴스를 지정하고 참조하기 위한 static 메서드를 제공합니다.
+
+```java
+// 생성자를 이용해서 객체를 등록 받는 서비스 로케이터 방식
+public class ServiceLocator {
+  private JobQueue jobQueue;
+  private Transcoder transcoder;
+
+  public ServiceLocater(JobQueue jobQueue, Transcoder transcoder) {
+    this.jobQueue = jobQueue;
+    this.transcoder = transcoder;
+  }
+
+  // get 메서드 생략.
+  ...
+
+  // 서비스 로케이터 접근을 위한 static 메서드
+  public static ServiceLocater instance;
+  public static void load(ServiceLocater locater) {
+    ServiceLocater.instance = instance;
+  }
+  public static ServiceLocater getInstance() {
+    return instance;
+  }
+}
+```
+
+다만, 모든 객체를 전달하는 것은 코드 가독성을 떨어트리게 됩니다.
+
+이와는 반대로 객체를 등록하는 방식은 있는데 이 방식은 서비스 로케이터 구현이 쉽습니다. 다만, 서비스 로케이터는 객체를 등록할 때 인터페이스가 노출되어 있기 때무넹 의존 객체를 언제든지 바꿀수 있습니다.
+
+#### 상속을 통한 서비스 로케이터 구현
+
+- 객체를 구하는 추상 메서드를 제공하는 상위 타입 구현
+- 상위 타입을 상속받은 하위 타입에서 사용할 객체 설정
+
+#### 제네릭/템플릿을 이용한 서비스 로케이터 구현
+
+서비스 로케이터의 단점은 인터페이스 분리 원칙을 위합낳ㅂ니다. 이 문제를 해결하기 위해서는 의존 객체마다 서비스 로케이터를 작성해줘야합니다. 다만, 클래스르를 중복해서 만드는 문제가 발생할 수 있습니다.
+
+#### 서비스 로케이터의 단점
+
+- 객체가 다수 필요한 결우, 객체 별로 제공 메서드를 만들어줘야합니다.
+- 인터페이스 분리 원칙을 위배합니다.
+
+따라서, DI를 쓸 수 있는 환경이라면 **DI를 쓰는 것이 중요합니다.**
