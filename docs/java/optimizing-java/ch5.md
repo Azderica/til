@@ -102,6 +102,25 @@ JMH는 앞의 이슈를 해결하기 위해 개발된 프레임워크입니다.
 
 - JMH : 자바를 비롯해 JVM을 타깃으로 하는 언어로 작성된 벤치마크를 제작, 실행, 분석하는 자바 도구입니다.
 
+프로엠워크는 컴파일 타임에 벤치마크 내용을 알 수 없으므로 동적이여야합니다.
+
+### 벤치마크 실행
+
+```bash
+mvn archetype:generate \
+  -DinteractiveMode=false \
+  -DarchetypeGroupId=org.openjdk.jmh \
+  -DarchetypeArtifactId=jmh-java-benchmark-archetype \
+  -DgroupId=org.sample \
+  -DartifactId=test \
+  -Dversion=1.0
+```
+
+JMH는 강력한 기능을 제공합니다.
+
+- 컴파일러를 제어합니다.
+- 벤치마크 도중 CPU 사용 수준을 시뮬레이션합니다.
+
 <br/>
 
 ## JVM 성능 통계
