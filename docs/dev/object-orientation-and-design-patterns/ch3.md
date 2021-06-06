@@ -173,6 +173,35 @@ transactionTemplate.execute(new TransactionCallback<String>()) {
 
 ## 어댑터 패턴
 
+**클라이언트가 요구하는 인터페이스와 재사용하려는 모듈의 인터페이스가 일치하지 않을 때 사용할 수 있는 패턴**이 어댑터 패턴입니다.
+
+어댑터 패턴을 적용한 구조는 다음과 같습니다.
+
+![image](https://user-images.githubusercontent.com/42582516/120910654-7e97e580-c6bb-11eb-8b97-c46de7981b3d.png)
+
+코드의 예시는 다음과 같습니다.
+
+```java
+public class SearchServiceTolrAdapter implements SearchService {
+  private TolrClient tolrClient = new TolrClient();
+
+  public SearchResult search(String keyword) {
+    TolrQuery tolrQuery = new TolrQuery(keyword);
+    QueryResponse response = tolrClient.query(tolrQuery);
+    SearchResult result = convertToResult(response);
+    return result;
+  }
+
+  ...
+}
+```
+
+이러한 어댑터 패턴을 적용된 예는 `SLF4J` 라는 로깅 API입니다. SLF4J는 단일 로깅 API를 사용하면서 자바 로깅, log4j, LogBack 등의 로깅 프레임워크를 선택적으로 사용할 수 있도록 해줍니다. 이때 SLF4J가 제공하는 인터페이스와 각 로깅 프레임워크를 맞춰 주기 위해 어댑터를 사용하고 있습니다.
+
+![image](https://user-images.githubusercontent.com/42582516/120910633-5e682680-c6bb-11eb-91f8-cc5bfefc27f3.png)
+
+이러한 어댑터 패턴은 개방 폐쇄 원칙을 따를 수 있게 해줍니다.
+
 <br/>
 
 ## 옵저버 패턴
