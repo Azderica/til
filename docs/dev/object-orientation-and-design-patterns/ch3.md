@@ -206,6 +206,72 @@ public class SearchServiceTolrAdapter implements SearchService {
 
 ## 옵저버 패턴
 
+**한 객체의 상태 변화를 정해지지 않은 여러 다른 객체에 토잊하고 싶을 때 사용하는 패턴**을 옵저버 패턴이라고 합니다.
+
+![image](https://user-images.githubusercontent.com/42582516/120910857-63c67080-c6bd-11eb-8801-fe8659a1b8a1.png)
+
+옵저버 패턴은 크게 주제(subject) 객체와 옵저버(observer) 객체가 등장하며, **주제 객체**는 다음의 두가지 책임을 가집니다.
+
+- 옵저버 목록을 관리하고 옵저버를 등록하고 제거할 수 있는 메서드를 제공합니다.
+- 상태의 변경이 발생하면 등록된 옵저버에 변경 내역을 알립니다.
+
+```java
+// 옵저버 패턴에서 주제에 해당하는 클래스의 구현
+public abstract class StatusSubject {
+  private List<StatusObserver> observers = new ArrayList<StatusObserver>();
+
+  public void add(StatusObserver observer) {observers.add(observer);}
+  public void remove(StatusObserver observer) {observers.remove(observer);}
+  public void notifyStatus(Status status) {
+    for(StatusObserver observer : observers)
+      observer.onAbnormalStatus(status);
+  }
+}
+```
+
+```java
+// 옵저버 인터페이스
+public interface StatusObserver {
+  void onAbnormalStatus(Status status);
+}
+
+// 콘클이트 옵저버 클래스의 구현 예시
+public class StatusEmailSender implements StatusObserver {
+  @Override
+  public void onAbnormalStatus(Status status) {
+    sendEmail(status);
+  }
+
+  private void sendEmail(Status status) {
+    ... // 이메일 전송 코드
+  }
+}
+```
+
+이러한 옵저버 패턴을 적용할 때의 **장점**은 **주제 클래스 변경 없이 상태 변경을 통지 받을 옵저버를 추가할 수 있습니다.**
+
+### 옵저버 객체에게 상태 전달 방법
+
+일반적으로는 주체 객체에서 상태 값을 전달하면, 옵저버 객체에서 파라미터로 받아 상태를 전달 받습니다. 다만, 필요에 따라, 콘크리트 주체 객체에서 직접 접근하는 경우도 존재합니다. 이러한 경우에는 콘크리트 주제 클래스에 의존을 가지게 됩니다.
+
+### 주제 객체 구분
+
+옵저버 패턴을 자주 사용되는 영역은 GUI 프로그래밍 영역입니다.
+
+### 옵저버 패턴 구현의 고려 사항
+
+일반적으로 옵저버 패턴을 구현할 때는 다음을 고려합니다.
+
+- 주제 객체의 통지 기능 실행 주체
+  - 옵저버에 통지하는 시점을 결정하는 주체가 누가 되는지에 대한 고민
+- 옵저버 인터페이스의 분리
+  - 옵저버 인터페이스 개수에 대한 고민(ex. 마우스 클릭 이벤트, 터치 이벤트 ...)
+- 통지 시점에서의 주제 객체 상태
+  - 통지 시점에서 주제 객체의 상태에 결함이 없어야합니다.
+  - 이러한 방법의 예시로는 상태 변경과 통지 기능에 템플릿 메서드 패턴을 적용하는 것입니다.
+- 옵저버 객체의 실행 제약 조건
+  - 옵저버 객체의 실행에 대한 제약 규칙을 정해야합니다.
+
 <br/>
 
 ## 미디에이터 패턴
