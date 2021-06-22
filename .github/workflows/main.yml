@@ -49,4 +49,4 @@ jobs:
           else
           npm i
           fi
-          npm run deploy
+          GIT_USER=Azderica USE_SSH=true yarn deploy
