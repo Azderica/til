@@ -14,6 +14,27 @@ JVM은 다음 세 공간에 주로 데이터를 담아 높습니다.
 - 로컬 변수 : 결과를 임시 저장합니다.
 - 객체 힙 : 메서드끼리, 스레드끼리 공유됩니다.
 
+### JVM 바이트코드 개요
+
+자바는 처음부터 이식성을 염두에 두고 설계된 언어입니다. 따라서 big endian, little endian 하드웨어 아키텍처 모두 바이트 코드 변경없이 실행 가능하도록 명세에 규정되어 있습니다.
+
+다음과 같은 명령어가 있습니다.
+
+- 로드/스토어 카테고리
+  - load, store, ldc, const, pop, dup, getField, putField
+- 산술 카테고리
+  - add, sub, div, mul
+- 흐름 제어 카테고리
+  - if, goto
+- 메서드 호출 카테고리
+  - invokevirtual, invokespecial, ...
+- 플랫폼 카테고리
+  - new, newarray, anewarray, ...
+
+### 단순 인터프리터
+
+### 핫스팟에 특정한 내용
+
 <br/>
 
 ## AOT와 JIT 컴파일
