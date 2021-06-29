@@ -206,7 +206,7 @@ public class SearchServiceTolrAdapter implements SearchService {
 
 ## 옵저버 패턴
 
-**한 객체의 상태 변화를 정해지지 않은 여러 다른 객체에 토잊하고 싶을 때 사용하는 패턴**을 옵저버 패턴이라고 합니다.
+**한 객체의 상태 변화를 정해지지 않은 여러 다른 객체에 주입하고 싶을 때 사용하는 패턴**을 옵저버 패턴이라고 합니다.
 
 ![image](https://user-images.githubusercontent.com/42582516/120910857-63c67080-c6bd-11eb-8801-fe8659a1b8a1.png)
 
