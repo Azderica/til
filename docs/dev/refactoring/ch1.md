@@ -1,18 +1,18 @@
-# 리팩터링: 첫 번째 예시
+# 1. 리팩터링: 첫 번째 예시
 
 ## 리팩토링 전 코드
 
 리팩토링을 하기 전, 공연료 청구서에 들어갈 데이터를 표한한 코드는 다음과 같습니다.
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let totalAmount = 0
   let volumeCredits = 0
   let result = `청구 내역 (고객명: ${invoice.customer})\n`
   const format = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2
+    minimumFractionDigits: 2,
   }).format
 
   for (let perf of invoice.performance) {
@@ -131,7 +131,7 @@ function statement (invoice, plays) {
 다만, 아직도 중첩 함수가 존재합니다.
 
 ```js
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   let result = `청구 내역 (고객명: ${invoice.customer})\n`
   for (let perf of invoice.performances) {
     result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${
@@ -141,7 +141,7 @@ function statement (invoice, plays) {
     result += `적립 포인트: ${totalVolumeCredits()}점\n`
     return result
 
-    function totalAmount () {
+    function totalAmount() {
       let result = 0
       for (let perf of invoice.performances) {
         result += amountFor(perf)
@@ -150,7 +150,7 @@ function statement (invoice, plays) {
     }
 
     // 중첩 함수 시작
-    function totalVolumeCredits () {
+    function totalVolumeCredits() {
       let result = 0
       for (let perf of invoice.performances) {
         result += volumeCreditsFor(perf)
@@ -158,15 +158,15 @@ function statement (invoice, plays) {
       return result
     }
 
-    function usd (aNumber) {
+    function usd(aNumber) {
       return new Intl.NumberFormat('en_US', {
         style: 'currency',
         currency: 'USD',
-        minimumFractionDigits: 2
+        minimumFractionDigits: 2,
       }).format(aNumber / 100)
     }
 
-    function volumeCreditsFor (aPerformance) {
+    function volumeCreditsFor(aPerformance) {
       let result = 0
       result += Math.max(aPerformance.audience - 30, 0)
       if ('comedy' === playFor(aPerformance).type)
@@ -174,11 +174,11 @@ function statement (invoice, plays) {
       return result
     }
 
-    function playFor (aPerformance) {
+    function playFor(aPerformance) {
       return plays[aPerformance.playID]
     }
 
-    function amountFor (aPerformance) {
+    function amountFor(aPerformance) {
       let result = 0
       switch (playFor(aPerformance).type) {
         case 'tragedy': // 비극
@@ -222,11 +222,11 @@ function statement (invoice, plays) {
 // 출력용 파일입니다.
 import createStatementData from './createStatementData.js'
 
-function statement (invoice, plays) {
+function statement(invoice, plays) {
   return renderPlayText(createStatementData(invoice, plays))
 }
 
-function renderPlayText (data, plays) {
+function renderPlayText(data, plays) {
   let result = `청구 내역 (고객명: for ${data.customer})\n`
   for (let perf of data.performances) {
     result += ` ${playFor(perf).name}: ${usd(amountFor(perf))} (${
@@ -238,11 +238,11 @@ function renderPlayText (data, plays) {
   return result
 }
 
-function htmlStatement (invoice, plays) {
+function htmlStatement(invoice, plays) {
   return renderHtml(createStatementData(invoice, plays))
 }
 
-function renderHtml (data) {
+function renderHtml(data) {
   let result = `<h1>청구 내역 (고객명: ${data.customer})</h1>\n`
   result += '<table>\n'
   result += '<tr><th>연극</th><th>좌석 수</th><tr>금액</tr></tr>'
@@ -256,11 +256,11 @@ function renderHtml (data) {
   return result
 }
 
-function usd (aNumber) {
+function usd(aNumber) {
   return new Intl.NumberFormat('en_US', {
     style: 'currency',
     currency: 'USD',
-    minimumFractionDigits: 2
+    minimumFractionDigits: 2,
   }).format(aNumber / 100)
 }
 ```
@@ -268,7 +268,7 @@ function usd (aNumber) {
 ```js
 // createStatementData.js
 // 계산에 대한 로직을 수행합니다.
-export default function createStatementData (invoice, plays) {
+export default function createStatementData(invoice, plays) {
   const result = {}
   result.customer = invoice.customer
   result.performances = invoice.performances.map(enrichPerformance)
@@ -276,7 +276,7 @@ export default function createStatementData (invoice, plays) {
   result.totalVolumeCredits = totalVolumeCredits(result)
   return result
 
-  function enrichPerformance (aPerformance) {
+  function enrichPerformance(aPerformance) {
     const calculator = createPerformanceCalculator(
       aPerformance,
       playFor(aPerformance)
@@ -288,19 +288,19 @@ export default function createStatementData (invoice, plays) {
     return result
   }
 
-  function playFor (aPerformance) {
+  function playFor(aPerformance) {
     return plays[aPerformance.playID]
   }
-  function totalAmount (data) {
+  function totalAmount(data) {
     return data.performances.reduce((total, p) => total + p.amount, 0)
   }
 
-  function totalVolumeCredits () {
+  function totalVolumeCredits() {
     return data.performances.reduce((total, p) => total + p.volumeCredits, 0)
   }
 }
 
-function createPerformanceCalculator (aPerformance, aPlay) {
+function createPerformanceCalculator(aPerformance, aPlay) {
   switch (aPlay.type) {
     case 'tragedy':
       return new TragedyCalculator(aPerformance, aPlay)
@@ -312,22 +312,22 @@ function createPerformanceCalculator (aPerformance, aPlay) {
 }
 
 class PerformanceCalculator {
-  constructor (aPerformance, aPlay) {
+  constructor(aPerformance, aPlay) {
     this.performance = aPerformance
     this.play = aPlay
   }
 
-  get amount () {
+  get amount() {
     throw new Error('서브 클래스에서 처리하도록 설계되었습니다.')
   }
 
-  get volumeCredits () {
+  get volumeCredits() {
     return Math.max(this.performance.audience - 30, 0)
   }
 }
 
 class TragedyCalculator extends PerformanceCalculator {
-  get amount () {
+  get amount() {
     let result = 40000
     if (aPerformance.audience > 30) {
       result += 1000 * (aPerformance.audience - 30)
@@ -337,7 +337,7 @@ class TragedyCalculator extends PerformanceCalculator {
 }
 
 class ComedyCalculator extends PerformanceCalculator {
-  get amount () {
+  get amount() {
     let result = 30000
     if (aPerformance.audience > 20) {
       result += 10000 + 500 * (aPerformance.audience - 20)
@@ -346,7 +346,7 @@ class ComedyCalculator extends PerformanceCalculator {
     return result
   }
 
-  get volumeCredits () {
+  get volumeCredits() {
     return super.volumeCredits + Math.floor(this.performance.audience / 5)
   }
 }
