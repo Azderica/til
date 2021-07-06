@@ -2,552 +2,438 @@
 sidebar_position: 7
 ---
 
-# Methods
+# 7. 람다와 스트림
 
-이 챔터에서는 메서드 디자인의 여러 측면에 대해 이야기합니다. (어떻게 파라미터를 처리하고, 값을 리턴하는지, 메서드 서명을 어떻게 디자인하는 지, 메서드를 어떻게 문서화하는지) 이러한 대부분의 자료들은 생성자와 메서드에에 적용됩니다. 특히, 유용성, 견고성 및 유연성에 중점을 둡니다.
+Java 8에서 함수 객체를 더 쉽게 만들 수 있도록, `functional interface`, 람다 및 메소드 참조가 추가되었습니다. 스트림 API는 이러한 언어 변경과 함께 추가되어 데이터 요소들의 시퀀스 처리를 위한 라이브러리 지원을 제공합니다.
 
-## Item 49. 매개 변수의 유효성을 확인합니다.
+## Item 42. 익명 클래스보다 람다를 선택합니다.
 
-대부분의 메서드와 생성자는 매개 변수에 전달할 수 있는 값에 대한 몇가지 제한이 있습니다. 그렇기 때문에, 특정 실패에 대해 예외처리를 해줘야합니다.
-
-그러나 Java 7에서 추가된 `Object.requireNonNull`처럼, 유연하고 편리한 방법을 통해서 null 검사 등을 수동으로 할 필요가 없게 되었습니다.
+과거에는 하나의 추상 메소드를 가진 인터페이스가 function types로 사용되었습니다.
 
 ```java
-// Java의 null 검사 기능 인라인 사용
-this.strategy = Objects.requireNonNull (strategy, "strategy");
+// 함수 객체로서의 익명 클래스 인스턴스 - 폐기되었음
+Collections.sort(words, new Comparator<String>() {
+  public int compare(String s1, String s2) {
+    return Integer.compare(s1.length(), s2.length());
+  }
+});
 ```
 
-그 이후로, Java 9에서는 범위 검사 기능이 `java.util.Objects`에 추가되었으며, 이러한 방법은 checkFromIndexSize, checkFromToIndex, checkIndex 등을 사용할 수 있습니다.
+이러한 익명 클래스는 object-oriented 객체를 필요로 하는 고전적인 객체 지향 디자인 패턴(특히. Strategy pattern)에 적합했습니다. 그러나 이는 매우 애매모호했기 때문에 이를 대체할 수단이 필요하게 되었습니다.
 
-nonpublic method는 `assertions`을 사용해서 매개변수를 확인할 수 있습니다.
+Java 8에서는 단일 추성 메서드와의 인터페이스가 필요하다는 개념을 공식화하였고, 이를 `function interface`라고 알려져 있으며, 람다식이나 람다를 통해서 이를 만들 수 있게 되었습니다.
 
 ```java
-// 재귀 적 정렬을 위한 private helper function
-private static void sort(long a[], int offset, int length) {
-  assert a != null;
-  assert offset >= 0 && offset <= a.length;
-  assert length >= 0 && length <= a.length - offset;
-  ... // Do the computation
+// 함수 객체로서의 람다 표현식 (익명 클래스 대체)
+Collections.sort (words,
+    (s1, s2)-> Integer.compare (s1.length (), s2.length () ));
+```
+
+프로그램이 명확해지지 않는 한, 모든 람다 파라미터의 유형을 생략하는 방법이 좋습니다. (컴파일러가 이를 유추할 수 없기 때문에 그렇습니다.) 그렇기 때문에 **앞선 주제에서 말했듯이 Raw 타입을 사용하지 않는 것**이 여기서 중요합니다.
+
+또한 이러한 람다식을 통해서 더 짧게 만들 수 있고, 의미적으로도 잘 보일 수 있습니다.
+
+```java
+// Before 코드
+Collections.sort(words, comparingInt(String::length));
+
+// After 코드
+words.sort(comparingInt(String::length));
+
+// 뒤의 코드가 앞의 코드보다 직관적입니다.
+```
+
+이전 챕터에서 나왔던 Enum형을 아래처럼 수정할 수도 있습니다.
+
+```java
+public enum Operation {
+  PLUS  ("+", (x, y) -> x + y),
+  MINUS ("-", (x, y) -> x - y),
+  TIMES ("*", (x, y) -> x * y),
+  DIVIDE("/", (x, y) -> x / y);
+
+  private final String symbol;
+  private final DoubleBinaryOperator op;
+
+  Operation(String symbol, DoubleBinaryOperator op) {
+    this.symbol = symbol;
+    this.op = op;
+  }
+
+  @Override public String toString() { return symbol; }
+
+  public double apply(double x, double y) {
+    return op.applyAsDouble(x, y);
+  }
 }
 ```
 
-`assert`의 기본 원리는 패키지가 클라이언트에 의해 사용되는 방식에 관계없이 asserted condition이 true라는 주장으로 진행됩니다. 그렇기 때문에, 일반 유효성 검사와 달리 assertions은 만약 실패할시, `AssertionError`가 발생합니다.
+그러나, 이러한 **람다는 name과 document가 없기 때문에 계산이 확실하지 않거나, 몇줄을 초과하는 경우에는 람다에 넣는 것은 좋지않습니다.** (일반적으로 1줄 ~ 3줄 사이가 적합)
 
-- [Assertions 공식 문서](https://docs.oracle.com/javase/8/docs/technotes/guides/language/assert.html)
+현재는 람다의 등장으로 익명 클래스를 거의 사용하지 않지만, 익명 클래스만 할 수 있는 부분이 있습니다.
 
-이외에도 여러 조건에 따라 확인할 수 있는 부분이 있고, 확인할 수 없는 부분이 있습니다.
+- 람다는 기능 인터페이스로 제한되나, 추상 클래스의 인스턴스를 만들려면 람다가 아닌 익명 클래스로 만들 수 있습니다.
+- 익명 클래스를 사용해서 여러 추상 메서드가 있는 인터페이스의 인스턴스를 만들 수 있습니다.
+- 람다는 자신에 대한 참조를 얻을 수 없습니다. 즉, 본문 내에서 함수 객체에 액세스해야하는 경우 익명 클래스를 사용해야합니다.
 
-결론적으로는 **메소드나 생성자를 작성할 때마다, 매개 변수에 어떤 제한이 있는지를 생각**해야합니다. 이러한 제한 사항을 문서화하여야하며, method body의 시작 부분에 명시적인 검사를 적용해야하며, 이러한 습관을 가지고 있어야합니다.
+람다는 구현 중에 안정적으로 직렬화 및 역 직렬화 할 수 없는 속성은 익명 클래스와 공유합니다. 따라서 람다나 익명 클래스 인스턴스를 직렬화하는 경우는 거의 없습니다. Comparator 등의 직렬화를 쓸때는 nested class를 사용하는 것이 좋습니다.
+
+이를 요약하면 Java 8에서 람다는 작은 함수 객체를 표현하는 가장 좋은 방법입니다. **기능 인터페이스가 아닌 유형의 인스턴스를 만들어야하는 경우가 아니면, 함수 개체에 익명 클래스를 사용하면 안됩니다.**
 
 <br/>
 
-## Item 50. 필요할 때, 방어적 사본을 생성합니다.
+## Item 43. 람다보다 메서드 참조를 선택합니다.
 
-Java의 장점 중 하나는, safe language입니다. 이는 메모리 손상 오류에 영향을 받지않음을 의미하며, 이를 통해서 어떤 일이 일어나도 불변성이 유지될 것이라 확신하고 진행할 수 있습니다.
-
-다만, 이 경우에도 코드를 개판... 으로 짜면 문제가 발생할 수 있습니다. 따라서 **클래스의 클라이언트가 위험하게 구성될 수 있다는 가정하에, 방어적으로 프로그래밍해야합니다.**
+익명 클래스에 비해 람다의 주요 장점은 더 간결한 것입니다. 그러나 자바에서는 메서드 참조를 하는 람다보다 더 간결한 함수 객체를 생성하는 방법이 존재합니다.
 
 ```java
-// Broken "immutable" time period class
-public final class Period {
-  private final Date start;
-  private final Date end;
+// 람다식을 사용한 경우.
+map.merge (key, 1, (count, incr)-> count + incr);
 
-  public Period(Date start, Date end) {
-    if (start.compareTo(end) > 0)
-      throw new IllegalArgumentException(
-    start + " after " + end);
-    this.start = start;
-    this.end   = end;
-  }
-
-  public Date start() { return start; }
-
-  public Date end() {   return end;   }
-
-  ...    // Remainder omitted
-}
-
-public static void main() {
-  // Period 인스턴스의 내부를 공격한 경우.
-  Date start = new Date();
-  Date end = new Date();
-  Period p = new Period(start, end);
-  end.setYear(78); // p 내부가 수정됩니다.
-}
+// 더 짧은 코드, 메서드 참조
+map.merge (key, 1, Integer::sum);
 ```
 
-이러한 경우처럼, Date가 더이상 사용되지 않으면 이를 새로운 코드에서 사용하면 안됩니다. 따라서 이러한 문제에서 인스턴스 내부를 보호하려면, **생성자에 대한 각 변경 가능한 매개 변수의 방어적 복사본을 만드는 것이 중요합니다.**
+메서드에 파라미터가 많을수록 메서드 참조로 제거할 수 있는 상용구가 많아집니다. 다음은 그에 대한 주의사항입니다.
+
+- 람다로 할 수 없는 경우, 메서드 참조로도 할 수 있는 방법은 없습니다.
+- IDE로 프로그래밍하는 경우, 가능한 경우에 한해 람다를 메서드 참조로 대체할 수 있습니다.
+
+그러나 항상 이가 옳지는 않습니다. 특히 메서드가 같은 클래스에 있을 때 자주 발생합니다.
 
 ```java
-// 변경된 생성자, 매개 변수의 방어적 복사본을 만듭니다.
-public Period (Date start, Date end) {
-  this.start = new Date (start.getTime ());
-  this.end = new Date (end.getTime ());
+// 메서드 참조
+service.execute (GoshThisClassNameIsHumongous :: action);
 
-  if (this.start.compareTo (this.end)> 0)
-    throw new IllegalArgumentException (
-  this.start + "after"+ this.end);
-}
+// 람다식 사용 (여기서는 이게 더 좋음.)
+service.execute (()-> action ());
 ```
 
-이렇게 사용하면 위의 문제를 해결할 수 있습니다. 그러나 아래처럼, 데이터를 바꿀 수 도 있습니다.
+메서드 참조의 종류는 다음과 같습니다.
 
-```java
-Date start = new Date ();
-Date end = new Date ();
-Period p = new Period(start, end);
-p.end().setYear(78); // p의 내부를 수정합니다!
-```
+| Method Ref Type   | Example                  | Lambda Equivalent                                        |
+| ----------------- | ------------------------ | -------------------------------------------------------- |
+| Static            | `Integer::parseInt`      | `str -> Integer.parseInt(str)`                           |
+| Bound             | `Instant.now()::isAfter` | `Instant then = Instant.now();`<br/>`t->then.isAfter(t)` |
+| UnBound           | `String::toLowerCase`    | `str -> str.toLowerCase()`                               |
+| Class Constructor | `TreeMap<K, V>::new`     | `() -> new TreeMap<K, V>`                                |
+| Array Constructor | `int[]::new`             | `len -> new int[len]`                                    |
 
-이를 해결할려면 다음처럼 또 할 수 있습니다.
-
-```java
-// 수리 된 접근 자-내부 필드의 방어용 복사본 만들기
-public Date start () {
-  return new Date (start.getTime ());
-}
-
-public Date end () {
-  return new Date (end.getTime ());
-}
-```
-
-이와 같이 새로운 생성자와 새로운 접근자를 사용함을 통해서 방어적 코딩을 할 수 있습니다.
-
-**클라이언트에서 클래스를 가져오거나, 반환하는 경우에 변경 가능한 요소가 있는 경우에는 클래스는 구성 요소를 방어적으로 복사해야합니다. 복사를 할 수 없는 환경이면, 사용하는 클라이언트를 신뢰하는 구조로 가야하면서, 이를 수정하지 않도록 문서화시켜야합니다.**
+이를 정리하면 메서드 참조는 종종 람다보다 간결한 대안을 제공합니다. 따라서, **메소드 참조가 더 짧고 명확한 경우에는 이를 사용하고 그렇지 않은 경우에는 람다를 사용하는 것이 중요합니다.**
 
 <br/>
 
-## Item 51. 메서드 이름을 신중하게 설계합니다.
+## Item 44. 표준 기능 인터페이스를 선택합니다.
 
-아래의 규칙을 지켜야합니다.
+Java에 람다가 들어오고 난 이후, API 작성 가이드가 변경되었습니다.
 
-### 메서드 이름을 신중하게 선택해야합니다.
+대표적으로 Map을 쓰는 경우에는 LinkedHashMap 등을 사용하는 것이 좋습니다. 예를 들어 Map에서 removeEldestEntry를 사용한다고 했을 때, LinkedHashMap 의 경우에는 삭제할 수 있지만 Map의 경우에는 수동적으로 생성해야합니다.
 
-- 이해하기 동일한 패키지의 다른 이름과 일치하는 이름을 선택합니다.
-- 광범위한 합의와 일치하는 이름을 선택하는 것이 좋습니다.
+```java
+// 불필요한 기능 인터페이스; 대신 표준을 사용하십시오.
+@FunctionalInterface interface EldestEntryRemovalFunction <K, V> {
+  boolean remove (Map <K, V> map, Map.Entry <K, V> eldest);
+}
+```
 
-### 편리한 방법을 제공하는데 너무 과하게 사용하면 안됩니다.
+즉, 표준 기능 인터페이스의 기능을 사용하는 경우, **특수 목적으로 만든 인터페이스보다는 표준 기능 인터페이스를 사용하는 것이 중요합니다.**
 
-- 너무 많아지면 이를 사용하고 문서화하고 테스트, 유지하는데 어려워집니다.
+아래는 기본적인 기능 인터페이스입니다.
 
-### 너무 긴 매개변수는 피합니다.
+| Interface           | Function Signature     | Example               |
+| ------------------- | ---------------------- | --------------------- |
+| `UnaryOperator<T>`  | `T apply (T t)`        | `String::toLowerCase` |
+| `BinaryOperator<T>` | `T apply (T t1, T t2)` | `BigInteger::add`     |
+| `Predicate<T>`      | `boolean test (T t)`   | `Collection::isEmpty` |
+| `Function<T>`       | `R apply (T t)`        | `Arrays::asList`      |
+| `Supplier<T>`       | `T get ()`             | `Instant::now`        |
+| `Consumer<T>`       | `void accept (T t)`    | `System.out::println` |
 
-- 4개 이하의 매개변수를 사용하는 것이 좋습니다.
-- 동일한 형식의 매개 변수 시퀀스가 길면 안좋습니다.
+이를 사용해서 여러 변형 케이스로 만들 수도 있습니다. 이를 사용하는 여러 변형 케이스가 존재하지만, 대부분의 표준 기능 인터페이스는 기본 유형에 대한 지원을 위해 존재합니다.
 
-이를 해결하는 방법은 다음과 같습니다.
+즉, 기본 기능 인터페이스 대신 다른 요소(boxed primitives)가 있는 인터페이스를 사용하는 것은 좋지않습니다.
 
-- 메서드를 여러 메서드로 나눕니다.
-- 매개 변수 그룹을 보유하는 `helper class`를 만듭니다.
-- 메서도 호출까지 Builder 패턴을 적용합니다.
+목적에 맞는 **인터페이스가 필요한 경우**에는 아래의 조건인 경우인지를 잘 생각해봐야합니다.
 
-### 매개변수 유형의 경우, 클래스보다 인터페이스를 선호합니다.
+- 일반적으로 사용되며 설명이 포함된 이름이 도움이 될 수 있는 경우.
+- 관련된 강력한 결합(contract)가 있는 경우.
+- 사용자 커스텀 메소드가 이점을 가지고 있는 경우.
 
-매개 변수를 정의하는데 적합한 인터페이스가 있는 경우, 인터페이스를 구현하는 클래스를 대신 사용하는 것이 좋습니다.
+다만 이러한 경우에는 신중하게 설계가 필요합니다. 그리고, `@FunctionalInterface`와 같이 기능적 인터페이스에는 어노테이션을 추가해야합니다.
 
-### boolean의 의미가 메서드 이름에서 명확하지 않으면,boolean 매개 변수 보다는 요소가 두개인 Enum 형을 쓰는 것이 중요합니다.
-
-열거형을 통해서 코드를 더 쉽게 읽고 쓸 수 있습니다.
+요약하면, Java에서는 람다가 있기 때문에 이를 생각하고 API를 생계하는 것이 중요합니다.
 
 <br/>
 
-## Item 52. 오버로딩을 신중하게 사용합니다.
+## Item 45. 스트림을 신중하게 사용합니다.
 
-아래는 집합, 목록, 또는 다른 종류의 컬렉션인지에 따라 컬렉션을 분류하는 의도로 된 목적으로 된 코드입니다. 그러나 잘못된 코드입니다.
+Stream API는 대량 작업을 순차적으로 또는 병렬적으로 수행하는 작업을 쉽게하기 위해서 Java 8에 추가되었습니다.
+
+Stream API는 다음의 특징을 가집니다.
+
+- Stream pipeline은 source stream과 0개 이상의 intermediate operation, 하나의 terminal operation으로 나눠집니다.
+- Stream pipeline은 lazily하게 평가됩니다. (호출될 때까지 시작되지 않으며, 필요없는 데이터 요소는 계산되지 않습니다.)
+- Stream API는 유연합니다. (모든 호출이 단일 표현식으로 연결 가능합니다.)
+- Stream pipeline은 순차적으로 실행됩니다.
+- Stream API는 다재다능하지만, 항상 이렇게 해야하지는 않습니다. (잘못 사용하면, 유지보수성이 떨어집니다.)
+
+Stream을 남용한 코드는 다음과 같습니다.
 
 ```java
-public class CollectionClassifier {
-  public static String classify(Set<?> s) {
-    return "Set";
-  }
+// Overuse of streams - don't do this!
+public class Anagrams {
+  public static void main(String[] args) throws IOException {
+    Path dictionary = Paths.get(args[0]);
+    int minGroupSize = Integer.parseInt(args[1]);
 
-  public static String classify(List<?> lst) {
-    return "List";
+    try (Stream<String> words = Files.lines(dictionary)) {
+      words.collect(groupingBy(word -> word.chars()
+        .sorted()
+        .collect(StringBuilder::new, (sb, c) -> sb.append((char) c),
+          StringBuilder::append).toString()))
+        .values().stream()
+        .filter(group -> group.size() >= minGroupSize)
+        .map(group -> group.size() + ": " + group)
+        .forEach(System.out::println);
+    }
   }
+}
+```
 
-  public static String classify(Collection<?> c) {
-    return "Unknown Collection";
+이 경우, 프로그램을 읽고 유지하기가 매우 어렵습니다. Stream을 잘사용한 케이스는 다음과 같습니다.
+
+```java
+// 세련된 스트림 사용으로 명확성과 간결함 향상
+public class Anagrams {
+  public static void main(String[] args) throws IOException {
+    Path dictionary = Paths.get(args[0]);
+    int minGroupSize = Integer.parseInt(args[1]);
+
+    try (Stream<String> words = Files.lines(dictionary)) {
+      words
+        .collect(groupingBy(word -> alphabetize(word)))
+        .values().stream()
+        .filter(group -> group.size() >= minGroupSize)
+        .forEach(g -> System.out.println(g.size() + ": " + g));
+      }
   }
+// alphabetize method is the same as in original version
+...
+}
+```
 
-  public static void main(String[] args) {
-    Collection<?>[] collections = {
-      new HashSet<String>(),
-      new ArrayList<BigInteger>(),
-      new HashMap<String, String>().values()
+이와 같이 표현하면, 프로그램을 이해하기 어렵지 않습니다. 그리고, 람다 매개 변수의 이름도 신중하게 선정해야합니다. 명시적 유형이 없기 때문에, 스트림 파이프파린의 가독성을 높이기 위해서라도 이름 선정은 중요한 역할을 가지고 있습니다.
+
+또한, **파이프 라인에서는 명시적인 유형 정보와 임시 변수가 없기 때문에 도우미 메서드를 사용하는 것은 반복 코드보다 스트림 파이프라인에서 가독성을 위해 매우 중요합니다.**
+
+예를 들어, 아래 코드는 이러한 스트림을 잘못 사용한 케이스입니다.
+
+```java
+"Hello world!".chars().forEach(System.out :: print);
+// output : 721011081081113211911111410810033 (type을 모르므로)
+
+"Hello world!".chars().forEach(x-> System.out.print ((char) x));
+// 수정한 케이스, but 이렇게 사용하는 것은 좋지않음
+```
+
+이와 같이 스트림 파이프라인에서 사용할 수 없는 몇가지 작업이 있습니다.
+
+- 코드 블록에서는 범위의 모든 지역 변수를 읽거나 수정이 가능하지만, 람다에서는 최종만 읽을 수 있기때문에 지역변수를 수정할 수 없습니다.
+- 코드 블록 return에서 둘러싸는 메서드 break, continue, 예외 throw 등이 가능하지만 람다에서는 불가능합니다.
+
+그러나 스트림에서 적절한 동작은 다음과 같습니다.
+
+- 요소 시퀀스를 균일하게 변경
+- 요소 시퀀스 필터링
+- 단일 작업을 사용하여 요소 시퀀스 결합(요소 추가 및 최소값 계산)
+- 요소의 시퀀스를 컬렉션으로 합쳐서, 공통 속성별로 그룹화
+- 일부 기준을 충족하는 요소에 대한 요소 시퀀스를 검색
+
+이러한 경우에 매우 좋습니다.
+
+스트림을 사용하면 아래처럼 이쁜 코드를 구성할 수 있습니다.
+
+```java
+// 가장 큰 메르센 소수 20개를 출력하는 코드.
+public static void main(String[] args) {
+  primes().map(p -> TWO.pow(p.intValueExact()).subtract(ONE))
+    .filter(mersenne -> mersenne.isProbablePrime(50))
+    .limit(20)
+    .forEach(System.out::println);
+}
+```
+
+그러나 항상 Stream을 쓸지, 혹은 iteration을 사용할지는 애매한 경우가 많습니다. 이러한 경우에서는 개발자의 취향에 가깝습니다. 즉, **어떤 작업이 Stream이나 Iteration에 의해 더 나은건지 확실하지 않기 때문에, 두가지 모두를 시도하고 어떤 것이 나을지 고르는 것이 중요합니다.**
+
+<br/>
+
+## Item 46. 스트림에서 부작용이 없는 함수를 선택합니다.
+
+스트림은 단순한 API가 아니라, 함수형 프로그래밍을 기반으로 하는 패러다임입니다. 이러한 스트림이 제공해야하는 표현성과 속도, 경우에 따라 병렬화 가능성을 얻기위해서는 패러다임과 API를 채택해야합니다.
+
+스트림 패러다임의 가장 중요한 부분은 각 단계의 결과가 이전 단계의 `pure function`에 최대한 가까운 변환 시퀀스로 계산을 구성하는 것입니다. (`pure function`은 결과가 입력에만 의존하는 함수입니다. 즉, 변경 가능한 상태에 의존하지 않으며 어떤 상태도 업데이트가 없습니다.)
+
+```java
+Map <String, Long> freq = new HashMap <> ();
+
+// 잘못 스트림을 사용한 경우.
+try (Stream <String> words = new Scanner (file) .tokens ()) {
+  words.forEach (word-> {
+    freq.merge (word.toLowerCase (), 1L, Long::sum);
+  });
+}
+
+// 스트림 API를 잘 사용한 경우.
+try (Stream <String> words = new Scanner (file) .tokens ()) {
+  freq = words.collect(groupingBy(String::toLowerCase, counting()));
+}
+```
+
+위와 같이 `forEach` 연산은 동작 연산을 수행하지 않게 **스트림 결과를 보고하는 목적으로 사용**해야합니다.
+
+```java
+// freq 테이블에서 상위 10 개 단어 목록을 가져 오는 파이프 라인
+List <String> topTen = freq.keySet().stream()
+    .sorted (comparison(freq::get).reversed()).limit(10)
+    .collect (toList ());
+```
+
+그리고 해당 코드처럼, Collectors의 member를 정적으로 가져오는 것이 스트림 파이프라인을 더 읽기 쉽게 만듭니다.
+
+이외에도 여러개의 Collectors들이 존재합니다. 스트림 파이프 라인 프로그래밍의 본질은 부작용이 없는 함수 객체를 구성하는 것입니다. 이는 스트림 및 관련 개체에 전달된 많은 함수 개체 모두에 적용됩니다.
+
+- `forEach` : 계산을 수행하는 것이 목적이 아니라, 스트림에 의해 수행된 계산 결과를 보고해야하는 곳에 사용해야합니다.
+- `toList`, `toSet`, `toMap`, `groupingBy`, `joining` 등의 Collector factories를 사용하는 것이 중요합니다.
+
+<br/>
+
+## Item 47. Return 타입으로 스트림보다는 컬렉션을 선택합니다.
+
+많은 메서드들은 element 시퀀스를 반환합니다. 그러나 Java 8에서 스트림이 여러 플랫폼에 추가되어서 sequence 반환 방법에 대해 적절한 반환 유형을 선정하는 방법이 어려워졌습니다. 다만 이에 대한 명확한 해결책은 없습니다.
+
+```java
+// Stream <E>에서 Iterable <E> 로의 Adapter
+public static <E> Iterable <E> iterableOf (Stream <E> stream) {
+  return stream::iterator;
+}
+
+// Iterable <E>에서 Stream <E> 로의 Adapter
+public static <E> Stream <E> streamOf (Iterable <E> iterable) {
+  return StreamSupport.stream (iterable.spliterator (), false);
+}
+```
+
+다음과 같이 for-each 문으로 변환 할 수 있습니다. Collection 인터페이스 하위 유형 Iterable 및 보유 stream이 반복 스트림 액세스를 모두 제공하기 때문에, **Collection이나 적절한 subType 등이 public, sequence-returning 메서드에 가장 적합합니다.** 다만, **Collection 반환을 위해 메모리에 큰 시퀀스를 저장하는 것은 좋지 않습니다.**
+
+이를 사용한 코드는 아래와 같습니다.
+
+```java
+// Returns the power set of an input set as custom collection
+public class PowerSet {
+  public static final <E> Collection<Set<E>> of(Set<E> s) {
+    List<E> src = new ArrayList<>(s);
+    if (src.size() > 30)
+      throw new IllegalArgumentException("Set too big " + s);
+    return new AbstractList<Set<E>>() {
+      @Override public int size() {
+        return 1 << src.size(); // 2 to the power src.size()
+      }
+
+      @Override public boolean contains(Object o) {
+        return o instanceof Set && src.containsAll((Set)o);
+      }
+
+      @Override public Set<E> get(int index) {
+        Set<E> result = new HashSet<>();
+        for (int i = 0; index != 0; i++, index >>= 1)
+          if ((index & 1) == 1)
+            result.add(src.get(i));
+        return result;
+      }
     };
-
-    for (Collection<?> c : collections)
-      System.out.println(classify(c));
   }
 }
-
-/* Output
- * : Unknown Collection
- * : Unknown Collection
- * : Unknown Collection
- */
 ```
 
-다음과 같이 발생하는 원인은, `classify` 메서드가 overload되고 호출할 overload가 컴파일 타임에 선택되기 때문입니다.
-
-오버로드된 메서드 중에서 선택이 static이고, 재정의된 메서드 중에서 선택이 `dynamic`이기 때문에 직관적이지 않습니다. 즉, 오버로딩된 메서드의 올바른 버전은 런타임에 선택되고, 메서드가 호출되는 개체의 런타임 유형을 기반으로 합니다.
-
-즉, 상위 클래스의 메서드 선언과 동일한 시그니처가 있는 메서드 선언이 하위 클래스에 포함되어 있으면 메서드가 재정의 됩니다. 이를 잘표현 코드는 다음과 같습니다.
-
 ```java
-class Wine {
-  String name() { return "wine"; }
-}
+// 입력 목록의 모든 하위 목록 스트림을 반환합니다.
+public class SubLists {
+  public static <E> Stream <List<E>> of (List <E> list) {
+    return Stream.concat (Stream.of (Collections.emptyList) ()),
+        prefixes (list) .flatMap (SubLists :: suffixes));
+  }
 
-class SparklingWine extends Wine {
-  @Override String name() { return "sparkling wine"; }
-}
+  private static <E> Stream <List<E>> prefixes (List <E> list) {
+    return IntStream.rangeClosed (1, list.size ())
+        .mapToObj (end-> list.subList (0, end)) ;
+  }
 
-class Champagne extends SparklingWine {
-  @Override String name() { return "champagne"; }
-}
-
-public class Overriding {
-  public static void main(String[] args) {
-    List<Wine> wineList = List.of(
-      new Wine(), new SparklingWine(), new Champagne());
-
-    for (Wine wine : wineList)
-      System.out.println(wine.name());
+  private static <E> Stream <List<E>> suffixes (List <E> list) {
+    return IntStream.range (0, list.size ())
+        .mapToObj (start-> list.subList (start, list.size ( )));
   }
 }
-
-/* Output
- * : wine
- * : sparkling wine
- * : champagne
- */
 ```
 
-또 다른 방법으로 아래처럼 `instanceof`를 사용할 수도 있습니다.
-
 ```java
-public static String classify(Collection<?> c) {
-  return c instanceof Set ? "Set" :
-    c instanceof List ? "List" : "Unknown Collection";
+// 입력 목록의 모든 하위 목록 스트림을 반환합니다.
+public static <E> Stream <List <E >> of (List <E> list) {
+  return IntStream.range (0, list.size ())
+      .mapToObj (
+        start- > IntStream.rangeClosed (start + 1, list.size ())
+            .mapToObj (end-> list.subList (start, end)))
+      .flatMap (x-> x);
 }
 ```
 
-오버라이딩(overriding)은 표준이고, 오버로딩(overloading)이기 때문에, 오버라이딩(overriding, 재정의)는 메서드 호출의 동작에 대해 사람들의 예상을 설정할 수 있습니다. 그러나 오버로딩(overloading)은 여러 expectations에 혼란을 줄 수 있습니다.
-
-이러한 잘못된 오버로딩의 사용은, 어떠한 것이 호출되는지 모르기 때문에 어려움을 겪을 수 있습니다. 따라서 **혼란스러운 오버로딩 사용을 피해야합니다.**
-
-여러 오버로딩을 잘사용하는 방법은 이야기가 많지만, **안전하고 보수적인 정책은 동일한 수의 매개 변수로 두 개의 오버로딩을 내보내지 않는 것입니다.** 이러한 제한을 통해서 메서드를 오버로드하는 대신 항상 다른 이름을 지정할 수 있습니다.
-
-예를 들면, write 메서드 대신에, writeBoolean, writeInt, writeLong 등이 있으며 이를 통해서 대응하는 메서드를 바로 확인할 수 있다는 점입니다.
-
-오버로딩을 애매하게 사용하는 부분은 Java 5 이전부터 존재했으며, Java 8에서 람다가 나오고 나서 더 헷갈리게 되었습니다. 또한 동일한 인수 위치에서 서로 다른 기능적 인터페이스를 사용하는 메서드 또는 생성자를 오버로딩하면 혼란을 만듭니다. **동일한 인수 위치에서 다른 기능 인터페이스를 사용하기 위해 메서드를 오버로드하면 안됩니다.**
-
-결론적으로는, 메서드를 오버로드할 수 있다고 꼭 할 필요가 없습니다. 일반적으로 동일한 수의 매개 변수를 가진 여러 시그니처가 있는 메서드를 오버로드하지 않는 곳이 좋습니다. 일부 생성자와 관련되어 이가 힘들 수도 있지만, 캐스트를 통해서 동일한 매개 변수가 다른 오버로딩에 전달되는 것은 막아야합니다.
+이와 같이, element 시퀀스를 반환하는 메서드를 작성할 때, 일부 사용자는 stream으로 처리하고 다른 사용자는 iteration으로 사용하는 것을 좋아할 수 있습니다. 그러나 둘다 잘못된 것이 아니고, 이 두개를 필요에 따라 사용하는 것이 좋습니다. 그리고 Collections로 반환할 수 있으면 좋습니다. (작은 경우, ArrayList / 큰 경우, 사용자 지정 컬렉션)
 
 <br/>
 
-## Item 53. Varargs를 신중하게 사용합니다.
+## Item 48. 스트림을 병렬로 만들 때 주의합니다.
 
-`variable arity` 메서드로 알려진 Varargs 메서드는 지정된 유형의 0개 이상의 이상의 인수를 허용합니다. varargs 기능은 먼저 arguments 배열을 만들고, 다음 argument 값을 배열에 넣고, 마지막으로 배열을 메서드에 전달하는 방식으로 작동합니다.
+Java는 동시 프로그래밍 작업을 용이하게 하기 위해 많은 노력을 했습니다.
 
-아래는 대표적인 예시입니다.
+예를 들어 다음의 코드를 병렬로 구성하는 경우입니다.
 
 ```java
-// 간단한 varargs 사용
-static int sum(int... args) {
-  int sum = 0;
-  for(int arg : args)
-    sum += arg;
-  return sume;
+// 처음 20 개의 Mersenne 소수를 생성하는 스트림 기반 프로그램
+public static void main (String [] args) {
+  primes (). map (p-> TWO.pow (p.intValueExact ()). subtract (ONE))
+      .filter (mersenne-> mersenne.isProbablePrime (50))
+      .limit ( 20) .forEach (System.out :: println);
+}
+
+static Stream <BigInteger> primes () {
+  return Stream.iterate (TWO, BigInteger :: nextProbablePrime);
 }
 ```
 
-그러나 때로는 0 개 이상의 인수가 아닌 특정 유형의 하나 이상의 인수 가 필요한 메서드를 작성하는 것이 적절합니다
+이 작업을 parallel() 스트림 파이프 라인에 호출을 추가해서 속도를 높일려고하면, 이를 병렬화 하는 방법을 모르기 때문에 실패합니다. 즉, **최상의 상황에서 Stream.iteration이거나 intermediate operation limited가 사용되는 경우 파이프 라인을 병렬화해도 성능적인 이득은 없습니다.** 따라서 스트림 파이프라인을 무차별적으로 병렬화하는 것이 좋지 않습니다.
 
-아래는 잘못된 코드입니다.
+일반적으로 `ArrayList`, `HashMap`, `HashSet`, `ConcurrentHashMap`, `arrays`, int 범위, long 범위 등이 병렬 처리의 성능 향상을 통해 스트림에 가장 적합합니다.
+
+스트림을 병렬화를 하게 되었을 때, 장애 및 성능 저하가 발생할 수 있게 되었으며 잘못된 결과 및 예측할 수 없는 동작으로 이어지게 됩니다.
+
+다만 적절한 상황에서, 스트림 파이프라인에 parallel(병렬) 호출을 추가하는 것만으로 프로세서 코어 수에서 거의 선형에 가까운 속도 향상을 달성할 수 있습니다.
 
 ```java
-static int min(int... args) {
-  if (args.length == 0)
-    throw new IllegalArgumentException("Too few arguments");
+// 소수 계산 스트림 파이프 라인-병렬화의 이점
+static long pi (long n) {
+  return LongStream.rangeClosed (2, n)
+      .mapToObj (BigInteger :: valueOf)
+      .filter (i-> i.isProbablePrime (50))
+      .count();
+}
 
-  int min = args[0];
-  for (int i = 1; i < args.length; i++)
-    if (args[i] < min)
-      min = args[i];
-  return min;
+// 아래는 parallel()을 통해 시간 단축을 한 경우입니다.
+static long pi (long n) {
+  return LongStream.rangeClosed (2, n)
+      .parallel ()
+      .mapToObj (BigInteger :: valueOf)
+      .filter (i-> i.isProbablePrime (50 ))
+      .count ();
 }
 ```
 
-위의 문제는 클라이언트가 인수없이 메서드를 호출하면 컴파일 에러가 아닌 런타임 에러가 발생합니다. 이를 해결하기 위해서는 두개의 매개 변수를 사용할 수 있습니다.
-
-```java
-// The right way to use varargs to pass one or more arguments
-static int min(int firstArg, int... remainingArgs) {
-  int min = firstArg;
-  for (int arg : remainingArgs)
-    if (arg < min)  min = arg;
-  return min;
-}
-```
-
-성능이 중요한 상황에서 varargs를 사용할 때는 주의해서 사용해야합니다. varargs 메서드를 호출할 때 마다 배열 할당 및 초기화가 발생합니다. 이러한 경우 성능적인 이슈를 해결하기 위해서는 다음과 같은 패턴을 사용할 수도 있습니다.
-
-```java
-public void foo() { }
-public void foo(int a1) { }
-public void foo(int a1, int a2) { }
-public void foo(int a1, int a2, int a3) { }
-public void foo(int a1, int a2, int a3, int... rest) { }
-```
-
-이는 일반적으로 적절하지않지만, 일부 경우에서 적용될 수 있습니다.
-
-즉, varargs는 가변 개수의 인수로 메서드를 정의해야할 때 매우 유용합니다. varargs 매개 변수 앞에 필수 매개 변수를 추가하고 varargs 의 성능에 대해 유의해야합니다.
-
-<br/>
-
-## Item 54. Null이 아닌 빈 컬렉션이나 배열을 반환합니다.
-
-```java
-// 빈 컬렉션을 나타 내기 위해 null을 반환합니다. -> 좋지 않습니다.
-private final List<Cheese> cheesesInStock = ...;
-
-public List<Cheese> getCheeses() {
-  return cheesesInStock.isEmpty() ? null
-    : new ArrayList<>(cheesesInStock);
-}
-```
-
-이러한 경우, 클라이언트 측에서는 null을 처리하기 위해서 추가 코드가 필요합니다.
-
-```java
-List<Cheese> cheeses = shop.getCheeses();
-if (cheeses != null && cheeses.contains(Cheese.STILTON))
-  System.out.println("Jolly good, just the thing.");
-```
-
-이런 처리가 필요없게 하기 위해서는 다음과 같이 작성하는 것이 좋습니다.
-
-```java
-List<Cheese> cheeses = shop.getCheeses();
-if (cheeses != null && cheeses.contains(Cheese.STILTON))
-  System.out.println("Jolly good, just the thing.");
-```
-
-이를 더 최적화하면 아래처럼 표현할 수 있습니다.
-
-```java
-// 최적화-빈 컬렉션 할당 방지
-public List <Cheese> getCheeses () {
-  return cheesesInStock.isEmpty ()? Collections.emptyList ()
-    : new ArrayList <> (cheesesInStock);
-}
-```
-
-배열도 비슷한 방식으로 처리할 수 있으며, 최적화할 수 있습니다.
-
-```java
-// 최적화-빈 배열 할당 방지
-private static final Cheese [] EMPTY_CHEESE_ARRAY = new Cheese [0];
-
-public Cheese [] getCheeses () {
-  return cheesesInStock.toArray (EMPTY_CHEESE_ARRAY);
-}
-```
-
-이를 요약하면, **빈 배열이나 컬렉션 대신에 null을 반환하면 안됩니다.**
-
-<br/>
-
-## Item 55. Optionals를 신중하게 반환합니다.
-
-Java 8 이전에는 특정 상황에서 값을 반환 할 수 없는 메서드를 작성할 때, 취할 수 있는 두 가지 접근 방식이 있습니다. 보통 예외를 throw 하거나 반환할 수 있습니다. 하지만 디 두 접근 방식 모두 완벽하지는 않습니다.
-
-Java 8에는 값을 반환 할 수 없는 메서드를 작성하는 세번 째 접근 방식이 있습니다. (`Optional<T>`)
-
-`Optional<T>`는 개념적으로 T를 반환하지만 그렇게 할 수 없는 경우에는 대신에 `Optional<T>`를 반환합니다. `Optional`의 반환 값은 예외를 던지거나, null을 던지는 거보다 유연하고 쉽습니다.
-
-```java
-// 컬렉션에서 최대 밧 반환, 비어있는 경우 예외 발생
-public static <E extends Comparable<E>> E max(Collection<E> c) {
-  if (c.isEmpty())
-    throw new IllegalArgumentException("Empty collection");
-
-  E  9result = null;
-  for (E e : c)
-    if (result == null || e.compareTo(result) > 0)
-      result = Objects.requireNonNull(e);
-
-  return result;
-}
-```
-
-이를 `Optional`릍 통해서 수정할 수 있습니다.
-
-```java
-public static <E extends Comparable<E>> Optional<E> max(Collection<E> c) {
-  if (c.isEmpty())
-    return Optional.empty();
-
-  E result = null;
-  for (E e : c)
-    if (result == null || e.compareTo(result) > 0)
-      result = Objects.requireNonNull(e);
-
-  return Optional.of(result);
-}
-```
-
-다만, `Optional-returning` 메서드에서 null 값을 반환하면 안됩니다. 이는 `Optional`의 목적을 무시하는 것입니다. 또한 `Optional`을 통해서 다른 메서드에서도 사용할 수 있습니다.
-
-```java
-// 컬렉션의 최대 값을 Optional <E>로 반환-스트림을 사용
-public static <E extends Comparable <E >> Optional <E> max (Collection <E> c) {
-  return c.stream().max(Comparator.naturalOrder());
-}
-```
-
-```java
-// 선택 사항을 사용하여 선택한 기본값 제공
-String lastWordInLexicon = max(words).orElse( "No words ...");
-```
-
-```java
-// 선택 사항을 사용하여 선택한 예외 발생
-Toy myToy = max (toys).orElseThrow(TemperTantrumException::new);
-```
-
-```java
-// 반환 값이 있다는 것을 알고있을 때 선택 사항 사용
-Element lastNobleGas = max(Elements.NOBLE_GASES).get() ;
-```
-
-위의 이러한 방법들을 통해서 적절한 해결책을 찾지 못한 경우에는 `Optional`의 `isPresent().true`를 사용하는 것도 나쁘지 않습니다. 또한 snippset을 사용하는 것도 좋습니다.
-
-```java
-// snippset 코드
-Optional<ProcessHandle> parentProcess = ph.parent();
-System.out.println("Parent PID: " + (parentProcess.isPresent() ?
-  String.valueOf(parentProcess.get().pid()) : "N/A"));
-
-// Optional의 map 기능을 사용한 코드
-System.out.println("Parent PID: " +
-  ph.parent().map(h -> String.valueOf(h.pid())).orElse("N/A"));
-```
-
-자바의 Stream을 사용하는 경우, 아래처럼 `Optional`을 적용할 수 있습니다. (Java9에서는 스트림에 `Optional`이 추가되었습니다.)
-
-```java
-// Java 8
-streamOfOptionals
-  .filter(Optional::isPresent)
-  .map(Optional::get)
-
-// Java 9
-streamOfOptionals
-  .flatMap(Optional::stream)
-```
-
-그러나 모든 반환 유형에서 적용되는 것은 아닙니다. `Collections`, `Maps`, `Streams`, `Arrays`, `Optionals` 을 포함하는 컨테이너 유형은 옵션으로 래핑해서는 안됩니다. 이 경우에는 `Optional<List<T>>`를 반환하는 것 보다는 `List<T>`를 반환하는 것이 좋습니다.
-
-결과를 반환 할 수 없는 경우, `Optional<T>`를 반환하는 메서드를 선언해야하며, 결과가 반환되지 않으면 클라이언트가 특별한 처리를 수행해야합니다.
-
-boxed primitive type을 포함하는 옵셔널을 반환하는 것은, 비용이 매우 큽니다. 따라서 `Boolean`, `Byte`, `Character`, `Short`, `Float` 형을 제외하고는 `boxed primitive type`을 Optional로 반환하면 안됩니다.
-
-앞서 Optional 을 반환하고, 치를 처리하는 방법에 대해 설명했습니다. 이를 다른 가능한 사용에 대해 이야기 하지 않은 이유는, 이를 잘 못 사용하면, 불필요한 복잡성을 만들기 때문입니다. Collection이나 array의 key, value, element 로 Optional을 사용하는 것은 적절하지 않습니다.
-
-이를 정리하면, **항상 값을 반환할 수 없는 메서드를 작성하고 메서드 사용자가 호출 할 때마다, 이 가능성을 고려하는 것을 중요하다고 생각하면 `Optional`을 사용하는 것이 좋습니다.** 그러나, 이 경우 성능에 대한 부분을 고려해야합니다. 성능이 중요한 메서드의 경우에는 null을 반환하거나, throw하는 것이 더 좋을 수 있습니다.
-
-<br/>
-
-## Item 56. 노출된 모든 API 요소에 대한 문서 주석을 작성합니다.
-
-API를 사용할 수 있으려면 문서화해야합니다. 전통적으로 API 문서는 수동으로 생성되었으며 코드와 동기화를 유지하는 어려운 일입니다.
-
-문서 주석 규칙은 공식적으로 언어의 일부는 아니지만 모든 Java 프로그래머가 알아야하는 사실상의 API를 구성합니다. 대표적인 문서 태그로 Java 9의 `{@index}`, Java 8의 `{@implSpec}`, Java 5의 `{@literal}`, `{@code}` 등이 있습니다.
-
-API를 올바르게 문서화하려면 내보낸 모든 클래스, 인터페이스, 생성자, 메소드 및 필드 선언 앞에 주석을 붙여야합니다. 또한 메서드에 대한 문서 주석은 메서드와 클라이언트 간의 계약을 간결하게 설명해야합니다.
-
-이를 표현한 코드는 다음과 같습니다.
-
-```java
-// ({@code index < 0 || index >= this.size()})
-E get(int index);
-```
-
-```java
- /* 이 컬렉션이 비어 있으면 true를 반환합니다.
-  * @implSpec
-  * 이 구현은 {@code this.size () == 0}을 반환합니다.
-  * @return true if this collection is empty
-  */
-public boolean isEmpty () {...}
-```
-
-**문서 주석은 소스 코드와 생성된 문서 모두에서 읽을 수 있어야합니다.** 또한, 클래스 또는 인터페이스의 두 멤버 또는 생성자는 동일한 요약 설명을 가져서는 안됩니다.
-
-이를 사용한 예제 코드는 아래와 같습니다.
-
-```java
-/**
- * A suspect, such as Colonel Mustard or {@literal Mrs. Peacock}.
- */
-public enum Suspect { ... }
-```
-
-```java
-* This method complies with the {@index IEEE 754} standard.
-```
-
-```java
- /** 키를 값에 매핑하는 객체. 맵은 중복 키를 포함 할 수 없습니다
-  * 각 키는 최대 하나의 값에 매핑 할 수 있습니다. (나머지는 생략 됨)
-  * @param <K>이 맵에서 관리하는 키 유형
-  * @param <V> 매핑 된 값 유형
-  */
-public interface Map<K, V> { ... }
-```
-
-Enum 형을 문서화할 때는 상수와, 유형 및 공용 메서드를 문서화해야합니다.
-
-```java
- /**
-  * 심포니 오케스트라의 악기 섹션.
-  */
-public enum OrchestraSection {
-  /** 플루트, 클라리넷, 오보에와 같은 목 관악기. */
-  WOODWIND,
-
-  /** 프렌치 호른 및 트럼펫과 같은 금관 악기. */
-  BRASS,
-
-  /** 팀파니 및 심벌즈와 같은 타악기. */
-  PERCUSSION,
-
-  /** 바이올린과 첼로와 같은 현악기. */
-  STRING;
-}
-```
-
-```java
- /**
-  * 주석이 달린 메서드가 통과하려면 지정된 예외를 throw해야하는 테스트 메서드임을 나타냅니다.
-  */
-@Retention (RetentionPolicy.RUNTIME)
-@Target (ElementType.METHOD)
-public @interface ExceptionTest {
- /**
-  * 통과하기 위해 주석이 달린 테스트 메서드가 throw해야하는 예외입니다 .
-  * (테스트는 이 클래스 객체가 설명하는 유형의 하위 유형을 던질 수 있습니다.)
-  */
-  Class <? Throwable> value ();를 확장합니다.
-}
-```
-
-또한 API의 두가지 측면은 스레드 안전성고 직렬화 가능성입니다. 또한 **클래스 또는 정적 메서드가 스레드로부터 안전한지 여부에 관계없이, 스레드 안전성을 문서화**해야합니다. 이를 문서화 해야지, 이후에 관리를 하기 편합니다.
-
-이를 요약하면 문서 주석은 API를 문서화하는 가장 효과적인 방법입니다. **내보낸 모든 API 요소에 대한 사용은 필수로 간주해야합니다. 따라서 표준 규칙을 준수하는 일관된 스타일을 채택해야합니다.**
+**계산의 정확성을 유지하고 속도를 높일 것이라고 믿을 충분한 이유가 없는 경우, 스트림 파이프 라인을 병렬화하는 것은 좋지않습니다.** 이를 사용할 때는, 올바른 상태를 유지하고, 신중한 성능 측정을 수행해서 사용하는 것이 꼭 필요합니다.

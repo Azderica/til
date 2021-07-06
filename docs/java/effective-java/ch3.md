@@ -2,448 +2,335 @@
 sidebar_position: 3
 ---
 
-# 클래스와 인터페이스
+# 3. 모든 객체의 공통적인 메소드
 
-Class와 Interface는 추상화의 기본 단위이며, 이를 위해 여러 요소 등을 사용할 수 있습니다.
+`Object`는 자바에서 모든 오브젝트의 최상위 클래스이며, 상속을 통해서 사용하도록 설계되었습니다. 따라서 `Object` 클래스에서 final이 아닌 메서드들(대표적인 예시로, equals, hashCode, toString, clone, finalize 등)이 모두 오버라이딩을 염두하고 설계되었습니다.
 
-- [클래스 란](https://azderica.github.io/05-java-study/)
-- [인터페이스 란](https://azderica.github.io/08-java-study/)
+아래에서는 이를 재정의하는 것에 대해서 정리합니다.
 
-## Item 15. 클래스 및 멤버의 접근성을 최소화합니다.
+## Item 10. `Equals`를 오버라이딩 할 때, 일반적인 룰을 준수합니다.
 
-- 정보 은닉은 개발, 테스트, 최적화, 사용, 이해 및 수정에서 큰 용이성을 가집니다.
-- **각 클래스 또는 멤버를 가능한 한 액세스 할 수 없게 처리합니다.**
+equals 메서드를 재정의하는 방법은 여러가지가 있지만, 잘못된 사용은 끔찍한 결과를 만듭니다. 따라서 다음의 룰을 준수해야합니다.
 
-액세스 수준은 다음과 같이 4가지로 구성됩니다.
+- 클래스의 각 인스턴스는 본질적으로 unique합니다.
+- 클래스에 대해 `logical equality(지역적 동일성)` 테스트를 제공할 필요가 없습니다.
+- 슈퍼 클래스는 이미 equals를 이미 오버라이딩하였으므로, 슈퍼클래스의 동작은 이미 클래스의 적합합니다.
+- 클래스는 private나 package-private이므로, 해당 'equals'는 호출되지 않을것이라고 확신합니다.
 
-- private : 선언된 최상위 클래스에서만 액세스 가능
-- package-private(default) : 선언된 패키지의 모든 클래스에서 액세스 가능
-- protected : 선언된 클래스의 하위 클래스 및 선언된 패키지의 모든 클래스에서 액세스 가능
-- public : 어디서나 액세스 가능
+### equivalence relation의 조건.
 
-추가적으로 지켜야하는 룰은 다음과 같습니다.
+equivalence relation 이란, 요소 집합에서 요소가 서로 동일한 것으로 간주하는 하위 집합으로 분할하는 연산자이며 이를 `equivalence class`라고 합니다. 이를 위해서는 5가지의 요구 사항을 지켜야합니다.
 
-- public 클래스의 인스턴스 필드는 public이면 안됩니다.
-- **변경가능한 public 필드가 있는 class는 일반적으로 스레드로부터 안전하지 않습니다.**
-- 클래스에 public static final array field 또는 이러한 필드를 반환하는 접근자가 있으면 안됩니다.
-  - 해결책은 2개가 있습니다.
-  - public array를 비공개로 바꾸고, public static 목록에 추가합니다.
-  - array를 private로 만들고, public method를 추가합니다.
+- `Reflexivity(반사성)`
 
-```java
-// 잠재적인 보안 구멍
-public static final Thing[] VALUES = {...};
-```
+  - 객체가 자신과 동일해야합니다.
 
-**결론적으로, 프로그램 요소의 접근성을 최대한 줄여야합니다.**
+- `Symmetry(대칭)`
 
-> 고민 점.
-
-- 모든 메서드에 테스트 코드를 작성하는 것이 중요하다고 생각하는데, private으로 선언해버리면 테스트 코드에서 쓸 수가 없어서 어떤식으로 해야할지.
-
-<br/>
-
-## Item 16. public class에서는 public field가 아닌, 접근자 메소드를 사용합니다.
+  - 두 객체가 동일한 지 여부에 대해 동의해야합니다.
+  - equals 를 위반한 경우, 해당 객체가 다른 객체를 비교하게 되면 어떻게 동작할지 알 수가 없습니다.
 
 ```java
-class Point {
-  // 이런식으로 짜면, 캡슐화의 이점이 없습니다.
-  public double x;
-  public double y;
-}
-```
+// 대칭을 위반한 케이스
+public final class CaseInsensitiveString {
+  private final String s;
 
-- 클래스가 패키지 외부에서 액세스 가능한 경우, 접근자 메소드를 제공합니다.
-- 그러나, 클래스가 `package-private 클래스`이거나 `private 중첩 클래스`인 경우, 데이터 필드를 노출하는데 본질적인 문제는 없습니다.
-
-<br/>
-
-## Item 17. 변경 가능성을 최소화합니다.
-
-분변 클래스는 단순히 인스턴스를 수정할 수 없는 클래스이며 이는 설계, 구현 및 사용하기에 더 쉬우며 오류 가능성이 적고 더 안전합니다.
-
-클래스를 불변으로 만들려면 `5가지 규칙`을 지켜야합니다.
-
-- 객체의 상태(state)를 수정하는 메소드를 제공하면 안됩니다.
-- 클래스를 확장할 수 없는지 확인합니다.
-- 모든 필드를 final으로 만듭니다.
-- 모든 필드를 private로 설정합니다.
-- 변경 가능한 구성 요소에 대한 독점적인 액세스를 보장합니다.
-
-변경 불가능한 객체는 이러한 장점을 가지고 있습니다.
-
-- 단순합니다.
-- 생성된 시점의 상태를 파괴될 때까지 그대로 간직합니다.
-- 스레드로부터 안전하며 동기화가 필요하지 않습니다. 그렇기에 이러한 객체는 자유롭게 공유할 수 있습니다.
-- 다른 개체를 위해서 좋은 **building block**을 만듭니다.
-- 상태는 변경되지 않기 때문에, 일시적인 불일치 가능성이 없습니다.
-
-다만 이러한 단점을 가지고 있습니다.
-
-- 값이 다르면 반드시 독립된 객체로 만들어야합니다.
-- `getter`가 있다고 반드시 `setter`가 필요한 것은 아닙니다.
-- 대부분이 장점이며, 단점은 단시 일정 상황에서 잠재석인 성능 저하가 발생할 수 있습니다. 다만 모든 클래스를 불변으로 만들 수 없습니다.
-- 대부분의 클래스를 변경할 수 있는 부분으로 최소화해야합니다.
-- 그리고 다른 이유가 없으면, 모든 필드를 private final로 선언해야합니다.
-- 생성자는 모든 불변성을 설정하여, 완전히 초기화된 객체를 만들어야합니다.
-
-<br/>
-
-## Item 18. Inheritance(상속)보다 Composition(구성)을 선호합니다.
-
-상속은 코드 재사용을 달성하는 방법이지만 좋은 방법은 아닙니다.
-
-- 메서드 호출과 달리 상속은 캡슐화를 위반합니다.
-- 즉, 상속의 취약점을 피하기 위해서는 상속 대신 컴포지션과 전달을 사용하는 것이 좋습니다.
-
-특히 래퍼 클래스로 구현할 적당한 인터페이스가 있다면 더 사용하는 것이 좋습니다. 아래는 그러한 좋은 케이스입니다.
-
-```java
-// Wrapper Class - 상속 대신 합성을 사용하는 경우.
-public class InstrumentedSet <E> extends ForwardingSet <E> {
-  private int addCount = 0;
-
-  public InstrumentedSet (Set <E> s) { super(s) }
-
-  @Override public boolean add(E e) {
-    addCount++;
-    return super.add(e);
+  public CaseInsensitiveString(String s) {
+    this.s = Objects.requireNonNull(s);
   }
 
-  @Override public boolean addAll(Collection<? extends E> c) {
-    addCount += c.size();
-    return super.addAll(c);
-  }
-
-  public int getAddCount() {
-    return addCount;
-  }
-}
-
-// Reusable forwarding class
-public class ForwardingSet<E> implements Set<E> {
-  private final Set<E> s;
-  public ForwardingSet(Set<E> s) { this.s = s; }
-  public void clear() { s.clear(); }
-
-  public boolean contains(Object o) { return s.contains(o); }
-  public boolean isEmpty()          { return s.isEmpty();   }
-  public int size()                 { return s.size();      }
-  public Iterator<E> iterator()     { return s.iterator();  }
-  public boolean add(E e)           { return s.add(e);      }
-  public boolean remove(Object o)   { return s.remove(o);   }
-  public boolean containsAll(Collection<?> c) { return s.containsAll(c); }
-  public boolean addAll(Collection<? extends E> c) { return s.addAll(c);      }
-  public boolean removeAll(Collection<?> c) { return s.removeAll(c);   }
-  public boolean retainAll(Collection<?> c) { return s.retainAll(c);   }
-  public Object[] toArray()          { return s.toArray();  }
-  public <T> T[] toArray(T[] a)      { return s.toArray(a); }
-  @Override public boolean equals(Object o) { return s.equals(o);  }
-  @Override public int hashCode()    { return s.hashCode(); }
-  @Override public String toString() { return s.toString(); }
-}
-```
-
-위와 같은 코드는 인터페이스를 통해서 **클래스의 디자인이 가능하며 매우 유연**합니다.
-
-상속은 하위 클래스가 실제로 수퍼 클래스의 하위 유형인 상황에서만 적절합니다. 즉, `is-a` 관계인 경우에만 주로 사용하는 것이 좋습니다.
-
-<br/>
-
-## Item 19. 상속을 고려해 설계하고 문서화합니다. 그렇지 않으면 상속을 사용하지 않습니다.
-
-상속을 위해 클래스를 설계하고 문서화하는 것은 아래를 의미합니다.
-
-- 클래스는 메서드 재정의의 효과를 정확하게 문서화해야합니다. 즉, **클래스는 재정의 가능한 메서드의 자체 사용을 문서화해야합니다.**
-- 클래스 내부 동작 과정 중간에 끼어들 수 잇는 훅을 잘 선별해서 `protected` 메서드 형태로 수정해야할 수도 있습니다.
-- 상속용으로 설계한 클래스는 배포전에 하위 클래스를 작성하여 클래스를 테스트해야합니다.
-- 상속용 클래스의 생성자는 재정의 가능한 메서드를 직접 혹은 간접으로 호출하면 안됩니다.
-- clone이나 readObject 모두 직접적이나 간접적으로든 재정의 가능 메서드를 호출하면 안됩니다.
-
-즉, 클래스를 상속용으로 설계하려면 매우 까다로우며 제약사항이 있습니다. 이를 해결하는 좋은 방법은 상속용으로 설계하지 않는 클래스는 상속을 금지합니다. (`final`이나 외부접근이 불가능하도록 클래스를 구성합니다./)
-
-<br/>
-
-## Item 20. 추상 클래스보다는 인터페이스를 선호합니다.
-
-자바에서는 type을 구현하는 두가지 방법은 인터페이스와 추상클래스가 있습니다.
-
-- 기존클래스를 쉽게 개조하여 새 인터페이스를 구현할 수 있습니다.
-- 인터페이스는 `믹스인(mixin)`를 정의하는 것에 이상적입니다.
-  - mixin : 클래스가 기본유형에 추가하여 구현할 수 있는 유형이며 선택적 동작을 제공함
-- 인터페이스는 계층구조가 없는 타입 프레임워크를 만들 수 있습니다.
-
-```java
-public interface Singer {
-  AudioClip sing(Song s);
-}
-
-public interface Songwriter {
-  Song compose (int chartPosition);
-}
-
-public interface SingerSongwriter extends Singer, Songwriter {
-  AudioClip strum();
-  void actSensitive();
-}
-```
-
-- 인터페이스는 wrapper 클래스를 통해 안전하고 강력한 기능 향상을 가능하게합니다.
-
-### Template Method Pattern
-
-인터페이스와 함께, abstract skeletal 구현 클래스를 제공해서 장점을 결합한 패턴입니다. 인터페이스는 유형을 정의하고, 기본 메소드를 제공하며 skeletal 구현하며 클래스는 나머지 non-primitive 인터페이스를 구현합니다.
-
-인터페이스 자체에 있는 기본 메소드의 이점을 사용할 수 있고 skeletal 구현 클래스는 구현의 작업을 지원할 수 있습니다,.
-
-```java
-// Skeletal implementation class
-public abstract class AbstractMapEntry<K,V> implements Map.Entry<K,V> {
-  // Entries in a modifiable map must override this method
-  @Override public V setValue(V value) {
-    throw new UnsupportedOperationException();
-  }
-
-  // Implements the general contract of Map.Entry.equals
+  // 대칭을 위반한 경우
   @Override public boolean equals(Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof Map.Entry))
-      return false;
-    Map.Entry<?,?> e = (Map.Entry) o;
-
-    return Objects.equals(e.getKey(), getKey())
-      && Objects.equals(e.getValue(), getValue());
-  }
-
-  // Implements the general contract of Map.Entry.hashCode
-  @Override public int hashCode() {
-    return Objects.hashCode(getKey())
-      ^ Objects.hashCode(getValue());
-  }
-
-  @Override public String toString() {
-    return getKey() + "=" + getValue();
+    if (o instanceof CaseInsensitiveString)
+      return (s.equalsIgnoreCase((CaseInsensitiveString) o).s);
+    if (o instanceof String)  // 단방향 상호 운용성
+      return s.equalsIgnoreCase ((String) o);
+    return false;
   }
 }
 ```
 
-- skeletal 구현은 상속을 위해 설계되었으므로 skeletal 구현에서는 좋은 문서가 절대적으로 필요합니다.
+```java
+// 대칭을 준수한 코드
+@Override public boolean equals(Object o) {
+  return o instanceof CaseInsensitiveString &&
+    ((CaseInsensitiveString) o).s.equalsIgnoreCase (s);
+}
+```
+
+- `Transitivity`
+
+  - 한 객체가 두번째 객체와 같고, 두번째 객체가 세번째 객체와 같으면 첫번째 객체와 세번째 객체가 같아야합니다.
+
+```java
+// equals contract를 위반하지 않는 값 구성 요소
+public class ColorPoint {
+  private final Point point;
+  private final Color color;
+
+  public ColorPoint(int x, int y, Color color) {
+    point = new Point(x, y);
+    this.color = Objects.requireNonNull(color);
+  }
+
+  public Point asPoint() {
+    return point;
+  }
+
+  @Override public boolean equals(Object o) {
+    if(!(o instanceof ColorPoint))
+      return false;
+    ColorPoint cp = (ColorPoint) o;
+    return cp.point.equals(point) && cp.color.equals(color);
+  }
+}
+```
+
+- `Consistency`
+
+  - 두 객체가 같은 경우에, 둘 중 하나가 변경되지 않는 한 항상 동일하게 유지되어야합니다.
+  - 신뢰할 수 없는 리소스에 의존하는 경우, equals를 사용하면 안됩니다.
+  - 대표적으로 사용하면 안되는 것이, `java.net.url`에서의 equals이며, 이는 IP를 사용하기 때문에 시간이 바뀌면서 바뀔 수 있습니다.
+
+- `Non-nullity`
+
+  - 모든 객체는 null과 같으면 안됩니다.
+
+```java
+// Implicit null check - preferred
+@Override public boolean equals(Object o) {
+  if (!(o instanceof MyType))
+    return false;
+  MyType mt = (MyType) o;
+  ...s
+}
+```
+
+### 좋은 equals 사용 방법
+
+- `==`를 사용하여 인수가 이 객체에 대한 참조인지 확인합니다.
+- `instanceof`를 사용해서 argument의 유형한 타입인지 확인합니다.
+- 올바른 유형으로 캐스트합니다.
+- 클래스의 각 중요한 필드에 대해 인수의 해당 필드가, 이 객체의 해당 필드와 일치하는 지 확인합니다.
+
+이러한 방법으로 equals를 작성하고 나서는 세가지를 확인해야합니다.
+
+- `symmetric`, `transitive`, `consistent`
+
+그 외의 주의사항은 다음과 같습니다.
+
+- `equals`를 재정의할 때는, `hashCode`를 재정의합니다.
+- 너무 영리하게 할 필요가 없습니다. 복잡하게 구성하면 안됩니다.
+- `equals`를 선언할 때는, 객체를 다른 타입으로 대체하면 안됩니다.
 
 <br/>
 
-## Item 21. 인터페이스는 구현하는 쪽을 생각해 설계합니다.
+## Item 11. `Equals`를 오버라이딩 할때, `Hashcode`를 항상 오버라이딩합니다.
 
-Java 8 이후로, default method 구성이 추가되었습니다. 또한 주로 람다 사용을 용이하기 위해서 Java 8의 핵심 Collection Interface에 많은 기본 메서드가 추가됩니다. Java의 라이브러리의 기본 메소드는 잘 구현되어 있으며, 대부분 제대로 작동합니다.
-
-그러나 **모든 가능한 구현의 모든 불변을 유지하는 default 메서드를 작성하는 것은 어렵습니다.**
+- `equals`를 재정의하는 모든 클래스에서는 반드시 `hashCode`를 재정의해야합니다.
+- 동일한 개체에 동일한 해시 코드가 있어야합니다.
 
 ```java
-// Java 8의 Collection 인터페이스에 추가 된 기본 메소드
-default boolean removeIf (Predicate <? super E> filter) {
-  Objects.requireNonNull(filter);
-  boolean result = false;
-  for (Iterator<E> it = iterator(); it.hasNext(); ) {
-    if (filter.test(it.next())) {
-      it.remove();
-      result = true;
-    }
-  }
+// 전형적인 hashCode method
+@Override public int hashCode() {
+  int result = Short.hashCode(areaCode);
+  result = 31 * result + Short.hashCode(prefix);
+  result = 31 * result + Short.hashCode(lineNum);
   return result;
 }
 ```
 
-해당 코드가 removeIf 메소드에 대해 작성할 수 있는 코드이지만, 실제 Collection 구현에서는 실패합니다.
-
-기본 메서드가 있는 경우, 인터페이스의 기존 구현이 오류나 경고없이 컴파일 될 수 있지만 런타임에는 실패합니다.
-
-기본 메소드가 Java 플랫폼의 일부이지만, **인터페이스를 신중하게 디자인하는 것이 여전히 가장 중요합니다**.
-
-인터페이스 출시 이후에, 몇 가지 인터페이스 결함을 수정하는 것이 가능하지만 이를 믿을 수 없습니다. 따라서 release 하기 전에는 새 인터페이스를 테스트하는 것이 중요합니다.
+- 성능을 향상시키기 위해 hash code 계산에서 중요한 필드를 제외하면 안됩니다. (품질이 급격하게 떨어짐)
+- `hashCode`에서 반환한 값에 대해 자세한 스펙을 제공하면 안됩니다. 이 경우, 클라이언트 값에 합리적으로 의존할 수 없습니다. 따라서, 유연성을 제공해야합니다.
 
 <br/>
 
-## Item 22. 인터페이스는 타입을 정의하는 용도로만 사용합니다.
+## Item 12. `ToString`을 항상 오버라이딩합니다.
 
-클래스가 인터페이스를 구현할 때, 인터페이스는 클래스의 인스턴스를 참조하는데 사용할 수 있는 type으로 사용됩니다.
+아래의 부분을 중시해야합니다.
 
-상수 인터페이스 패턴은 인터페이스를 제대로 사용하지 못하는 것입니다. 상수 유틸리티 클래스로 다음과 같이 선언할 수 있습니다.
+- equals나 hashCode를 준수하는 것만큼의 비중은 아니지만, 좋은 `toString`을 제공하면, 클래스를 더 좋게 사용할 수 있고 이후에 디버깅을 하기도 편해집니다.
+- 가능한 경우, `toString` 메소드는 객체에서 포함하고 있는 중요한 정보를 반환해야합니다.
+- 형식 지정 여부와 관계없이, 의도를 명확하게 문서화해야합니다.
 
 ```java
-// 상수 유틸리티 클래스
-public class PhysicalConstants {
-  private PhysicalConstants() {}  // 인스턴스화 방지
-
-  public static final double AVOGADROS_NUMBER = 6.022_140_857e23;
-  public static final double BOLTZMANN_CONST = 1.380_648_52e-23;
-  public static final double ELECTRON_MASS = 9.109_383_56e-31;
+/* 휴대폰 번호를 세 부분으로 나누는 것은 너무 작기때문에,
+ * 이러한 필드값을 채우기 위해, 다음과 같이 진행했습니다.
+ * Ex. lineNum이 123인 경우, "0123"으로 나타냅니다.
+ */
+@Override public String toString() {
+  return String.format("%03d-%03d-%04d", areaCode, prefix, lineNum);
 }
 ```
 
-즉, 인터페이스는 type을 정의하는데만 사용해야합니다. 상수를 내보낼 때는 사용해서는 안됩니다.
+- 형식을 지정했든 말든, `toString`로 반환되는 값에 포함된 정보에 대해 프로그램 액세스를 제공해야합니다.
+
+정리하자면, toString을 사용한다면 **가급적 해당 객체가 가지고 있는 모든 정보들을 노출시키는 것이 좋습니다.**
 
 <br/>
 
-## Item 23. 태그가 있는 클래스보다 클래스 계층 구조를 활용합니다.
+## Item 13. 신중하게 `Clone`을 오버라이딩합니다.
 
-경우에 따라 인스턴스가 둘 이상의 특징으로 제공되는 인스턴스의 특징을 나타내는 tag field를 포함하는 클래스를 실행할 수 있습니다.
+`Cloneable` 인터페이스는 복제가능한 클래스를 명시하는 인터페이스이지만, 그 목적을 수행하지 못합니다. 즉, 여러 객체를 복사하는 경우 잘못되는 경우가 쉽게 발생합니다.
+
+대표적인 예시로 `immutable class`의 경우에는 낭비적인 복사를 사용하기 때문에, `clone` 메소드를 제공하면 안됩니다.
 
 ```java
-// Tagged class - 클래스 계층보다 안좋습니다.
-class Figure {
-  enum Shape {RECTANGLE, CIRCLE};
+public class Stack {
+  private Object[] elements;
+  private int size = 0;
+  private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
-  // Tag field : the shape of this figure
-  final Shape shape;
-
-  // These fields are used only if shape is RECTANGLE
-  double length;
-  double width;
-
-  // This field is used only if shape is CIRCLE
-  double radius;
-
-  // Constructor for circle
-  Figure(double radius) {
-    shape = Shape.CIRCLE;
-    this.radius = radius;
+  public Stack() {
+    this.elements = new Object[DEFAULT_INITIAL_CAPACITY];
   }
 
-  // Constructor for rectangle
-  Figure(double length, double width) {
-    shape = Shape.RECTANGLE;
-    this.length = length;
-    this.width = width;
+  public void push(Object e) {
+    ensureCapacity();
+    elements[size++] = e;
   }
 
-  double area() {
-    switch(shape) {
-      case RECTANGLE:
-        return length * width;
-      case CIRCLE:
-        return Math.PI * (radius * radius);
-      default:
-        throw new AssertionError(shape);
-    }
+  public Object pop() {
+    if(size == 0) throw new EmptyStackException();
+    Object result = elements[--size];
+    elements[size] = null;  // 사용하지 않는 참조
+    return result;
+  }
+
+  public void ensureCapacity() {
+    if(elements.length == size)
+      elements = Arrays.copyOf(elements, 2 * size + 1);
   }
 }
 ```
 
-이러한 코드는 매우 지저분합니다. 즉, **태그가 지정된 클래스는 장황하고 오류가 발생하기 쉬우며 비효율적입니다.** 이러한 클래스는 클래스 계층 구조를 모방한 것입니다.
+해당 위의 스택 클래스를 clone을 하는 경우, 복제된 Stack 클래스의 경우 동일한 elements 주소를 참조하기 때문에, 복제본의 불변성이 파괴됩니다.
 
-이를 클래스 계층으로 나타내면 다음과 같습니다.
+즉, clone 메서드는 생성자 역할을 수행하기 때문에, 원본 객체에 해를 끼치지 않고 복제본에 불변을 수행하는 지 확인해야합니다.
+
+또한 **추가적으로 생성자를 호출하지 않고, 객체를 생성할 수도 있기 때문에 이는 큰 위험을 가지고 있습니다.**
+
+따라서 다음과 같이 clone()을 사용해야합니다.
 
 ```java
-// Class hierarchy replacement for a tagged class
-abstract class Figure {
-  abstract double area();
-}
-
-class Circle extends Figure {
-  final double radius;
-
-  Circle(double radius) { this.radius = radius; }
-
-  @Override double area() { return Math.PI * (radius * radius); }
-}
-
-class Rectangle extends Figure {
-  final double length;
-  final double width;
-
-  Rectangle(double length, double width) {
-    this.length = length;
-    this.width  = width;
+@Override public Stack clone() {
+  try {
+    Stack result = (Stack) super.clone();
+    result.elements = elements.clone();
+    return result;
+  } catch (CloneNotSupportedException e) {
+    throw new AssertionError();
   }
-
-  @Override double area() { return length * width; }
 }
 ```
 
-이와 같은 클래스 계층은 태그 지정된 클래스의 모든 단점을 해결하고, 자연스러운 계층 관계를 반영하여 유연성을 높이고 컴파일시 유형 검사를 향상 시킬수 있습니다.
+`Cloneable` 아키텍처는 변경가능한 객체을 참조하는 final 필드의 일반적인 사용과 호환되지 않습니다.
+
+따라서 아래와 같은 복사를 사용할 수 있습니다.
+
+```java
+// 반복적인 복사, 깨끗하지만 맹목적으로 복사본을 덮어씁니다.
+Entry deepCopy() {
+  Entry result = new Entry(key, value, next);
+  for(Entry p = result; p.next != null; p = p.next)
+    p.next = new Entry(p.next.key, p.next.value, p.next.next);
+  return result;
+}
+```
+
+그러나 이러한 방법보다, 가장 좋은 방법 중 하나는 **복사 생성자 또는 복사 팩토리를 제공하는 것**입니다.
+
+```java
+// 복사 생성자, Copy constructor
+public Yum(Yum yum) { ... }
+
+// 복사 팩토리, Copy factory
+public static Yum newInstance(Yum yum) { ... };
+```
+
+이러한 방법은 클래스가 구현한 인터페이스 타입 인스턴스를 인수로 받을 수 있기 때문에, 클라이언트는 원본의 구현 타입에 얽매이지 않고 복제본의 타입을 정할 수 있습니다.
+
+결론적으로, `Cloneable`을 확장하는 것은 좋지 않으며 생성자와 팩토리를 사용하는 것이 좋습니다. 다만 배열의 경우는 clone 메서드를 사용하는 것이 좋습니다.
+
+> 추가적으로 알면 좋은 글
+
+clone() 메서드의 경우, deep copy이고 arraycopy()의 경우, shallow clone입니다.
+
+- [clone() vs arraycopy()](https://masima305.tistory.com/36)
+- [Shallow Copy vs Deep Copy](https://velog.io/@coin46/Shallow-copy-vs-Deep-copy)
+
+[추가적으로 ]
 
 <br/>
 
-## Item 24. 멤버 클래스는 되도록 static으로 만듭니다.
+## Item 14. `Comparable`을 개발할때 고려합니다.
 
-nested(중첩된) class는 다른 클래스내에 정의된 클래스입니다. nested class가 다른 컨텍스트에서 유용하다면 최상위 클래스여야지 의미가 있습니다.
+`compareTo` 메서드는 `Comparable` 인터페이스의 유일한 메서드입니다. (Object 메서드가 아닙니다.) 이는 Comparable 객체의 컬렉션 유지 관리에도 편하는 장점이 있습니다.
 
-중첩 클래스는 다음으로 나눠집니다.
-
-- static member class
-- non-static member class
-- anonymous class
-- local class
-
-### static member class
-
-static member class (정적 멤버 클래스)은 public helper class로, 외부 클래스와 함께 사용하는 경우 유용합니다.
-
-### non-static member class
-
-정적 멤버 클래스와 비정적 멤버 클래스의 유일한 차이점은 static 선언에 수정자가 있다는 점입니다.
-
-일반적으로 nonstatic member class의 일반적인 용도 중 하나 는 외부 클래스의 인스턴스를 관련없는 일부 클래스의 인스턴스로 볼 수 있도록 허용하는 Adapter이며, 다음과 같이 구현됩니다.
+sgn에 대한 여러가지 수학적 조건이 있으나 여기서는 너무 수학적으로 설명되기에 이를 생략합니다.
 
 ```java
-// nonstatic member class의 일반적인 사용
-public class MySet<E> extends AbstractSet<E> {
-  ... // Bulk of the class omitted
-
-  @Override public Iterator<E> iterator() {
-    return new MyIterator();
-  }
-
-  private class MyIterator implements Iterator<E> { ... }
-}
-```
-
-둘러싸는 인스턴스에 액세스할 필요가 없는 멤버 클래스를 선언하는 경우, 항상 해당 선언에 static modifier을 넣습니다.
-
-### anonymous class
-
-익명 클래스는 이름이 없고, 적용 가능성에는 많은 제한이 있습니다. 선언된 시점을 제외하고는 인스턴스화할 수 없습니다. 또한 길어지면 가독성이 떨어지기 때문에 짧게 유지해야합니다.
-
-### local class
-
-가장 자주 사용되지 않으며, 지역 변수가 선언될 수 있고 동일한 scope 내에 지정 규칙을 지킵니다.
-
-<br/>
-
-## Item 25. 단일 최상 클래스는 한 파일에 하나만 담습니다.
-
-Java 컴파일러를 사용하면 단일 소스 파일에 여러 최상위 클래스를 정의할 수 있지만, 이에 대한 이점이 없으며 위험이 있습니다.
-
-즉, 아래의 코드는 매우 위험합니다.
-
-```java
-// 하나의 파일에 정의 된 두 개의 클래스
-class Utensil {
-  static final String NAME = "pan";
-}
-
-class Dessert {
-  static final String NAME = "cake";
-}
-```
-
-위의 코드보다 나은 케이스입니다.
-
-```java
-// 여러 최상위 클래스 대신 정적 멤버 클래스
-public class Test {
-  public static void main (String [] args) {
-    System.out.println (Utensil.NAME + Dessert.NAME);
-  }
-
-  private static class Utensil {
-    static final String NAME = "pan";
-  }
-
-  private static class Dessert {
-    static final String NAME = "cake";
+// 개체 참조 필드와 비교 가능한 단일 필드
+public final class CaseInsensitiveString implements Comparable<CaseInsensitiveString> {
+  public int compareTo(CaseInsensitiveString cis) {
+    return String.CASE_INSENSITIVE_ORDER.compare(s, cis.s);
   }
 }
 ```
 
-다음과 같이, **단일 소스에는 여러 최상이 클래스 또는 인터페이스를 넣으면 안됩니다.**
+`Object`의 `equals`나 `==`와 주로 비교대상이 되며 이를 특징별로 정리하면 다음과 같습니다.
+
+- `compareTo`
+  - 기준에 따라 비교합니다. 동일성 비교에 더해 순서까지 비교할 수 있으며 제네릭합니다.
+- `equals`
+  - 두 객체의 값의 동일성 여부를 반환합니다.
+- `==`
+  - 두 객체의 동일성 여부를 반환합니다.
+
+이중에서 `compareTo`에 대해서 좀 더 알아보자면 지켜야하는 3가지의 규약이 있습니다.
+
+- 두 객체의 참조의 순서를 바꿔 비교해도 항상 예상한 결과가 같아야합니다.
+- a < b, b < c라면 a < c가 성립해야합니다.
+- 같은 객체들끼리는 어떤 객체와 비교하더라도 항상 같아야합니다.
+
+### Comparable VS Comparator
+
+`Comparable` 인터페이스의 경우 `compareTo()` 메서드를 오버라이딩 하여서 인자로 넘어온 같은 타입의 다른 객체와 대소 비교합니다.
+
+```java
+public class Player implements Comparable<Player> {
+// Fields, Getters, Setters 생략
+  @Override
+  public int compareTo(Player o) {
+    return o.getScore() - getScore();
+  }
+}
+
+Collections.sort(players);
+System.out.println(players);
+```
+
+`Comparator` 인터페이스의 경우, 정렬 대상 클래스를 수정할 수 없을 때 주로 사용합니다. 주로 `Arrays.sort()`, `Collections.sort()` 등을 사용하며, 이를 통해서 정렬을 합니다.
+
+```java
+Comparator<Player> comparator = new Comparator<Player>() {
+  @Override
+  public int compare(Player a, Player b) {
+    return b.getScore() - a.getScore();
+  }
+};
+
+Collections.sort(players, comparator);
+System.out.println(players);
+```
+
+다만 보통은 람다함수로 표현합니다.
+
+```java
+Collections.sort(players, (a, b) -> b.getScore() - a.getScore());
+System.out.println(players);
+```
+
+이에 대한 상세 내용은 아래르 참고하면 좋습니다.
+
+- [comparable vs comparator](https://www.daleseo.com/java-comparable-comparator/)
