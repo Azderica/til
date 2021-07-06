@@ -29,13 +29,13 @@ function prinOwing(invoice) {
 }
 ```
 
-다음의 변경 사항이 있습니다.
+### 간략하게.
 
 - 함수 추출하기
   - 하는 일을 파악, 독립된 함수로 추출, 목적에 맞는 이름을 붙입니다.
   - 대부분 함수를 아주 짧게 구성합니다. (1줄에서 5~6줄 사이)
 
-다음의 절차로 진행합니다.
+### 절차
 
 1. 함수를 새로 만들고 목적을 잘 드러내는 이름을 붙입니다.
    - 어떻게가 아닌 무엇을 하는지 잘 나타내야합니다.
@@ -55,3 +55,26 @@ function prinOwing(invoice) {
 7. 다른 코드에 방금 추출한 것과 똑같은 코드가 없는지 살핍니다. 있는 경우에는 추출한 새 함수를 호출할지 바꿀지 검토합니다. (인라인 코드를 함수 호출로 변경)
    - 중복 혹은 비슷한 코드를 찾아주는 리팩터링 도구를 사용하는 것도 좋은 방법입니다.
    - 검색 기능을 사용하는 방법도 괜찮습니다.
+
+### 코드
+
+최초의 코드는 다음과 같습니다.
+
+- [메인 로직](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-0.js)
+- [리팩터링 전 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-1.js)
+
+여기서 유효 범위를 벗어나는 변수가 없기에 이를 추출합니다.
+
+- [step-2](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-2.js)
+
+지역 변수를 통해서 추출합니다.
+
+- [step-3](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-3.js)
+
+지역 변수의 값을 변경합니다.
+
+- [step-4](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-4.js)
+
+계산에 대한 로직도 분리하여, 리팩터링을 종료합니다.
+
+- [step-5, 최종 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-5.js)
