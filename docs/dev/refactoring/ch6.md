@@ -454,6 +454,84 @@ class Reading {
 
 ## 10. 여러 함수를 변환 함수로 묶기
 
+```js
+// before
+function base(aReading) {}
+function taxableCharge(aReading) {}
+
+// after
+function enrichReading(argReading) {
+  const aReading = _.cloneDeep(argReading)
+  aReading.baseCharge = base(aReading)
+  aReading.taxableCharge = taxableCharge(aReading)
+  return aReading
+}
+```
+
+### 배경
+
+- 도출 로직이 중복되는 것을 피하는 것이 중요합니다.
+
+### 절차
+
+- 변환할 레코드를 입력받아서 값을 그대로 반환하는 변환 함수를 만듭니다.
+  - 이 작업은 대체로 깊은 복사로 처리해야합니다.
+- 묶을 함수 중 함수 하나를 골라서 본문 코드를 변환 함수로 옮기고, 처리 결과를 레코드에 새 필드로 기록합니다. 그런 다음 클라이언트 코드가 이 필드를 사용하도록 수정합니다.
+  - 로직이 복잡하면 함수를 추출합니다.
+- 테스트합니다.
+- 나머지 관련 함수도 위 과정에 따라 처리합니다.
+
+### 예시
+
+- [예시 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex10/refactoring-step-1.js)
+
 <br/>
 
 ## 11. 단계 쪼개기
+
+```js
+// before
+const orderDate = orderString.split(/\s+/)
+const productPrice = priceList[orderDate[0].split('-')[1]]
+const orderPrice = parseInt(orderDate[1]) * productPrice
+
+// after
+const orderRecord = parseOrder(order)
+const orderPrice = price(orderRecord, priceList)
+
+function parseOrder(aString) {
+  const values = aString.split(/\s+/)
+  return {
+    productID: values[0].split('-')[1],
+    quantity: parseInt(values[1]),
+  }
+}
+function price(order, priceList) {
+  return order.quantity * priceList[order.productID]
+}
+```
+
+### 배경
+
+- 서로 다른 두 대상을 한꺼번에 다루는 코드를 발견하면 각각을 별개의 모듈로 나눕니다.
+- 동작을 두 단계로 나눠서 처리하는 것이 쉬운 방법 중 하나입니다.
+
+### 절차
+
+- 두 번째 단계에 해당하는 코드를 독립 함수로 추출합니다.
+- 테스트합니다.
+- 중간 데이터 구조를 만들어서 앞에서 추출한 함수의 인수로 추가합니다.
+- 테스트합니다.
+- 추출한 두 번째 단계 함수의 매개변수를 하나씩 검토합니다. 그 중 첫 번째 단계에서 사용되는 것은 중간 데이터 구조로 옮깁니다. 하나씩 옮길 때마다 테스트합니다.
+- 첫 번째 단계 코드를 함수로 추출하면서 중간 데이터 구조를 반환하도록 만듭니다.
+  - 아때 첫 번째 단계를 변환 객체로 추출해도 좋습니다.
+
+### 예시
+
+JS로 짠 기본 예시 코드는 다음과 같습니다.
+
+- [리팩토링 전 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex11/refactoring-step-1.js)
+- [중간 리팩토링 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex11/refactoring-step-2.js)
+- [리팩토링 후 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex11/refactoring-step-3.js)
+
+자바로도 예제 코드를 구성할 수 있습니다.
