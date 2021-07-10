@@ -11,7 +11,7 @@
   - 변수 캡슐화와 꽌련이 있습니다.
 - 여러 함수를 클래스로 묶기, 여러 함수를 변환 함수로 묶기, 단계 쪼개기
 
-## 함수 추출하기
+## 1. 함수 추출하기
 
 다음의 코드를 점차 풀어가며, 리팩토링 할 예정입니다.
 
@@ -78,3 +78,147 @@ function prinOwing(invoice) {
 계산에 대한 로직도 분리하여, 리팩터링을 종료합니다.
 
 - [step-5, 최종 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex1/refactoring-step-5.js)
+
+<br/>
+
+## 2. 함수 인라인하기
+
+함수 추출하기와 반대의 리팩터링입니다.
+
+```js
+// before
+function getRating(driver) {
+  return moreThanFiveLateDeliveries(driver) ? 2 : 1
+}
+
+function moreThanFiveLateDeliveries(driver) {
+  return driver.numberOfLateDeliveries > 5
+}
+
+// after
+function getRating(driver) {
+  return driver.numberOfLateDeliveries > 5 ? 2 : 1
+}
+```
+
+다음의 경우에 일반적으로 사용합니다.
+
+- 잘못 추출된 함수들도 다시 인라인합니다.
+- 다른 함수로 단순히 위임하는게 너무 많고, 관계가 복잡한 경우에 다시 인라인합니다.
+
+### 절차
+
+- 다형 메서드인지 확인합니다.
+  - 서브클래스에서 오버라이드하는 메서드는 인라인하면 안됩니다.
+- 인라인할 함수를 호출하는 곳을 모두 찾습니다.
+- 각 호출문을 함수 본문으로 교체합니다.
+- 하나씩 교체할 때마다 테스트합니다.
+- 함수 정의를 삭제합니다.
+
+### 예시
+
+- [변경 전 리팩터링 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex2/refactoring-step-2.js)
+- [변경 후 리팩터링 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex2/refactoring-step-3.js)
+
+<br/>
+
+## 3. 변수 추출하기
+
+변수 인라인하기와 반대의 리팩터링입니다.
+
+다음과 같습니다.
+
+```js
+// before
+return (
+  order.quantity * order.itemPrice -
+  Math.max(0, order.quantity - 500) * order.itemPrice * 0.05 +
+  Math.min(order.quantity * order.itemPrice * 0.1, 100)
+)
+
+// after
+const basePrice = order.quantity * order.itemPrice
+const quantityDiscount =
+  Math.max(0, order.quantity - 500) * order.itemPrice * 0.05
+const shipping = Math.min(order.quantity * order.itemPrice * 0.1, 100)
+return basePrice - quantityDiscount + shipping
+```
+
+### 배경
+
+- 표현식이 너무 복잡해서 이해하기 어려운 경우가 있으며, 이런 경우에 지역 변수를 활용하여 표현식을 쪼개 관리하기 쉽습니다.
+- 추가한 변수는 디버깅에 도움이됩니다.
+- 중복이 적으면서 의도가 잘 드러내는 코드를 구성해야합니다.
+
+### 절차
+
+- 추출하려는 표현식에 부작용은 없는지 확인합니다.
+- 불변 변수를 하나 선언하고 이름을 붙일 표현식의 복제본을 대입합니다.
+- 원본 표현식을 새로 만든 변수로 교체합니다.
+- 테스트합니다.
+- 표현식을 여러 곳에서 사용한다면 각각 새로 만든 변수로 교체합니다.
+
+### 예시
+
+- [변경 전 리팩터링 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex3/refactoring-step-2.js)
+- [변경 후 리팩터링 코드](https://github.com/Azderica/js-test/blob/master/refactoring/ch6/ex3/refactoring-step-3.js)
+
+위의 코드를 보면 객체의 장점을 확인할 수 있습니다. 객체는 특정 로직과 데이터를 외부와 공유할 때 적당한 크기의 문맥이 되어줍니다.
+
+<br/>
+
+## 4. 변수 인라인하기
+
+다음의 형태를 가집니다.
+
+```js
+// before
+let basePrice = anOrder.basePrice
+return basePrice > 1000
+
+// after
+return anOrder.basePrice > 1000
+```
+
+### 배경
+
+변수는 함수 안에서 표현식을 가리키는 이름이며 대체로 긍정적인 효과입니다. 하지만 그 이름이 원래 표현식과 다르지 않은 경우도 있고 변수가 주변 코드를 리팩터링하는데 방해가 되기도 합니다. 이때 **변수를 인라인하는 것**이 좋습니다.
+
+### 절차
+
+- 대입문의 표현식에서 부작용이 생기지는 않는지 확인합니다.
+- 변수가 불변으며 선언되지 않았다면 불변으로 만든 후 테스트합니다.
+  - 이렇게 하면 변수에 값이 단 한번만 대입되는 지 확인할 수 있습니다.
+- 이 변수를 가장 처음 사용하는 코드를 찾아서 대입문 우변의 코드로 바꿉니다.
+- 테스트합니다.
+- 변수를 사용하는 부분을 모두 교체할 때까지 이 과정을 반복합니다.
+- 변수 선언문과 대입문을 지웁니다.
+- 테스트합니다.
+
+<br/>
+
+## 5. 함수 선언 바꾸기
+
+<br/>
+
+## 6. 변수 캡슐화하기
+
+<br/>
+
+## 7. 변수 이름 바꾸기
+
+<br/>
+
+## 8. 매개변수 객체 만들기
+
+<br/>
+
+## 9. 여러 함수를 클래스로 묶기
+
+<br/>
+
+## 10. 여러 함수를 변환 함수로 묶기
+
+<br/>
+
+## 11. 단계 쪼개기
