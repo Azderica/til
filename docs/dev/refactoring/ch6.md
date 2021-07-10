@@ -199,9 +199,160 @@ return anOrder.basePrice > 1000
 
 ## 5. 함수 선언 바꾸기
 
+다음의 형태를 가집니다.
+
+```java
+// before
+function circum(radius) {
+  return 2 * Math.PI * radius
+}
+
+// after
+function circumference(radius) {
+  return 2 * Math.PI * radius
+}
+```
+
+### 배경
+
+- 함수는 프로그램을 작은 부분으로 나누는 주된 수단입니다.
+- 소프트웨어는 연결부에 상당히 의존하며, 이를 잘 정의하면 시스템에 새로운 부분을 추가하기 쉬워집니다.
+- 함수의 이름과 매개변수가 중요한 요소입니다
+  - 좋은 이름으로 선정하는 것이 중요하고, 잘못된 함수를 발견하면 즉시 바꿔야 이후에 같은 고민을 안하게 됩니다.
+  - 이를 통해서 활용 점위가 넓어지고 다른 모듈간의 결합을 제거할 수 있습니다.
+
+### 절차
+
+크게 **간단한 절차**와 **마이그레이션 절차**로 나눌 수 있습니다.
+
+#### 간단한 절차
+
+호출하는 곳이 많거나, 호출 과정이 복잡하거나, 호출 대상이 다형 메서드거나 선언을 복잡하게 변경할 때 사용해야합니다.
+
+- 매개변수를 제거하려거든 먼저 함수 본문에서 제거 대상 매개변수를 참조하는 곳은 없는지 확인합니다.
+- 메서드 선언을 원하는 형태로 바꿉니다.
+- 기존 메서드 서언을 참조하는 부분을 모두 찾아서 바뀐 형태로 수정합니다.
+- 테스트합니다.
+
+#### 마이그레이션 절차
+
+변경할 것이 둘 이상이면 나눠서 처리할 때가 나을 때가 있으며, 이름 변경과 매개변수 추가를 모두 하고 싶다면 각각을 독립적으로 처리합니다. (이후 문제가 생길 시 돌리기 위해서)
+
+- 이어지는 추출 단계를 수월하게 만들어야 한다면 함수의 본문을 적절히 리팩터링합니다.
+- 함수 본문을 새로운 함수로 추출합니다.
+  - 새로 만들 함수 이름이 기존 함수와 같아면 일단 검색하기 쉬운 이름을 임시로 붙입니다.
+- 추출한 함수에 매개변수를 추가해야 한다면 '간단한 절차'를 따라 추가합니다.
+- 테스트합니다.
+- 기존 함수를 인라인합니다.
+- 이름을 임시로 붙여뒀다면 함수 선언 바꾸기를 한 번 더 적용해서 원래 이름으로 되돌립니다.
+- 테스트합니다.
+
+### 예시
+
+#### 함수 이름 바꾸기
+
+위의 시작 코드와 동일
+
+#### 매개변수 추가하기
+
+```js
+// before
+class Book {
+  addReservation(customer) {
+    this._reservations.push(customer)
+  }
+}
+
+// after
+class Book {
+  zz_addReservation(customer, isPriority) {
+    assert(isPriority == true || isPriority == false)
+    this._reservations.push(customer)
+  }
+}
+```
+
+### 매개변수를 속성으로 바꾸기
+
+```js
+// before
+function inNewEngland(aCustomer) {
+  return ['MA', 'CT', 'ME', 'VT', 'NH', 'RI'].includes(aCustomer.address.state)
+}
+const newEnglanders = someCustomer.filter((c) => inNewEngland(c))
+
+// after
+function inNewEngland(stateCode) {
+  return ['MA', 'CT', 'ME', 'VT', 'NH', 'RI'].includes(stateCode)
+}
+const newEnglanders = someCustomer.filter((c) => inNewEngland(c.address.state))
+```
+
 <br/>
 
 ## 6. 변수 캡슐화하기
+
+다음과 같이 진행됩니다.
+
+```js
+// before
+let defaultOwner = { firstName: '마틴', lastName: '파울러' }
+
+// after
+let defaultOwner = { firstName: '마틴', lastName: '파울러' }
+export function defaultOwner() {
+  return defaultOwner
+}
+export function settDefaultOwner(arg) {
+  defaultOwner = arg
+}
+```
+
+### 배경
+
+데이터의 유효범위가 넓을수록 캡슐화해야합니다.
+
+- 코드를 추가하거나 변경할 때마다 최대한 캡슐화해야합니다.
+- 결합도를 막을 수 있습니다.
+
+불변데이터는 가변 데이터보다 캡슐화의 이유가 적습니다.
+
+### 절차
+
+- 변수로의 접근과 갱신을 전담하는 캡슐화 함수들을 만듭니다.
+- 정적 검사를 수행합니다.
+- 변수를 직접 참조하던 부분을 모두 적절한 캡슐화 함수 호출로 바꿉니다. 하나씩 바꿨을 때마다 테스트합니다.
+- 변수의 접근 범위를 제한합니다.
+- 테스트합니다.
+- 변수 값이 레코드라면 레코드 캡슐화도 고민합니다.
+
+### 예시
+
+```js
+let defaultOwner = { firstName: '마틴', lastName: '파울러' }
+export function defaultOwner() {
+  return defaultOwner
+}
+export function settDefaultOwner(arg) {
+  defaultOwner = arg
+}
+
+class Person {
+  constructor(data) {
+    this._lastName = data.lastName
+    this._firstName = data.firstName
+  }
+
+  get lastName() {
+    return this._lastName
+  }
+  get firstName() {
+    return this._firstName
+  }
+}
+```
+
+핵심한 내용은 **데이터의 사용 범위가 넓을 수록 적절히 캡슐화하는 것이 중요**합니다.
 
 <br/>
 
