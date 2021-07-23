@@ -106,7 +106,7 @@ function top_calculateDistance(points) {
 }
 ```
 
-- 이가 문제가 없으므로 calculateDistance 함수로 옮깁니다. (top_calculateDistance 도.)
+- 문제가 없으므로 calculateDistance 함수로 옮깁니다. (top_calculateDistance 도.)
 
 ```js
 function trackSummary(points) {
@@ -264,6 +264,205 @@ class Account {
 <br/>
 
 ## 필드 옮기기
+
+```js
+// before
+class Customer {
+  get plan() {
+    return this._plan
+  }
+  get discountRate() {
+    return this._discountRate
+  }
+}
+
+// after
+class Customer {
+  get plan() {
+    return this._plan
+  }
+  get discountRate() {
+    return this.plan.discountRate
+  }
+}
+```
+
+### 배경
+
+- 프로그램의 힘은 데이터 구조에서 나옵니다.
+- 데이터 구조는 매우 중요하나, 제대로 하기 어렵습니다.
+- 데이터 구조가 적절치 않다고 판단하면 곧바로 수정합니다.
+
+### 절차
+
+1. 소스 필드가 캡슐화되어 있지 않다면 캡슐화합니다.
+2. 테스트합니다.
+3. 타깃 객체에 필드들을 생성합니다.
+4. 정적 검사를 수행합니다.
+5. 소스 객체에서 타깃 체를 참조할 수 있는지 확인합니다.
+6. 접근자들이 타깃 필드를 사용하도록 수정합니다.
+7. 테스트합니다.
+8. 소스 필드를 제거합니다.
+9. 테스트합니다.
+
+### 예시
+
+#### 기본 예시
+
+- 고객 클래스와 계약 클래스에서 시작합니다.
+
+```js
+class Customer {
+  constructor(name, discountRate) {
+    this._name = name
+    this._discountRate = discountRate
+    this._contract = new CustomerContract(dateToday())
+  }
+  get discountRate() {
+    return this._discountRate
+  }
+  becomePreferred() {
+    this._discountRate += 0.03
+  }
+  applyDiscount(amount) {
+    this amount.subtract(amount.multiply(this._discountRate))
+  }
+}
+
+class CustomerContract {
+  constructor(startDate) {
+    this._startDate = startDate
+  }
+}
+```
+
+- 필드를 캡슐화합니다.
+
+```js
+class Customer {
+  constructor(name, discountRate) {
+    this._name = name
+    this._discountRate = discountRate
+    this._contract = new CustomerContract(dateToday())
+  }
+  get discountRate() {
+    return this._discountRate
+  }
+  _setDiscountRate(aNumber) {
+    this._discountRate = aNumber
+  }
+  becomePreferred() {
+    this._discountRate += 0.03
+  }
+  applyDiscount(amount) {
+    this amount.subtract(amount.multiply(this._discountRate))
+  }
+}
+```
+
+- 필드와 접근자를 추가합니다.
+
+```js
+class CustomerContract {
+  constructor(startDate, discountRate) {
+    this._startDate = startDate
+    this._discountRate = discountRate
+  }
+  get discountRate() {
+    return this._discountRate
+  }
+  set discountRate(arg) {
+    this._discountRate = arg
+  }
+}
+```
+
+- 새로운 필드를 사용하도록 수정합니다.
+
+```js
+class Customer {
+  constructor(name, discountRate) {
+    this._name = name
+    this._contract = new CustomerContract(dateToday())
+    this._setDiscountRate(discountRate)
+  }
+  get discountRate() {
+    return this._contract.discountRate
+  }
+  _setDiscountRate(aNumber) {
+    this._contract.discountRate = aNumber
+  }
+  becomePreferred() {
+    this._discountRate += 0.03
+  }
+  applyDiscount(amount) {
+    this amount.subtract(amount.multiply(this._discountRate))
+  }
+}
+
+class CustomerContract {
+  constructor(startDate, discountRate) {
+    this._startDate = startDate
+    this._discountRate = discountRate
+  }
+  get discountRate() {
+    return this._discountRate
+  }
+  set discountRate(arg) {
+    this._discountRate = arg
+  }
+}
+```
+
+#### 공유 객체로 이동
+
+```js
+class Account {
+  constructor(number, type, interestRate) {
+    this._number = number
+    this._type = type
+    this._interestRate = interestRate
+  }
+  get interestRate() {
+    return this._interestRate
+  }
+}
+
+class AccountType {
+  constructor(nameString) {
+    this._name = nameString
+  }
+}
+```
+
+- 필드와 메서드 생성
+
+```js
+class AccountType {
+  constructor(nameString, interestRate) {
+    this._name = nameString
+    this._interestRate = interestRate
+  }
+
+  get interestRate() {
+    return this._interestRate
+  }
+}
+```
+
+- 테스트 후, 변경 후 기존 코드 삭제
+
+```js
+class Account {
+  constructor(number, type) {
+    this._number = number
+    this._type = type
+  }
+  get interestRate() {
+    return this._type.interestRate
+  }
+}
+```
 
 <br/>
 
