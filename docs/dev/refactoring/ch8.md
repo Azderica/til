@@ -657,9 +657,117 @@ appliesToMass = states.includes('MA')
 
 ## 6. 문장 슬라이드하기
 
+```js
+// before
+const pricingPlan = retrievePricingPlan()
+const order = retrieveOrder()
+let charge
+const chargePerUnit = pricingPlan.unit
+
+// after
+const pricingPlan = retrievePricingPlan()
+const chargePerUnit = pricingPlan.unit
+const order = retrieveOrder()
+let charge
+```
+
+### 배경
+
+- 관련된 코드들이 가까이 모여 있다면 이해하기가 더 쉽습니다.
+- 관련 코드를 모으는 것은 다른 리팩터링의 준비 단계로 행해집니다.
+
+### 절차
+
+1. 코드 조각을 이동할 목표 위치를 찾습니다. 이때 변경을 했을 때 문제가 있다고 판단하면 포기합니다.
+2. 코드 조각을 원래 위치에서 잘라내어 목표 위치에 붙여 넣습니다.
+3. 테스트합니다.
+
 <br/>
 
 ## 7. 반복문 쪼개기
+
+```js
+// before
+let averageAge = 0
+let totalSalary = 0
+for (const p of people) {
+  averageAge += p.age
+  totalSalary += p.salary
+}
+averageAge = averageAge / people.length
+
+// after
+let totalSalary = 0
+for (const p of people) {
+  totalSalary += p.salary
+}
+let averageAge = 0
+for (const p of people) {
+  averageAge += p.age
+}
+averageAge = averageAge / people.length
+```
+
+### 배경
+
+- 종종 반복문 하나에서 두가지 일을 수행하면 반복문 수정시 두가지 일 모두를 이해하고 진행해야합니다.
+- 다만 이는 최적화와 다르게 때문에 이러한 방식이 있습니다. 다만 이는 성능상 문제로 인해 필요하다고 판단되는 경우에 맞춰서 모아도 문제는 없습니다.
+
+### 절차
+
+1. 반복문을 복제해 두 개로 만듭니다.
+2. 반복문이 중복되어 생기는 부수효과를 파악해서 제거합니다.
+3. 테스트합니다.
+4. 완료되었으면 각 반복문을 함수로 추출할지 고민합니다.
+
+### 예시
+
+- 리팩터링 전
+
+```js
+let youngest = people[0] ? people[0].age : Infinity
+let totalSalary = 0
+for (const p of people) {
+  if (p.age < youngest) youngest = p.age
+  totalSalary += p.salary
+}
+
+return `최연소: ${youngestAge()}, 총 급여: ${totalSalary()}`
+```
+
+- 리팩터링 후
+
+```js
+function totalSalary() {
+  let totalSalary = 0
+  for (const p of people) {
+    totalSalary += p.salary
+  }
+  return totalSalary
+}
+
+function youngestAge() {
+  let youngest = people[0] ? people[0].age : Infinity
+  for (const p of people) {
+    if (p.age < youngest) youngest = p.age
+  }
+  return youngest
+}
+```
+
+- 알고리즘 리팩터링까지 젹용
+
+```js
+return `최연소: ${youngestAge()}, 총 급여: ${totalSalary()}`
+
+function totalSalary() {
+  return people.reduce((total, p) => total + p.salary, 0)
+}
+
+function youngestAge() {
+  return Math.min(...people.map((p) => p.age))
+}
+```
 
 <br/>
 
