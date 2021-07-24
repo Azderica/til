@@ -9,7 +9,7 @@
 
 <br/>
 
-## 함수 옮기기
+## 1. 함수 옮기기
 
 ### 배경.
 
@@ -263,7 +263,7 @@ class Account {
 
 <br/>
 
-## 필드 옮기기
+## 2. 필드 옮기기
 
 ```js
 // before
@@ -466,28 +466,175 @@ class Account {
 
 <br/>
 
-## 문장을 함수로 옮기기
+## 3. 문장을 함수로 옮기기
+
+```js
+// before
+result.push(`<p>제목: ${person.photo.title}</p>`)
+result.concat(photoData(person.photo))
+
+function photoData(aPhoto) {
+  return [`<p>위치: ${aPhoto.location}</p>`, `<p>위치: ${aPhoto.data}</p>`]
+}
+
+// after
+result.concat(photoData(person.photo))
+
+function photoData(aPhoto) {
+  return [
+    `<p>제목: ${aPhoto.title}</p>`,
+    `<p>위치: ${aPhoto.location}</p>`,
+    `<p>위치: ${aPhoto.data}</p>`,
+  ]
+}
+```
+
+### 배경
+
+- 중복 제거는 코드를 건강하게 관리하는 효과적인 방법 중 하나입니다.
+- 문장들을 함수로 옮기려면 그 문장들이 피호출 함수의 일부라는 확신이 있어ㅗ야합니다.
+
+### 절차
+
+1. 반복 코드가 함수 호출 부분과 멀리 떨어져 있다면 문장 슬라이드하기를 적용해 근처로 옮깁니다.
+2. 타깃 함수를 호출하는 곳이 한 곳뿐이면, 단순히 소스 위치에서 해당 코드를 잘라내어 피호출 함수로 복하고 테스트합니다.
+3. 호출자가 둘 이상이면 호출자 중 하나에서 타깃 함수 호출 부분과 그 함수로 옮기려는 문장들을 함께 다른 함수로 추출합니다. 추출한 함수에는 기억하기 쉬운 임시 이름을 지어줍니다.
+4. 다른 호출자 모두가 방금 추출한 함수를 사용하도록 수정합니다. 하나씩 수정할 때마다 테스트합니다.
+5. 모든 호출자가 새로운 함수를 사용하게 되면 원래 함수를 새로운 함수 안으로 인라인한 후 우ㅓㄴ래 함수를 제거합니다.
+6. 새로운 함수의 이름을 원래 함수의 이름으로 바꿔줍니다.
+
+### 예시
+
+- 사진 관련 데이터를 HTML로 내보내는 코드를 준비합니다.
+
+```js
+function renderPerson(outStream, person) {
+  const result = []
+  result.push(`<p>${person.name}</p>`)
+  result.push(renderPhoto(person.photo))
+  result.push(`<p>제목: ${person.photo.title}</p>`)
+  result.push(emitPhotoData(person.photo))
+  return result.join('\n')
+}
+
+function photoDiv(p) {
+  return ['<div>', `<p>제목: ${p.title}</p>`, emitPhotoData(p), '</div>'].join(
+    '\n'
+  )
+}
+
+function emitPhotoData(aPhoto) {
+  const result = []
+  result.push(`<p>위치: ${aPhoto.location}</p>`)
+  result.push(`<p>날짜: ${aPhoto.date.toDateString()}</p>`)
+  return result.join('\n')
+}
+```
+
+- 함수 추출합니다.
+
+```js
+function photoDiv(p) {
+  return ['<div>', zznew(p), '</div>'].join('\n')
+
+  function zznew(p) {
+    return [`<p>제목: ${p.title}</p>`, emitPhotoData(p)].join('\n')
+  }
+}
+```
+
+- 새로운 함수를 사용하도록 수정합니다.
+
+```js
+function renderPerson(outStream, person) {
+  const result = []
+  result.push(`<p>${person.name}</p>`)
+  result.push(renderPhoto(person.photo))
+  result.push(zznew(person.photo))
+  return result.join('\n')
+}
+```
+
+- emitPhotoData() 함수를 인라인합니다.
+
+```js
+function zznew(p) {
+  return [
+    `<p>제목: ${p.title}</p>`,
+    `<p>위치: ${aPhoto.location}</p>`,
+    `<p>날짜: ${aPhoto.date.toDateString()}</p>`,
+  ].join('\n')
+}
+```
+
+- 함수 이름을 바꿔서 마무리 합니다.
+
+```js
+function renderPerson(outStream, person) {
+  const result = []
+  result.push(`<p>${person.name}</p>`)
+  result.push(renderPhoto(person.photo))
+  result.push(emitPhotoData(person.photo))
+  return result.join('\n')
+}
+
+function photoDiv(p) {
+  return ['<div>', emitPhotoData(p), '</div>'].join('\n')
+}
+
+function emitPhotoData(p) {
+  return [
+    `<p>제목: ${p.title}</p>`,
+    `<p>위치: ${aPhoto.location}</p>`,
+    `<p>날짜: ${aPhoto.date.toDateString()}</p>`,
+  ].join('\n')
+}
+```
 
 <br/>
 
-## 문장을 호출한 곳으로 옮기기
+## 4. 문장을 호출한 곳으로 옮기기
+
+```js
+// before
+emitPhotoData(outStream, person.photo)
+
+function emitPhotoData(outStream, photo) {
+  outStream.write(`<p>제목: ${photo.title}</p>`)
+  outStream.write(`<p>위치: ${photo.location}</p>`)
+}
+
+// after
+emitPhotoData(outStream, person.photo)
+outStream.write(`<p>위치: ${person.photo.location}</p>`)
+
+function emitPhotoData(outStream, photo) {
+  outStream.write(`<p>제목: ${photo.title}</p>`)
+}
+```
+
+### 배경
+
+### 절차
+
+### 예시
 
 <br/>
 
-## 인라인 코드를 함수 호출로 바꾸기
+## 5. 인라인 코드를 함수 호출로 바꾸기
 
 <br/>
 
-## 문장 슬라이드하기
+## 6. 문장 슬라이드하기
 
 <br/>
 
-## 반복문 쪼개기
+## 7. 반복문 쪼개기
 
 <br/>
 
-## 반복문을 파이프라인으로 바꾸기
+## 8. 반복문을 파이프라인으로 바꾸기
 
 <br/>
 
-## 죽은 코드 제거하기
+## 9. 죽은 코드 제거하기
