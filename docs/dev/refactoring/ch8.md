@@ -773,6 +773,77 @@ function youngestAge() {
 
 ## 8. 반복문을 파이프라인으로 바꾸기
 
+```js
+// before
+const name = []
+for (const i of input) {
+  if (i.job === 'programmer') name.push(i.name)
+}
+
+// after
+const names = input.filter((i) => i.job === 'programmer').map((i) => i.map)
+```
+
+### 배경
+
+- 파이프라인을 통해서 이해하기 쉬워집니다.
+
+### 절차
+
+1. 반복문에서 사용하는 컬렉션을 가리키는 변수를 하나 만듭니다.
+2. 반복문의 첫 줄부터 시작해서, 각각의 단위 행위를 적절한 컬렉션 파이프라인 연산으로 대체합니다.
+3. 반복문의 모든 동작을 대체했다면 기존의 반복문을 없앱니다.
+
+### 예시
+
+- 인도에 자리한 사무시을 찾아, 도시명과 전화번호를 반환
+
+```js
+function acquireData(input) {
+  const lines = input.split('\n')
+  let firstLine = true
+  const result = []
+  for (const line of lines) {
+    if (firstLine) {
+      firstLine = false
+      continue
+    }
+    if (line.trim() === '') continue
+    const record = line.split(',')
+    if (record[1].trim() === 'India') {
+      result.push({ city: record[0].trim(), phone: record[2].trim() })
+    }
+  }
+  return result
+}
+```
+
+- 리팩토링 후
+
+```js
+function acquireData(input) {
+  const lines = input.split('\n')
+  // 람다도 사실 길면 안좋음.
+  return lines
+    .slice(1)
+    .filter((line) => line.trim() !== '')
+    .map((line) => line.split(','))
+    .filter((record) => record[1].trim() === 'India')
+    .map((record) => ({ city: record[0].trim(), phone: record[2].trim() }))
+}
+```
+
 <br/>
 
 ## 9. 죽은 코드 제거하기
+
+### 배경
+
+- 코드가 더 이상 사용되지 않는다면 지워야합니다.
+- 최신 컴파일러는 사용하지 않는 코드를 표시해줍니다.
+
+### 절차
+
+1. 죽은 코드를 외부에서 참조할 수 있는 경우라면 혹시라도 호출하는 곳이 있는지 확인합니다.
+2. 없다면 죽은 코드를 제거합니다.
+3. 테스트합니다.
