@@ -111,9 +111,104 @@ function discount(inputValue, quantity) {
 
 ## 필드 이름 바꾸기
 
+```js
+// before
+class Organization {
+  get name() {...}
+}
+
+// after
+class Organization {
+  get title() {...}
+}
+```
+
+### 배경
+
+- 데이터 구조는 프로그램을 이해하는데 큰 역할을 하며, 이름이 중요합니다.
+
+### 절차
+
+1. 레코드의 유효 범위가 제한적이라면 필드에 접근하는 모든 코드를 수정한 후 테스트합니다. 이후 단계는 필요없습니다.
+2. 레코드가 캡슐화되지 않았다면 우선 레코드를 캡슐화합니다.
+3. 캡슐화된 객체 안의 private 필드명을 변경하고, 그에 맞게 내부 메서드들을 수정합니다.
+4. 테스트합니다.
+5. 생성자의 매개변수 중 필드와 이름이 겹치는 게 있다면 함수 선언 바꾸기로 변경합니다.
+6. 접근자들의 이름도 바꿀 수 있습니다.
+
+### 예시
+
+```js
+class Organization {
+  constructor(data) {
+    this._name = data.name
+    this._country = data.country
+  }
+  get name() {
+    return this._name
+  }
+  set name(aString) {
+    this._name = aString
+  }
+  get country() {
+    return this._country
+  }
+  set country(aCountry) {
+    this._country = aCountry
+  }
+}
+
+const organization = new Organization({
+  name: '애크리 구스베리',
+  country: 'GB',
+})
+```
+
+- 리팩토링 이후
+
+```js
+class Organization {
+  constructor(data) {
+    this._title = data.title
+    this._country = data.country
+  }
+  get title() {
+    return this._title
+  }
+  set title(aString) {
+    this._title = aString
+  }
+  get country() {
+    return this._country
+  }
+  set country(aCountry) {
+    this._country = aCountry
+  }
+}
+
+const organization = new Organization({
+  title: '애크리 구스베리',
+  country: 'GB',
+})
+```
+
 <br/>
 
 ## 파생 변수를 질의 함수로 바꾸기
+
+```js
+// before
+get discountedTotal() {return this._discountedTotal}
+set discount(aNumber) {
+  const old = this._discount
+  this._discount = aNumber
+  this._discountedTotal += old - aNumber
+}
+
+// after
+get discountedTotal() {return this._discountedTotal}
+set discount(aNumber) {this._discount = aNumber;}
+```
 
 <br/>
 
