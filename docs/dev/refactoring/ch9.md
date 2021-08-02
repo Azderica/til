@@ -210,9 +210,122 @@ get discountedTotal() {return this._discountedTotal}
 set discount(aNumber) {this._discount = aNumber;}
 ```
 
+### 배경
+
+- 가변 데이터는 소프트웨어에 문제를 일으킵니다.
+- 가변 데이터의 유효 범위를 가능한 줄이는 것이 좋습니다.
+- 쉽게 계산해낼 수 있는 변수값은 제거합니다.
+- 다음의 경우는 예외입니다.
+  - 데이터 구조를 감싸며 그 데이터에 기초해서 계산한 결과를 속성으로 제공하는 객체인 경우
+  - 데이터 구조를 받아 다른 데이터 구조로 변환해 반환하는 함수인 경우
+
+### 절차
+
+1. 변수 값이 갱신되는 지점을 모두 찾습니다. 필요하면 변수 쪼개기를 활용해서 각 갱신 지점에서 변수를 분리합니다.
+2. 해당 변수의 값을 계산해주는 함수를 만듭니다.
+3. 해당 변수가 사용되는 모든 곳에 어시션을 추가하여 함수의 계산 결과가 변수의 값과 같은지 확인합니다.
+4. 테스트합니다.
+5. 변수를 읽는 코드를 모두 함수 호출로 대체합니다.
+6. 테스트합니다.
+7. 변수를 선언하고 갱신하는 코드를 죽은 코드 제거하기로 없앱니다.
+
+### 에시
+
+```js
+class ProductionPlan {
+  get production() {
+    return this._production
+  }
+  applyAdjustment(anAdjustment) {
+    this._adjustments.push(anAdjustment)
+    this._production += anAdjustment.amount
+  }
+}
+```
+
+- 신규 함수를 생성합니다.
+- assert를 통해서 테스트합니다.
+- 필드를 반환하는 코드를 수정해서 계산 결과를 직접 반환합니다.
+- 기존 메서드를 인라인합니다.
+- 옛 변수를 참조하는 모든 코드를 죽은 코드 제거하기로 정리합니다.
+
+```js
+class ProductionPlan {
+  get production() {
+    return this._adjustments.reduce((sum, a) => sum + a.amount, 0)
+  }
+  applyAdjustment(anAdjustment) {
+    this._adjustments.push(anAdjustment)
+  }
+}
+```
+
 <br/>
 
 ## 참조를 값으로 바꾸기
+
+```js
+// before
+class Product {
+  applyDiscount(arg) {
+    this._price.amount -= arg
+  }
+}
+
+// after
+class Product {
+  applyDiscount(arg) {
+    this._price = new Money(this._price.amount - arg, this._price.currency)
+  }
+}
+```
+
+### 배경
+
+- 객체를 다른 객체에 중첩하면 내부 객체를 참조 혹은 값으로 취급할 수 있습니다.
+
+### 절차
+
+1. 후보 클래스가 불변인지, 혹은 불변이 될 수 있는지 확인합니다.
+2. 각각의 세터를 하나씩 제거합니다.
+3. 이 값 객체의 필드들을 사용하는 동치성 비교 메서드를 만듭니다.
+
+### 예시
+
+```js
+class Person {
+  constructor() {
+    this._telephoneNumber = new TelephoneNumber()
+  }
+  get officeAreaCode() {
+    return this._telephone.areaCode
+  }
+  set officeAreaCode(arg) {
+    this._telephone.areaCode = arg
+  }
+  get officeNumber() {
+    return this._telephone.number
+  }
+  set officeNumber(arg) {
+    this._telephone.number = arg
+  }
+}
+
+class TelephoneNumber {
+  get areaCode() {
+    return this._areaCode
+  }
+  set areaCode(arg) {
+    this._areaCode = arg
+  }
+  get number() {
+    return this._number_
+  }
+  set number(arg) {
+    this._number = arg
+  }
+}
+```
 
 <br/>
 
