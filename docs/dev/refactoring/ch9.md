@@ -292,45 +292,111 @@ class Product {
 
 ### 예시
 
+<br/>
+
+## 값을 참조로 바꾸기
+
 ```js
-class Person {
-  constructor() {
-    this._telephoneNumber = new TelephoneNumber()
+// before
+let customer = new Customer(customerData)
+
+// after
+let customer = customerRepository.get(customerData)
+```
+
+### 배경
+
+- 데이터를 물리적으로 복제해야하는 상황의 문제는 해당 복제본들의 모든 부분을 갱신해야합니다.
+- 값을 참조로 바꾸면 하나당 객체도 하나만 존재하게 됩니다.
+
+### 절차
+
+1. 같은 부류에 속하는 객체들을 보관할 저장소를 만듭니다.
+2. 생성자에서 이 부류의 객체들 중 특정 객체를 정확히 찾아내는 방법이 있는지 확인합니다.
+3. 호스트 객체의 생성자들을 수정하여 필요한 객체를 이 저장소에서 찾도록 합니다. 하나 수정할 때마다 테스트합니다.
+
+### 예시
+
+```js
+class Order {
+  constructor(data) {
+    this._number = data.number
+    this._customer = new Customer(data.customer)
   }
-  get officeAreaCode() {
-    return this._telephone.areaCode
-  }
-  set officeAreaCode(arg) {
-    this._telephone.areaCode = arg
-  }
-  get officeNumber() {
-    return this._telephone.number
-  }
-  set officeNumber(arg) {
-    this._telephone.number = arg
+  get customer() {
+    return this._customer
   }
 }
 
-class TelephoneNumber {
-  get areaCode() {
-    return this._areaCode
+class Customer {
+  constructor(id) {
+    this._id = id
   }
-  set areaCode(arg) {
-    this._areaCode = arg
+  get id() {
+    return this._id
   }
-  get number() {
-    return this._number_
+}
+```
+
+- 저장할 저장소 객체를 생성합니다.
+
+```js
+let _repositoryData
+
+export function initialize() {
+  _repositoryData = {}
+  _repositoryData.customers = new Map()
+}
+
+export function registerCustomer(id) {
+  if (!_repositoryData.customers.has(id)) {
+    _repositoryData.customers.set(id, new Customer(id))
   }
-  set number(arg) {
-    this._number = arg
+  return findCustomer(id)
+}
+
+export function findCustomer(id) {
+  return _repositoryData.customers.get(id)
+}
+```
+
+- 객체를 사용하는 코드로 변경합니다.
+
+```js
+class Order {
+  constructor(data) {
+    this._number = data.number
+    this._customer = registerCustomer(data.customer)
+  }
+  get customer() {
+    return this._customer
   }
 }
 ```
 
 <br/>
 
-## 값을 참조로 바꾸기
-
-<br/>
-
 ## 매직 리터럴 바꾸기
+
+```js
+// before
+function potentialEnergy(mass, height) {
+  return mass * 9.81 * height
+}
+
+// after
+const STANDARD_GRAVITY = 9.81
+function potentialEnergy(mass, height) {
+  return mass * STANDARD_GRAVITY * height
+}
+```
+
+### 배경
+
+- 숫자대신 이를 잘 표현해줄 수 있는 상수로 변경하는 것이 좋습니다.
+
+### 방법
+
+1. 상수를 선언하고 매직 리터럴을 대입합니다.
+2. 해당 리터럴이 사용되는 곳을 모두 찾습니다.
+3. 찾은 곳 각각에서 리터럴이 새 상수와 똑같은 의미로 쓰였는지 확인하며, 같은 의미인 경우 상수로 대체하여 테스트합니다.
