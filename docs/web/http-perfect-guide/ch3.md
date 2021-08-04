@@ -285,3 +285,99 @@ Server: Test Server Version 1.0
 <br/>
 
 ## 3.5 헤더
+
+헤더와 메서드는 클라이언트와 서버가 무엇을 하는지 결정하기 위해서 함께 사용됩니다.
+
+### 일반 헤더(General Headers)
+
+- 클라이언트와 서버 양쪽 모두에서 사용됩니다.
+- 메시지에 대한 아주 기본적인 정보를 제공합니다.
+- 다양한 목적을 위해 사용됩니다.
+- ex) `Date: Tue, 3 Oct 1974 02:16:00 GMT`
+
+다음과 같은 종류가 있습니다.
+
+- Connection, Date, MIME-Version, Trailer chunked transfer, Transfer-Encoding, Upgrade, Via
+
+> 캐시 헤더
+
+원 서버로부터 객체를 가져오는 대신 로컬 복사본으로 캐시할 수 있도록 해주는 헤더입니다.
+
+- Cache-Control이나 Pragma 등이 있습니다.
+
+### 요청 헤더(Request Headers)
+
+- 요청 메세지를 위한 헤더입니다.
+- 서버에게 클라이언트가 받고자 하는 데이터의 타입이 무엇인지 물어봅니다.
+- ex) `Accept: */*`
+
+다음과 같은 종류가 있습니다.
+
+- Client-IP, From, Host, Referer, UA-Color, UA-CPU, UA_Disp, UA-OS, UA-Pixels, User-Agent
+
+> Accept 관련 헤더
+
+- Accept, Accept-Charset, Accept-Encoding, Accept-Language, TE
+
+> 조건부 요청 헤더
+
+- Expect, If-Match, If-Modified-Since, If-Range, If-Unmodified-Since, Range
+
+> 요청 보안 헤더
+
+- Authorization, Cookie, Cookie2
+
+> 프락시 요청 헤더
+
+- Max-Forwards, Proxy-Authorization, Proxy-Connection
+
+### 응답 헤더(Response Headers)
+
+- 클라이언트에게 정보를 제공하기 위한 자신만의 헤더를 갖고 있습니다.
+- 클라이언트에게 부가적인 정보를 제공합니다.
+- ex) `Server: Tiki-Hut/1.01`
+
+다음과 같은 종류가 있습니다.
+
+- Age, Public, Retry-After, Server, Title, Warning
+
+> 협상 헤더
+
+- Accept-Ranges, Vary
+
+> 응답 보안 헤더
+
+- Proxy-Authenticate, Set-Cookie, Set-Cookie2, WWW-Authenticate
+
+### 엔티티 헤더(Entity Headers)
+
+- 엔티티 본문에 대한 헤더입니다.
+- 엔티티 헤더를 통해서 본문에 들어있는 데이터의 타입을 말할 수도 있습니다.
+- 광범위한 내용을 제공합니다.
+- ex) `Content-Type: text/html; charset=iso-latin-1`
+
+다음과 같은 예시가 있습니다.
+
+- Allow, Location
+
+> 콘텐츠 헤더
+
+- Content-Base, Content-Encoding, Content-Language, Content-Length, Content-Location, Content-MD5, Content-Range, Content-Type
+
+> 엔티티 캐싱 헤더
+
+- ETag, Expires, Last-Modified
+
+### 확장 헤더(Extension Headers)
+
+- 비표준 헤더입니다.
+- 모르는 헤더 정보라도 책임을 지고 넘겨야합니다.
+
+<br/>
+
+## 추가 정보
+
+좀 더 자세한 정보는 다음에서 얻을 수 있습니다.
+
+- [W3 RFC2616](https://datatracker.ietf.org/doc/html/rfc2616)
+- [Protocols](https://www.w3.org/Protocols/)
