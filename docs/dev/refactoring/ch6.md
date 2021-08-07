@@ -15,7 +15,7 @@ sidebar_position: 6
   - 변수 캡슐화와 꽌련이 있습니다.
 - 여러 함수를 클래스로 묶기, 여러 함수를 변환 함수로 묶기, 단계 쪼개기
 
-## 1. 함수 추출하기
+## 6.1 함수 추출하기
 
 다음의 코드를 점차 풀어가며, 리팩토링 할 예정입니다.
 
@@ -85,7 +85,7 @@ function prinOwing(invoice) {
 
 <br/>
 
-## 2. 함수 인라인하기
+## 6.2 함수 인라인하기
 
 함수 추출하기와 반대의 리팩터링입니다.
 
@@ -126,7 +126,7 @@ function getRating(driver) {
 
 <br/>
 
-## 3. 변수 추출하기
+## 6.3 변수 추출하기
 
 변수 인라인하기와 반대의 리팩터링입니다.
 
@@ -171,7 +171,7 @@ return basePrice - quantityDiscount + shipping
 
 <br/>
 
-## 4. 변수 인라인하기
+## 6.4 변수 인라인하기
 
 다음의 형태를 가집니다.
 
@@ -201,7 +201,7 @@ return anOrder.basePrice > 1000
 
 <br/>
 
-## 5. 함수 선언 바꾸기
+## 6.5 함수 선언 바꾸기
 
 다음의 형태를 가집니다.
 
@@ -294,7 +294,7 @@ const newEnglanders = someCustomer.filter((c) => inNewEngland(c.address.state))
 
 <br/>
 
-## 6. 변수 캡슐화하기
+## 6.6 변수 캡슐화하기
 
 다음과 같이 진행됩니다.
 
@@ -360,7 +360,7 @@ class Person {
 
 <br/>
 
-## 7. 변수 이름 바꾸기
+## 6.7 변수 이름 바꾸기
 
 ```js
 // before
@@ -382,7 +382,7 @@ let area = height * width
 
 <br/>
 
-## 8. 매개변수 객체 만들기
+## 6.8 매개변수 객체 만들기
 
 ```js
 // before
@@ -422,7 +422,7 @@ function amountOverdue(aDateRange) {}
 
 <br/>
 
-## 9. 여러 함수를 클래스로 묶기
+## 6.9 여러 함수를 클래스로 묶기
 
 ```js
 // before
@@ -456,7 +456,7 @@ class Reading {
 
 <br/>
 
-## 10. 여러 함수를 변환 함수로 묶기
+## 6.10 여러 함수를 변환 함수로 묶기
 
 ```js
 // before
@@ -491,7 +491,7 @@ function enrichReading(argReading) {
 
 <br/>
 
-## 11. 단계 쪼개기
+## 6.11 단계 쪼개기
 
 ```js
 // before

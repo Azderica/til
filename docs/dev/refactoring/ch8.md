@@ -13,7 +13,7 @@ sidebar_position: 8
 
 <br/>
 
-## 1. 함수 옮기기
+## 8.1 함수 옮기기
 
 ### 배경.
 
@@ -267,7 +267,7 @@ class Account {
 
 <br/>
 
-## 2. 필드 옮기기
+## 8.2 필드 옮기기
 
 ```js
 // before
@@ -470,7 +470,7 @@ class Account {
 
 <br/>
 
-## 3. 문장을 함수로 옮기기
+## 8.3 문장을 함수로 옮기기
 
 ```js
 // before
@@ -597,7 +597,7 @@ function emitPhotoData(p) {
 
 <br/>
 
-## 4. 문장을 호출한 곳으로 옮기기
+## 8.4 문장을 호출한 곳으로 옮기기
 
 ```js
 // before
@@ -635,7 +635,7 @@ function emitPhotoData(outStream, photo) {
 
 <br/>
 
-## 5. 인라인 코드를 함수 호출로 바꾸기
+## 8.5 인라인 코드를 함수 호출로 바꾸기
 
 ```js
 // before
@@ -659,7 +659,7 @@ appliesToMass = states.includes('MA')
 
 <br/>
 
-## 6. 문장 슬라이드하기
+## 8.6 문장 슬라이드하기
 
 ```js
 // before
@@ -688,7 +688,7 @@ let charge
 
 <br/>
 
-## 7. 반복문 쪼개기
+## 8.7 반복문 쪼개기
 
 ```js
 // before
@@ -775,7 +775,7 @@ function youngestAge() {
 
 <br/>
 
-## 8. 반복문을 파이프라인으로 바꾸기
+## 8.8 반복문을 파이프라인으로 바꾸기
 
 ```js
 // before
@@ -839,7 +839,7 @@ function acquireData(input) {
 
 <br/>
 
-## 9. 죽은 코드 제거하기
+## 8.9 죽은 코드 제거하기
 
 ### 배경
 

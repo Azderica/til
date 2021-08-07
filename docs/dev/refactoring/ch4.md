@@ -6,7 +6,7 @@ sidebar_position: 4
 
 리팩터링은 분명 가치가 있지만, 이를 불가피하게 저지르는 실수를 잡아주는 **테스트 스위트(test suite)**가 뒷받침되어야합니다.
 
-## 자가 테스트 코드의 가치
+## 4.1 자가 테스트 코드의 가치
 
 개발의 대부분 시간은 디버깅에 사용합니다.
 
@@ -20,13 +20,13 @@ sidebar_position: 4
 
 <br/>
 
-## 테스트할 샘플 코드
+## 4.2 테스트할 샘플 코드
 
 > [코드](https://github.com/Azderica/js-test/tree/526397301b27c776f4de1a12123b2d203dc11896/refactoring/ch4)
 
 `mocha`와 `chai`를 사용한 코드입니다.
 
-## 첫번째 테스트
+## 4.3 첫번째 테스트
 
 테스트 코드에서 신경써야하는 부분은 다음과 같습니다.
 
@@ -36,7 +36,7 @@ sidebar_position: 4
 
 <br/>
 
-## 테스트 추가하기, 픽스처 수정하기
+## 4.4 테스트 추가하기, 4.5 픽스처 수정하기
 
 > [코드](https://github.com/Azderica/js-test/tree/b7b0fab9b72cdae6d0afc412ff68bd9fcadf2c27/refactoring/ch4)
 
@@ -50,7 +50,7 @@ sidebar_position: 4
 
 <br/>
 
-## 경계 조건 검사하기
+## 4.6 경계 조건 검사하기
 
 > [코드](https://github.com/Azderica/js-test/tree/master/refactoring/ch4)
 
@@ -62,7 +62,7 @@ sidebar_position: 4
 
 <br/>
 
-## 끝나지 않은 여정
+## 4.7 끝나지 않은 여정
 
 위에서 나온 코드는 단위 테스트(unit test)입니다.
 

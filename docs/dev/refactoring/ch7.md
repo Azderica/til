@@ -13,7 +13,7 @@ sidebar_position: 7
 - 위임 숨기기, 중개자 제거하기
 - 함수 추출하기, 알고리즘 교체하기
 
-## 1. 레코드 캡슐화하기
+## 7.1 레코드 캡슐화하기
 
 ### 배경
 
@@ -90,7 +90,7 @@ sidebar_position: 7
 
 <br/>
 
-## 2. 컬렉션 캡슐화하기
+## 7.2 컬렉션 캡슐화하기
 
 ```js
 // before
@@ -140,7 +140,7 @@ class Person {
 
 <br/>
 
-## 3. 기본형을 객체로 바꾸기
+## 7.3 기본형을 객체로 바꾸기
 
 ```js
 // before
@@ -171,7 +171,7 @@ orders.filter((o) => o.priority.higherThan(new Priority('normal')))
 
 <br/>
 
-## 4. 임시 변수를 질의 함수로 바꾸기
+## 7.4 임시 변수를 질의 함수로 바꾸기
 
 ```js
 // before
@@ -214,7 +214,7 @@ else return this.basePrice * 0.98
 
 <br/>
 
-## 5. 클래스 추출하기
+## 7.5 클래스 추출하기
 
 ```js
 // before
@@ -268,7 +268,7 @@ class TelephoneNumber {
 
 <br/>
 
-## 6. 클래스 인라인하기
+## 7.6 클래스 인라인하기
 
 ```js
 // before
@@ -319,7 +319,7 @@ class Person {
 
 <br/>
 
-## 7. 위임 숨기기
+## 7.7 위임 숨기기
 
 ```js
 // before
@@ -355,7 +355,7 @@ manager = aPerson.manager
 
 <br/>
 
-## 8. 중개자 제거하기
+## 7.8 중개자 제거하기
 
 ```js
 // before
@@ -387,7 +387,7 @@ manager = aPerson.department.manager
 
 <br/>
 
-## 9. 알고리즘 교체하기
+## 7.9 알고리즘 교체하기
 
 ```js
 // before

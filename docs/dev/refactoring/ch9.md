@@ -8,7 +8,7 @@ sidebar_position: 9
 - 참조를 값으로 바꾸기, 값을 참조로 바꾸기
 - 매직 리터럴 바꾸기
 
-## 변수 쪼개기
+## 9.1 변수 쪼개기
 
 ```js
 // before
@@ -109,7 +109,7 @@ function discount(inputValue, quantity) {
 
 <br/>
 
-## 필드 이름 바꾸기
+## 9.2 필드 이름 바꾸기
 
 ```js
 // before
@@ -194,7 +194,7 @@ const organization = new Organization({
 
 <br/>
 
-## 파생 변수를 질의 함수로 바꾸기
+## 9.3 파생 변수를 질의 함수로 바꾸기
 
 ```js
 // before
@@ -262,7 +262,7 @@ class ProductionPlan {
 
 <br/>
 
-## 참조를 값으로 바꾸기
+## 9.4 참조를 값으로 바꾸기
 
 ```js
 // before
@@ -294,7 +294,7 @@ class Product {
 
 <br/>
 
-## 값을 참조로 바꾸기
+## 9.5 값을 참조로 바꾸기
 
 ```js
 // before
@@ -376,7 +376,7 @@ class Order {
 
 <br/>
 
-## 매직 리터럴 바꾸기
+## 9.6 매직 리터럴 바꾸기
 
 ```js
 // before
