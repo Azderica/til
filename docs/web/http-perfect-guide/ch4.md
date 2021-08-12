@@ -188,6 +188,24 @@ HTTP 커넥션을 올리는 성능은 다음과 같습니다.
 
 ## 4.5 지속 커넥션
 
+### 지속 커넥션 vs 병렬 커넥션
+
+### HTTP/1.0+의 Keep-Alive 커넥션
+
+### Keep-Alive 동작
+
+### Keep-Alive 옵션
+
+### Keep-Alive 커넥션 제한과 규칙
+
+### Keep-Alive와 멍청한(dumb) 프락시
+
+### Proxy-Connection 살펴보기
+
+### HTTP/1.1의 지속 커넥션
+
+### 지속 커넥션의 제한과 규칙
+
 <br/>
 
 ## 4.6 파이프라인 커넥션
