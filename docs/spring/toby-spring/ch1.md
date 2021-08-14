@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # 1장. 오브젝트와 의존관계
 
 ## DAO
