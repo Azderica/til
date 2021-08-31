@@ -69,10 +69,49 @@ sidebar_position: 8
 
 - 애플리케이션을 연결하면서 생기는 까다로운 이슈 중 하나는 데이터를 교환하려는 두 애플리케이션 사이에서 프로토콜 인터페이스를 맞추는 일입니다.
 - 인터넷 커뮤니티는 각 웹 애플리케이션이 서로 통신하는데 사용할 표준과 프로토콜 집합을 개발합니다.
+- **SOAP(Simple Object Access Protocol)은 HTTP 메시지에 XML 데이터를 담는 방식에 관한 표준입니다.**
 
 <br/>
 
 ## 8.5 터널
+
+- 웹 터널은 HTTP 프로토콜을 지원하지 않는 애플리케이션에 HTTP 애플리켕시녕르 사용해 접근하는 방법을 제공합니다.
+- 웹 터널을 사용하면 HTTP 커넥션을 통해서 HTTP가 아닌 트래픽을 전송할 수 있다고, 다른 프로토콜을 HTTP 위에 올릴 수 있습니다.
+
+### CONNECT로 HTTP 터널 커넥션 맺기
+
+- 웹 터널은 HTTP의 CONNECT 메서드를 사용하여 커넥션을 맺습니다.
+- CONNECT 메서드는 모든 서버나 프로토콜에 TCP 커넥션을 맺는데 사용할 수 있습니다.
+
+#### CONNECT 요청
+
+```http
+CONNECT home.netscape.com:443 HTTP/1.0
+User-agent: Mozilla/4.0
+```
+
+추가적인 HTTP 요청 헤더 필드가 있거나 없습니다.
+
+#### CONNECT 응답
+
+```http
+HTTP/1.0 200 Connection Established
+Proxy-agent: Netscape-Proxy/1.1
+```
+
+일반적인 HTTP 응답과 달리 Content-Type이 필요가 없습니다. (바이트를 전달하므로)
+
+### 데이터 터널링, 시간, 커넥션 관리
+
+-
+
+### SSL 터널링
+
+### SSL 터널링 vs HTTP/HTTPS 게이트웨이
+
+### 터널 인증
+
+### 터널 보안에 대한 고려사항들
 
 <br/>
 
