@@ -51,9 +51,118 @@ sidebar_position: 7
 
 ### 커피를 주문하기 위한 협력 찾기
 
+- 객체지향 설계의 첫 번째 목표는 훌륭한 협력을 설계하는 것입니다. 그리고 이를 수행하는 것은 메시지입니다.
+- 메시지를 먼저 선택한 후에는 메시지를 수신하기에 적절한 객체를 선택합니다.
+
+이를 객체 협력으로 나타내면 다음과 같습니다.
+
+![커피 주문을 위한 객체 협력](https://user-images.githubusercontent.com/42582516/132597401-a8a7b48f-bb6d-47d2-998c-6fa072adefdb.png)
+
 ### 인터페이스 정리하기
 
+- 해당 작업으로 얻어낸 것은 객체들의 인터페이스입니다. (객체가 수신한 메시지가 객체의 인터페이스를 결정합니다.)
+  - **메시지가 객체를 선택했고, 선택된 객체는 메시지를 자신의 인터페이스로 받아들입니다.**
+- 객체들의 협력은 컴퓨터 안에서 일어나는 상황을 동적으로 묘사한 모델입니다.
+- 일반적으로 객체의 타입을 구현하는 일반적인 방법은 클래스를 이용하는 것입니다.
+
+```java
+class Customer {
+   public void order(String menuName) {}
+}
+class MenuItem {}
+class Menu {
+   public MenuItem choose(String name) {}
+}
+class Barista {
+   public Coffee makeCoffee(MenuItem menuItem) {}
+}
+class Coffee {
+   public Coffee(MenuItem menuItem) {}
+}
+```
+
 ### 구현하기
+
+앞에서 내온 내용을 구현하면 다음과 같습니다. (Customer가 Menu 객체와 Barista 객체에 접근하기 위해 참조를 사용합니다.)
+
+```java
+class Customer {
+   public void order(String menuName, Menu menu, Barista barista) {
+      MenuItem menuItem = menu.choose(menuName);
+      Coffee coffee = barista.makeCoffee(menuItem);
+      ...
+   }
+}
+```
+
+```java
+class Menu {
+   private List<MenuItem> items;
+
+   public Menu(List<MenuItem> items) {
+      this.items = items;
+   }
+
+   public MenuItem choose(String name) {
+      for(MenuItem each : items) {
+         if(each.getName().equals(name)) {
+            return each;
+         }
+      }
+      return null;
+   }
+}
+```
+
+```java
+class Barista {
+   public Coffee makeCoffee(MenuItem menuItem) {
+      Coffee coffee = new Coffee(menuItem);
+      return coffee;
+   }
+}
+```
+
+```java
+class Coffee {
+   private String name;
+   private int price;
+
+   public Coffee(MenuItem menuItem) {
+      this.name = menuItem.getName();
+      this.price = menuItem.cost();
+   }
+}
+```
+
+```java
+public class MenuItem {
+   private String name;
+   private int price;
+
+   public MenuItem(String name, int price) {
+      this.name = name;
+      this.price = price;
+   }
+
+   public int cost() {
+      return price;
+   }
+
+   public String getName() {
+      return name;
+   }
+}
+```
+
+이를 클래스 구조로 나타내면 다음과 같습니다.
+
+![최종 클래스 구조](https://user-images.githubusercontent.com/42582516/132598610-2840e430-3f75-452b-a329-b9eddbb3ebb6.png)
+
+> 참고 사항
+
+- 인터페이스를 통해 실제 상호작용을 해보지 않으면 인터페이스를 정확하게 예측이 안됩니다.
+- 설계는 간단히 끝나고 빠르게 구현에 들어갑니다.
 
 <br/>
 
