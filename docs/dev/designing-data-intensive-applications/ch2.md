@@ -208,6 +208,77 @@ UPDATE users SET first_name = substring_index(name, ' ', 1); -- MySQL
 
 ## 데이터를 위한 질의 언어
 
+- SQL은 **선언형** 질의 언어인 반면, IMS와 코다실은 **명령형** 코드를 통해 데이터베이스에 질의합니다.
+- 선언형 질의 언어는 명령형보다 간결하고 쉽게 작업가능합니다.
+- 선언형 질의 언어는 데이터베이스 엔진의 상세 구현이 숨겨져 있어서 질의를 변경하지 않고 데이터베이스 시스템의 성능을 올릴 수 있습니다.
+- SQL 예제는 특정 순서를 보장하지 않으며 순서가 바뀌어도 상관없습니다.
+- 마지막으로 선언형 언어는 종종 병렬 실행에 장점을 가집니다.
+
+### 웹에서의 선언형 질의
+
+- 선언형 질의 언어의 장점은 데이터베이스엣만 국한되지 않습니다.
+
+```html
+<ul>
+  <li class="selected">
+    <p>Sharks</p>
+    <ul>
+      <li>Great White Shark</li>
+      <li>Tiger Shark</li>
+      <li>Hammerhead Shark</li>
+    </ul>
+  </li>
+  <li>
+    <p>Whales</p>
+    <ul>
+      <li>Blue Whale</li>
+      <li>Humpback Whale</li>
+      <li>Fin Whale</li>
+    </ul>
+  </li>
+</ul>
+```
+
+```css
+li.selected > p {
+  background-color: blue;
+}
+```
+
+이러한 css 코드를 선언형, XSL을 사용하면 다음과 같이 표현할 수 있습니다.
+
+```xml
+<xsl:template match="li[@class='selected']/p">
+  <fo:block background-color="blue">
+    <xsl:apply-templates/>
+  </fo:block>
+</xsl:template>
+```
+
+명령형 접근 방식은 다음과 같이 해야합니다.
+
+```js
+var liElements = document.getElementsByTagName('li')
+for (var i = 0; i < liElements.length; i++) {
+  if (liElements[i].className === 'selected') {
+    var children = liElements[i].childNodes
+    for (var j = 0; j < children.length; j++) {
+      var child = children[j]
+      if ((child.nodeType === Node.ELEMENT_NODE) & (child.tagName === 'P')) {
+        child.setAttribute('style', 'background-color: blue')
+      }
+    }
+  }
+}
+```
+
+이러한 명령형 코드는 이해하기 어렵고 아래의 문제가 있습니다.
+
+- selected 클래스가 삭제된 경우, 코드가 재실행되더라도 파란색은 삭제되지 않습니다.
+- API의 장점을 취하고 싶으면 코드를 재작성해야합니다.
+
+### 맵리듀스 질의
+
 <br/>
 
 ## 그래프형 데이터 모델
