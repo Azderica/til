@@ -332,7 +332,26 @@ for (var i = 0; i < liElements.length; i++) {
 
 ### 사이퍼 질의 언어
 
+- 사이퍼(Cypher)는 속성 그래프를 위한 선언형 질의 언어로 Neo4j 그래프 데이터베이스용으로 만들어 졌습니다.
+- 예시) 미국에서 유럽으로 이민 온 사람을 찾는 사이퍼 질의
+
+```neo4j
+MATCH
+  (person) -[:BORN_IN] -> () -[:WITHIN*0..]-> (us:Location {name:'United States'}),
+  (person) -[:LIVES_IN] -> () -[:WITHIN*0..]-> (es:Location {name:'Europe'})
+RETURN person.name
+```
+
+- 질의 최적화기가 가장 효율적으로 예측한 전략을 자동으로 선택하며 사용자는 나머지 애플리케이션만 작성합니다.
+
 ### SQL의 그래프 질의
+
+- 사이퍼에서는 `:WITHIN*0..`은 "0회 이상 WITHIN 간선을 따라가라"는 의미를 가집니다.
+- SQL의 가변 순회 경로에 대한 질의 개념은 **재귀 공통 테이블 식(recursive common table expression)**을 사용해 표현합니다.
+
+```SQL
+-- 코드 생략
+```
 
 ### 트리플 저장소와 스파클
 
