@@ -18,6 +18,8 @@ sidebar_position: 2
 
 ### NoSQL의 탄생
 
+> [CAP이론](https://azderica.github.io/00-db-cap/)
+
 NoSQL의 채택 이유는 다음과 같습니다.
 
 - 대규모 데이터셋이나 매우 높은 쓰기 처리량 달성을 관계형 데이터베이스보다 쉽게 할 수 있는 뛰어난 확장성이 필요합니다.
@@ -188,6 +190,8 @@ UPDATE users SET first_name = substring_index(name, ' ', 1); -- MySQL
   - 사용자가 제어할 수 없고 언제나 변경 가능한 외부 시스템에 의해 데이터 구조가 결정됩니다.
 - 모든 레코드가 **동일한 구조**라 예상 가능하다면 **스키마**가 문서화 구조를 강제하기 위한 유용한 메커니즘입니다.
 
+> [스키마란?](https://jwprogramming.tistory.com/47)
+
 #### 질의를 위한 데이터 지역성
 
 - 애플리케이션이 자주 전체 문서에 접근할 때, **저장소 지역성(storage locality)** 을 활용하면 성능 이점이 있습니다.
@@ -297,19 +301,19 @@ for (var i = 0; i < liElements.length; i++) {
 ## 그래프형 데이터 모델
 
 - 데이터에서 다대다 관계가 매우 일반적인 경우에는 그래프로 데이터를 모델링하는 것이 더 자연스럽습니다.
-- 그래프는 **정점(vertex, 노드나 엔티티)**와 **간선(edge, 관계나 호)** 라고 합니다.
+- 그래프는 **정점(vertex, 노드나 엔티티)** 와 **간선(edge, 관계나 호)** 라고 합니다.
 - 다음의 예시가 있습니다.
   - 소셜 그래프, 웹 그래프, 도로나 철도 네트워크
 - 그래프에서 데이터를 구조화하고 질의하는 몇가지 방법이 있습니다.
-  - **속성 그래프 모델** : Neo4j, Titan, InfiniteGraph
+  - **속성 그래프 모델** : **Neo4j**, Titan, InfiniteGraph
   - **트리플 저장소 모델** : Datomic, Allegrograph
   - 그래프용 선언형 질의 언어 : Cypher, SPARQL, Datalog
-  - 명령형 그래프 질의 언어 : Gremlin
+  - 명령형 그래프 질의 언어 : **Gremlin**
   - 그래프 처리 프레임워크 : Pregel
 
 ### 속성 그래프
 
-속성 그래프 모델에서 각 **정점(vertex)**은 다음과 같은 요소로 구성됩니다.
+속성 그래프 모델에서 각 **정점(vertex)** 은 다음과 같은 요소로 구성됩니다.
 
 - 고유한 식별자
 - 유출(outgoing) 간선 집합
@@ -347,7 +351,7 @@ RETURN person.name
 ### SQL의 그래프 질의
 
 - 사이퍼에서는 `:WITHIN*0..`은 "0회 이상 WITHIN 간선을 따라가라"는 의미를 가집니다.
-- SQL의 가변 순회 경로에 대한 질의 개념은 **재귀 공통 테이블 식(recursive common table expression)**을 사용해 표현합니다.
+- SQL의 가변 순회 경로에 대한 질의 개념은 **재귀 공통 테이블 식(recursive common table expression)** 을 사용해 표현합니다.
 
 ```SQL
 -- 코드 생략
