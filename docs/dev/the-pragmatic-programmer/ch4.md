@@ -187,6 +187,40 @@ while(iter.hasMoreElements()){
 
 ## Item 24. 언제 예외를 사용할까
 
+- 가능한 모든 에러, 특히 의외인 것들을 체크하는 것이 중요합니다.
+- 에러 처리를 한 장소로 모아, 정상적인 컨트롤의 흐름이 명확히 보입니다.
+
+```java
+retcode = OK;
+try {
+  socket.read(name);
+  process(name);
+  socket.read(address);
+  processAddress(address);
+  socket.read(telNo);
+  // ...
+} catch (IOException e) {
+  retcode = BAD_READ
+  Logger.log("Error reading individual:" + e.getMessage());
+}
+return retcode;
+```
+
+### 무엇이 예외적인가
+
+- 예외에 문제가 있다면 하나는 이걸 언제 사용할지 아는 것입니다.
+- 예외가 프로그램의 정상 흐름의 일부로 사용되는 일은 거의 없어야 하며 의외의 상황을 위해 남겨둬야합니다.
+
+> Tip 34. 예외는 예외적인 문제에 사용하라
+
+- 예외를 정상적인 처리 과정의 일부로 사용하는 프로그램은 고전적인 스파게티 코드의 가독성 문제와 관리성 문제를 전부 떠안게 됩니다.
+- 이러한 코드는 캡슐화가 깨지고 루틴과 호출자 사이의 결합도가 높아집니다.
+
+### 에러 처리기는 또 다른 대안이다.
+
+- 에러 체러기는 에러가 감지되었을 때 호출되는 루틴입니다.
+- 특정 부류의 에러를 처리하기 위해 어떤 루틴을 등록하게 됩니다.
+
 <br/>
 
 ## Item 25. 리소스 사용의 균형
