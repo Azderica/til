@@ -231,3 +231,158 @@ return retcode;
 > Tip 35. 시작한 것은 끝내라
 
 - 위의 팁은 리소스를 할당하는 루틴이나 객체가 리소스를 해제하는 책임 역시 져야함을 의미합니다.
+
+다음의 코드 예시를 예로 들 수 있습니다.
+
+```c
+void readCustomer(const char *fName, Customer *cRec) {
+  cFile = fopen(fName, "r+");
+  fread(cRec, sizeof(*cRec), 1, cFile);
+}
+void writeCustomer(Customer *cRec) {
+  rewind(cFile);
+  fwrite(cRec, sizeof(*cRec), 1, cFile);
+  fclose(cFile);
+}
+void updateCustomer(const char *fName, double newBalance){
+  Customer cRec;
+  readCustomer(fName, &cRec);
+  cRec.balance = newBalance;
+  writeCustomer(&cRec);
+}
+```
+
+위 코드는 read 루틴과 write 루틴이 긴밀히 결합(coupling) 되어 있으며, 전역 변수인 cFile을 공유합니다.
+
+다음의 경우 명세를 바꿔서 음수가 아닌 경우만 업데이트를 하는 경우, 다음을 수정합니다.
+
+```c
+void updateCustomer(const char *fName, double newBalance){
+  Customer cRec;
+  readCustomer(fName, &cRec);
+  if(newBalance >= 0.0) {
+    cRec.balance = newBalance;
+    writeCustomer(&cRec);
+  }
+  else
+    fclose(cFile);
+}
+```
+
+위와 같은 구조는 전역 변수인 cFile을 통해 세 개의 루틴이 결합되는 안좋은 코드를 만들게 됩니다.
+
+따라서 아래와 같은 구조를 만들어야 합니다.
+
+```c++
+void readCustomer(FILE *cFile, Customer *cRec) {
+  fread(cRec, sizeof(*cRec), 1, cFile);
+}
+void writeCustomer(FILE *cFile, Customer *cRec) {
+  rewind(cFile);
+  fwrite(cRec, sizeof(*cRec), 1, cFile);
+}
+void updateCustomer(const char *fName, double newBalance){
+  File *cFile;
+  Customer cRec;
+  cFile = fopen(fName, "r+")
+  readCustomer(cFile, &cRec);
+  if (newBalance >= 0.0) {
+    cRec.balance = newBalance;
+    writeCustomer(&cRec);
+  }
+  fclose(cFile);
+}
+```
+
+#### 중첩 할당
+
+- 리소스 할당의 기본 패턴을 확장해서 한 번에 하나 이상의 리소스를 필요로 하는 루틴에 적용할 수 있습니다.
+  - (1) 리소스를 할당한 순서의 반대로 해제합니다.
+  - (2) 코드의 여러 곳에서 동일한 리소스 집합을 할당하는 경우, 할당 순서를 언제나 같게합니다. (deadlock 가능성을 줄여줍니다.)
+
+### 객체와 예외
+
+- 할당과 해제의 균형을 클래스의 생성자와 소멸자와 비슷합니다.
+- 객체지향 언어로 프로그래밍을 하는 경우, 리소스를 클래스 안에 캡슐화 하는 것이 유용합니다.
+
+### 균형과 예외
+
+- 예외를 지원하는 언어는 리소스 해제에 복잡한 문제가 있을 수 있습니다.
+
+#### C++에서 예외와 리소스 사용 균형
+
+```c++
+void doSomething(void) {
+  Node *n = new Node;
+  try {
+    // do Something
+  } catch (...) {
+    delete n;
+    throw;
+  }
+  delete n;
+}
+```
+
+- 위 코드는 DRY 원칙 위반입니다.
+- 이를 C++ 작동 방식 중 하나로 지역 객체의 특징을 사용할 수 있습니다.
+
+```c++
+void doSomething1(void) {
+  Node n;
+  try {
+    // do Something
+  } catch (...) {
+    throw;
+  }
+}
+```
+
+- 혹은 아래와 같이 할수도 있습니다.
+
+```c++
+class NodeResource {
+  Node *n;
+public:
+  NodeResource() { n = new Node; }
+  ~NodeResource() { delete n; }
+  Node *operator -> () { return n; }
+};
+void doSomething2(void) {
+  NodeResource n;
+  try {
+
+  } catch (...) {
+    throw;
+  }
+}
+```
+
+#### 자바에서 리소스 사용의 균형
+
+- 자바는 게으른 방식의 자동 객체 삭제를 사용합니다. (참조가 없으면 삭제됩니다.)
+- 위의 코드와 같이 구현은 힘드나 이를 위해 finally를 고안했습니다.
+
+```java
+public void doSomething() throws IOException {
+  File tmpFile = new File(tmpFileName);
+  FileWriter tmp = new FileWriter(tmpFile);
+  try {
+    // do something
+  } finally {
+    tmpFile.delete();
+  }
+}
+```
+
+### 리소스 사용의 균형을 잡을 수 없는 경우
+
+- 기본적인 리소스 할당 방식이 아예 적절하지 않는 경우도 있습니다. (ex. 동적 자료구조형)
+- 이때는 메모리 할당에 대한 의미론적인 불변식을 정하는 일이 필요합니다.
+- 집합적인 자료구조 안에 자료에 대해 책임을 지는 게 누구인지를 정해놓아야 합니다.
+- 리소스 사용의 기록을 남기는 것이 까다로워진다면 동적으로 할당된 객체에 일종의 자신만의 gc 기능을 작성할 수도 있습니다.
+
+### 균형을 점검하기
+
+- 실용주의 프로그래머는 자신을 포함해서 아무도 믿지 않기 대문에 정말로 리소스가 적절하게 해제되었는지 실제로 점검하는 코드를 늘 작성하는 것이 좋습니다.
+- 자원들이 해당 시점에 반드시 이런 시점에 있어야한다고 판단되는 경우, 래퍼들을 사용해서 점검하는 것또한 좋습니다.
