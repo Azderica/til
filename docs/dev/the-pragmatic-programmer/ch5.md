@@ -222,6 +222,78 @@ while(st1.hasMoreTokens() && st2.hasMoreTokens()) {
 
 ### 출판/구독
 
+- 모든 이벤트를 루틴 하나에 몰아넣는 일은 객체 캡슐화에 위배되며, 결합도를 늘리고, 여러 문제들 만듭니다.
+- 객체는 자기가 필요한 이벤트들만 구독해서 받아보고 필요하지 않은 이벤트들은 받아오지 않도록 해야합니다.
+- 이러한 경우 **출판/구독 프로토콜(관찰자 패턴)** 을 사용합니다.
+
+### 모델-뷰-컨트롤러
+
+- 데이터인 모델, 모델을 표시하는 뷰, 그리고 뷰를 관리하는 컨트롤러에서 모델을 분리하는 개념이 **모델-뷰-컨트롤러(Model-View-Controller, MVC)** 이 핵심입니다.
+
+> CORBA 이벤트 서비스
+
+- CORBA 이벤트 서비스에 참여하는 객체들은 이벤트 통보를 이벤트 채널(event channel)이라고 부르는 공유 버스를 통해 이벤트를 전송하고 수신할 수 있습니다.
+- 이벤트 채널은 밀기(push)와 끌기(pull) 두 기본적인 방식으로 작동합니다.
+- 밀기 방식은 이벤트 공급자들이 이벤트 채널에게 이벤트가 일어났다고 통보합니다. 그러면 채널이 관심있다고 등록한 모든 클라이언트 객체들에게 그 이벤트를 배포합니다.
+- 끌기 방식은 클라이언트가 주기적으로 이벤트 채널에 대해 폴링(polling)을 수행하고, 이벤트 채널은 다시 요청에 대응하는 이벤트 데이터를 제공하는 공급자에게 폴링을 합니다.
+- CORBA는 서로 다른 프로그래밍 언어, 멀리있는 공간, 다른 아키텍처에서의 객체들이 서로 의사소통이 가능하도록 만들어줍니다.
+
+> Tip 42. 모델에서 뷰를 분리하라
+
+- 모델과 뷰/컨트롤러를 분리하면 적은 비용으로 큰 유연성을 얻게 됩니다.
+
+
+#### 자바 트리 뷰
+
+- 자바의 트리 위젯이 MVC 설계의 좋은 예입니다.
+
+### GUI를 넘어서
+
+- MVC는 GUI 개발을 넘어 일반적으로 사용할 수 있는 프로그래밍 기법입니다.
+  - 모델 : 대상 객체를 나타내는 추상 데이터 모델, 모델은 어떤 뷰나 컨트롤러에 대해서 직접적인 지식을 지니지 않는다
+  - 뷰 : 모델을 해석하는 방법, 뷰는 모델의 변화 그리고 컨트롤러가 보내는 논리적 사건을 구독합니다.
+  - 컨트롤러 : 뷰를 제어하고 모델에 새로운 데이터를 제공하는 방법, 모델과 뷰 둘 모두에 이벤트를 보냄
+- 모델-뷰 네트워크도 자주 쓰이는 설계 기법입니다.
+  - 각 링크마다 원본 데이터와 그 데이터를 만드는 이벤트 사이의 결합을 끊습니다.
+  - 모든 새로운 뷰는 또 다른 추상화입니다.
+  - 서로 의 관계가 네트워크 이기 때문에 유연성도 커지고, 모델마다 많은 뷰, 뷰 하나가 여러 모델을 이용할 수도 있습니다.
+  - 이러한 복잡한 시스템이라면 **디버깅 뷰** 를 만드는 것이 좋고, 이는 모델의 상세 내부 정보를 보여주는 특수한 뷰입니다.
+
+### (그렇게 세월이 흘러도) 여전히 결합 중
+
+- 이러한 결합도 줄이기에도 불구하고, 청취자(listener)와 이벤트 생성자는 아직도 서로에 대한 약간의 지식이 남아 있습니다.
+- 뒤에서는 출판과 구독 형태의 일종이지만 참여하는 누구도 서로에 대해 알거나 서로를 직접 호출할 필요가 없는 형식을 이용해서 결합도를 낮추는 방법에 대해 이야기합니다.
+
+> Q. 비행기 개념을 포함한 항공 예약 시스템을 개선해봐라.
+
+```java
+// before
+public interface Flight {
+  public boolean addPassenger(Passenger p);
+  public void addToWaitList(Passenger p);
+  public int getFlightCapacity();
+  public int getNumPassengers();
+}
+```
+
+```java
+// after
+public interface Passenger {
+  public void waitListAvailable();
+}
+
+public interface Flight {
+  public void addWaitListListener(Passenger p);
+  public void removeWaitListListener(Passenger p);
+  public void addFullListener(FullListener b);
+  public void removeFullListener(FullListener b);
+}
+
+public interface BigReport extends FullListener {
+  public void FLightFullAlert(Flight f);
+}
+```
+
 <br/>
 
 ## Item 30. 칠판
