@@ -520,3 +520,8 @@ SELECT * FROM bookings
   - 트랜잭션이 커밋을 원할 때 트랜잭션을 확인해서 실행이 직렬적이지 않다면 어보트 시킵니다.
 
 이번 장에서는 단일 장비에서 데이터베이스를 실행하는 맥락에서 아이디어와 알고리즘을 살펴보았습니다. 다음 두 장에서는 분산 데이터베이스에서의 트랜잭션에서 발생하는 문제에 해결책을 이야기합니다.
+
+---
+
+- [다중 단위크기 단게 로킹](https://en.wikipedia.org/wiki/Multiple_granularity_locking)
+- [DB 관련 꼭 읽어볼 글](https://brunch.co.kr/@toughrogrammer/17)
