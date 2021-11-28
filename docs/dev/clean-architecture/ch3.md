@@ -71,7 +71,7 @@ sidebar_position: 3
 
 ![클래스, 컴포넌트 단위로 구분](https://user-images.githubusercontent.com/42582516/143729628-dc034673-ee40-428a-9fd5-920f586e823c.png)
 
-> > <I> : 인터페이스, <DS> : 데이터 구조
+> > `<I>` : 인터페이스, `<DS>` : 데이터 구조
 
 - 이를 한 후는 컴포넌트 관계를 그립니다.
 
