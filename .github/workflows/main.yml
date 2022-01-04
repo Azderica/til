@@ -1,51 +1,39 @@
-name: documentation
+name: Deploy Project
 
 on:
   push:
     branches: master
 
 jobs:
-  checks:
-    if: github.event_name != 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '12.x'
-      - name: Test Build
-        run: |
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
-          fi
-          npm run build
   gh-release:
-    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout
+        uses: actions/checkout@v2
         with:
-          ssh-key: ${{ secrets.SECRET_KEY }}
-      - uses: actions/setup-node@v1
+          lfs: true
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Setup Node
+        uses: actions/setup-node@v2.1.2
         with:
           node-version: '12.x'
-      - name: Release to GitHub Pages
-        env:
-          USE_SSH: true
-          GIT_USER: git
-          GITHUB_TOKEN: ${{ secrets.SECRET_KEY }}
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.85.0'
+      - name: Install and Build
         run: |
           git config --global user.email "mh97888@gmail.com"
           git config --global user.name "Azderica"
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
-          fi
-          npm run deploy
+          # npm ci
+          npm install
+          npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          user_email: 'mh97888@gmail.com'
+          user_name: 'Azderica'
+          github_token: ${{ secrets.ACCESS_TOKEN }}
+          # branch: master # The branch the action should deploy to.
+          publish_branch: gh-pages
+          publish_dir: build # The folder the action should deploy.
