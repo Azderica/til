@@ -33,6 +33,13 @@ sidebar_position: 2
 
 ## 계층 구조 아키텍처
 
+![계층 구조의 아키텍처 구성](https://user-images.githubusercontent.com/42582516/149680967-f76a0e77-ec54-4e42-bbbc-484e2e5b443a.png)
+
+- 전체적인 아키텍처는 위 그림의 구조를 따릅니다.
+- 계층 구조는 그 특성상 상위 계층에서 하위 계층으로의 의존만 존재하고 하위 계층은 상위 계층에 의존하지 않습니다.
+
+![전형적인 계층 구조상의 의존관계](https://user-images.githubusercontent.com/42582516/149681123-624aafc7-8220-4d44-aa90-783aea26a7cd.png)
+
 <br/>
 
 ## DIP
