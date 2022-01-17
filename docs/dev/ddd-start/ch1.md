@@ -79,13 +79,13 @@ sidebar_position: 1
 
 - 엔티티의 가장 큰 특징은 식별자를 갖는 것입니다.
 
-| Order                       |
-| --------------------------- |
-| -orderNumber:String         |
-| -orderLines:List<OrderLine> |
-| -totalAmount:int            |
-| -ShippingInfo:ShippingInfo  |
-| -state:OrderState           |
+| Order                         |
+| ----------------------------- |
+| `-orderNumber:String`         |
+| `-orderLines:List<OrderLine>` |
+| `-totalAmount:int`            |
+| `-ShippingInfo:ShippingInfo`  |
+| `-state:OrderState`           |
 
 ### 엔티티의 식별자 생성
 
