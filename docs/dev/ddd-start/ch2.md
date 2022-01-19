@@ -40,13 +40,69 @@ sidebar_position: 2
 
 ![전형적인 계층 구조상의 의존관계](https://user-images.githubusercontent.com/42582516/149681123-624aafc7-8220-4d44-aa90-783aea26a7cd.png)
 
+- 인프라스트럭처에 의존하면 '테스트 어려움'과 '기능 확장의 어려움'이라는 문제가 발생합니다.
+
 <br/>
 
 ## DIP
 
+![고수준 모듈과 저수준 모듈](https://user-images.githubusercontent.com/42582516/149946529-0ed784a4-c16e-4f55-8fcb-5f51ab5b8a17.png)
+
+- 고수준 모듈의 기능을 구현하려면 여러 하위 기능이 필요합니다.
+- 고수준 모듈이 제대로 동작하려면 저수준 모듈을 사용해야 합니다.
+- DIP는 이 문제를 해결하기 위해 저수준 모듈이 고수준 모듈에 의존하도록 바꿉니다.
+
+```java
+public interface RuleDiscounter {
+  public Money applyRules(Customer customer, List<OrderLine> orderLines);
+}
+```
+
+```java
+public class CalculateDiscountService {
+  private RuleDiscounter ruleDiscounter;
+
+  public CalculateDiscountService(RuleDiscounter ruleDiscounter) {
+    this.ruleDiscounter = ruleDiscounter;
+  }
+
+  public Money calculateDiscount(List<OrderLine> orderLines, String customerId) {
+    Customer customer = findCustomer(customerId);
+    return ruleDiscounter.applyRules(customer, orderLines);
+  }
+}
+```
+
+```java
+public class DroolsRuleDiscounter implements RuleDiscounter {
+  private KieContainer kContainer;
+
+  public DroolsRuleDiscounter) {
+    KieService ks = KieServices.Factory.get();
+    kContainer = ks.getKieClasspathContainer();
+  }
+
+  @Override
+  public Money applyRules(Customer customer, List<OrderLine> orderLines) {
+    ...
+  }
+}
+```
+
+- DIP를 적용해서 고수준 모듈이 저수준 모듈에 의존하지 않기 때문에 테스트 등이 쉬워집니다.
+
 ### DIP 주의사항
 
+- DIP는 단순히 인터페이스와 구현 클래스를 분리하는 것이 아닙니다.
+- 핵심은 고수준 모듈이 저수준 모듈에 의존하지 않도록 하는 것입니다.
+
+![하위 기능을 추상화한 인터페이스는 고수준 모듈에 위치](https://user-images.githubusercontent.com/42582516/150043420-196ea35c-0492-4033-9275-2e9c9a793ca8.png)
+
 ### DIP와 아키텍처
+
+- 인프라스트럭처 영역은 구현 기술을 다루는 저수준 모듈이며 응용 영역과 도메인 영역은 고수준 모듈입니다.
+
+![아키텍처 수준](https://user-images.githubusercontent.com/42582516/150043561-7309f180-6cd2-4bda-a1e4-aa7b87683c72.png)
 
 <br/>
 
