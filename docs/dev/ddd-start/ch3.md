@@ -116,6 +116,50 @@ Order order = orderRepository.findById(orderId);
   - 편한 탐색 오용
   - 성능에 대한 고민
   - 확장 어려움
+- 애그리거트를 직접 참조할 때 발생할 수 있는 가장 큰 문제는 편리함을 오용할 수 있다는 것입니다.
+
+```java
+public class Order {
+  private Orderer orderer;
+
+  public void changeShippingInfo(ShippingInfo newShippingInfo, boolean useNewShippingAddrAsMemberAddr) {
+    ...
+    if(useNewShippingAddrAsMemberAddr) {
+      // 다른 애그리거트에 접근할 수 있으면, 다른 애그리거트의 상태를 변경하는 유혹에 빠지기 쉽습니다.
+      orderer.getCustomer().changeAddress(newShippingInfo.getAddress());
+    }
+  }
+
+  ...
+}
+```
+
+- 두 번째 문제는 애그리거트를 직접 참조하면 성능과 관련된 여러 가지 고민을 해야합니다.
+- 세 번째 문제는 확장입니다.
+
+위의 세 가지 문제를 완화할 때 사용할 수 있는 것이 ID를 이용해서 다른 애그리거트를 참조하는 것입니다.
+
+- ID를 이용한 참조는 DB 테이블에서의 외래키를 사용해서 참조하는 것과 비슷하게 다른 애그리거트를 참조할 때 ID 참조를 사용한다는 점입니다.
+- ID 참조를 사용하려면 모든 객체가 참조로 연결되지 않고 한 애그리거트에 속한 객체들만 참조로 연결됩니다.
+- 구현 복잡도도 낮아집니다.
+
+```java
+public class ChangeOrderService {
+  @Transactional
+  public void changeShippingInfo(OrderId id, ShippingInfo newShippingInfo, boolean useNewShippingAddrAsMemberAddr) {
+    Order order = orderRepository.findById(id);
+    if(order == null) throw new OrderNotFoundException();
+    order.changeShippingInfo(newShippingInfo);
+    if(useNewShippingAddrAsMemberAddr) {
+      Customer customer = customerRepository.findById(order.getOrderer().getCustomerId());
+      customer.changeAddress(newShippingInfo.getAddress());
+    }
+  }
+}
+```
+
+- ID를 이용한 참조 방식을 사용하면 복잠도를 낮추는 것과 함께한 애그리거트에서 다른 애그리거트를 수정하는 문제를 원천적으로 방지할 수 있습니다.
+- 애그리거트별로 닫른 구현 기술을 사용하는 것도 가능합니다.
 
 ### ID를 이용한 참조와 조회 성능
 
