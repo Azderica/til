@@ -171,6 +171,58 @@ public class ChangeOrderService {
 
 ## 애그리거트 간 집합 연관
 
+- 애그리거트 간 1:N 과 M:N 연관도 있습니다.
+- 1:N 연관을 이용한 구현 방식은 다음과 같습니다.
+
+```java
+public class Category {
+  private Set<Product> products;  // 다른 애그리거트에 대한 1:N 연관
+
+  public List<Product> getProducts(int page, int size) {
+    List<Product> sortedProducts = sortById(products);
+    return sortedProducts.subList((page - 1) * size, page * size);
+  }
+}
+```
+
+- RDBMS를 이용해서 M:N 연관을 구현하려면 조인 테이블을 사용합니다.
+
+```java
+@Entity
+@Table(name = "product")
+public class Product {
+  @EmbeddedId
+  private ProductId id;
+
+  @ElementCollection
+  @CollectionTable(name = "product_category", joinColumns = @JoinColumn(name = "product_id"))
+  private Set<CategoryId> categoryIds;
+
+  ...
+}
+```
+
+```java
+@Repository
+public class JpaProductRepository implements ProductRepository {
+  @PersistenceContext
+  private EntityManager entityManager;
+
+  @Override
+  public List<Product> findByCategoryId(CategoryId categoryId, int page, int size) {
+    TypedQuery<Product> query = entityManager.createQuery(
+      "select p form Product p " +
+      "where : cateId member of p.categoryIds order by p.id.id desc",
+      Product.class);
+    query.setParameter("catId", categoryId);
+    query.setFirstResult((page - 1) * size);
+    query.setMaxResults(size);
+    return query.getResultList();
+  }
+  ...
+}
+```
+
 <br/>
 
 ## 애그리거트를 팩토리로 사용하기
