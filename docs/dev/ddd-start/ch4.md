@@ -13,7 +13,7 @@ sidebar_position: 4
 
 - 인터페이스는 애그리거트와 같이 도메인 영역에 속하고, 리포지터리를 구현한 클래스는 인프라스트럭처 영역에 속합니다.
 
-[그림  4.1]
+[그림 4.1]
 
 ### 리포지터리 기본 기능 구현
 
@@ -53,7 +53,7 @@ public interface OrderRepository {
 - 한 테이블에 엔티티와 밸류 데이터가 같이 있다면,
   - 밸류는 @Embeddable로 매핑 설정합니다.
   - 밸류 타입 프로퍼티는 @Embedded로 매핑 설정합니다.
-  
+
 [그림 4.2]
 
 - 주문 애그리거트의 경우, 루트 엔티티는 Order이고 이에 속한 Orderer와 ShippingInfo는 밸류입니다. 이를 표현하면 다음과 같습니다.
@@ -74,7 +74,7 @@ public class Orderer {
     @AttributeOverride(name = "id", column = @Column(name = "orderer_id"))
   )
   private MemberId memberId;
-  
+
   @Column(name = "orderer_name")
   private String name;
 }
@@ -102,10 +102,10 @@ public class ShippingInfo {
     ...
   })
   private Address address;
-  
+
   @Column(name = "shipping_message")
   private String message;
-  
+
   @Embedded
   private Receiver receiver;
 }
@@ -117,10 +117,10 @@ public class Order {
   ...
   @Embedded
   private Orderer orderer;
-  
+
   @Embedded
   private ShippingInfo shippingInfo;
-  
+
   ...
 }
 ```
@@ -133,6 +133,44 @@ public class Order {
 하이버네이트는 클래스를 상속한 프록시 객체를 이용해서 지연 로딩을 구현합니다 이 경우 프록시 클래스에서 상위 클래스의 기본 생성자를 호출할 수 있어야 하므로 지연 로딩 대상이 되는 @Entity와 @Embeddable의 기본 생성자는 private이 아닌 protected로 지정해야 합니다.
 
 ### 필드 접근 방식 사용
+
+- JPA는 필드와 메서드의 두 가지 방식으로 매핑을 처리할 수 있습니다.
+
+```java
+@Entity
+@Access(AccessType.PROPERTY)
+public class Order {
+  @Column(name = "state")
+  @Enumerated(EnumType.STRING)
+  public OrderState getState() {
+    return state;
+  }
+
+  public void setState(OrderState state) {
+    this.state = state;
+  }
+
+  ...
+}
+```
+
+- 엔티티가 객체로서 제 역할을 하려면 외부에 set 메서드 대신 의도가 잘 드러나는 기능을 제공해야 합니다.
+- 따라서 다음과 같이 프로퍼티가 아닌 필드 방식을 선택하여 get/set 메서드를 구현하지 말아야합니다.
+
+```java
+@Entity
+@Access(AccessType.FIELD)
+public class Order {
+  @EmbeddedId
+  private OrderNo number;
+
+  @Column(name = "state")
+  @Enumerated(EnumType.STRING)
+  private OrderState state;
+
+  ...
+}
+```
 
 ### AttributeConverter를 이용한 밸류 매핑 처리
 
