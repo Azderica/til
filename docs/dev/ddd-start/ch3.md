@@ -226,3 +226,40 @@ public class JpaProductRepository implements ProductRepository {
 <br/>
 
 ## 애그리거트를 팩토리로 사용하기
+
+- 온라인 쇼핑몰에 특정 상품이 차단된 상태인 경우를 구현한 서비스는 다음과 같습니다.
+
+```java
+public class RegisterProductService {
+  public ProductId registerNewProduct(NewProductRequest req) {
+    Store account = accountRepository.findStoreById(req.getStoredId());
+    checkNull(account);
+    if(account.isBlocked()) { throw new StoreBlockedException(); }
+    ...
+  }
+}
+```
+
+- 이코드는 나빠보이지 않을 수도 있지만 도메인 로직 처리가 응용 서비스에 노출된 경우입니다.
+- 이를 좀 더 잘표현하는 것은 Store 애그리거트입니다.
+
+```java
+public class Store extends Member {
+  public Product createProduct(ProductId newProductId, ...생략) {
+    if(account.isBlocked()) { throw new StoreBlockedException(); }
+    return new Product(newProductId, getId(), ... 생략);
+  }
+}
+```
+
+```java
+public class RegisterProductService {
+  public ProductId registerNewProduct(NewProductRequest req) {
+    Store account = accountRepository.findStoreById(req.getStoredId());
+    checkNull(account);
+    ...
+  }
+}
+```
+
+- 애그리거트가 갖고 있는 데이터를 이용해서 다른 애그리거트를 생성해야 한다면 애그리거트에 팩토리 메서드를 구현하는 것을 고려하는 것도 좋은 방법입니다.
