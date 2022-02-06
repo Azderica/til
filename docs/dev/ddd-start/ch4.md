@@ -47,7 +47,90 @@ public interface OrderRepository {
 
 ### 엔티티와 밸류 기본 매핑 구현
 
+애그리거트와 JPA 매핑을 위한 기본 규칙은 다음과 같습니다.
+
+- 애그리거트 루트는 엔티티이므로 @Entity로 매핑 설정합니다.
+- 한 테이블에 엔티티와 밸류 데이터가 같이 있다면,
+  - 밸류는 @Embeddable로 매핑 설정합니다.
+  - 밸류 타입 프로퍼티는 @Embedded로 매핑 설정합니다.
+  
+[그림 4.2]
+
+- 주문 애그리거트의 경우, 루트 엔티티는 Order이고 이에 속한 Orderer와 ShippingInfo는 밸류입니다. 이를 표현하면 다음과 같습니다.
+
+```java
+@Entity
+@Table(name = "purchase_order")
+public class Order {
+  ...
+}
+```
+
+```java
+@Embeddable
+public class Orderer {
+  @Embedded
+  @AttributeOverrides(
+    @AttributeOverride(name = "id", column = @Column(name = "orderer_id"))
+  )
+  private MemberId memberId;
+  
+  @Column(name = "orderer_name")
+  private String name;
+}
+```
+
+```java
+@Embeddable
+public class MemberId implements Serializable {
+  @Column(name = "member_id")
+  private String id;
+  ...
+}
+```
+
+- JPA 2부터 @Embeddable은 중첩을 허용하므로 밸류인 Orderer가 또 다른 밸류인 MemberId를 포함할 수 도 있습니다.
+- 이때는 @AttributeOverride 애노테이션을 사용할 수 있습니다.
+
+```java
+@Embeddable
+public class ShippingInfo {
+  @Embedded
+  @AttributeOverrides ({
+    @AttributeOverride(name = "zipCode", column = @Column(name = "shipping_zipcode"));
+    @AttributeOverride(name = "address1", column = ....)
+    ...
+  })
+  private Address address;
+  
+  @Column(name = "shipping_message")
+  private String message;
+  
+  @Embedded
+  private Receiver receiver;
+}
+```
+
+```java
+@Entity
+public class Order {
+  ...
+  @Embedded
+  private Orderer orderer;
+  
+  @Embedded
+  private ShippingInfo shippingInfo;
+  
+  ...
+}
+```
+
 ### 기본 생성자
+
+- Receiver가 불변 타입이면 생성 시점에 필요한 값을 모두 전달받으므로 값을 변경할 set 메서드가 필요없습니다.
+- 그러나, JPA의 @Entity와 @Embeddable로 클래스를 매핑하려면 기본 생성자를 제공해야 합니다. (기술적 제약)
+
+하이버네이트는 클래스를 상속한 프록시 객체를 이용해서 지연 로딩을 구현합니다 이 경우 프록시 클래스에서 상위 클래스의 기본 생성자를 호출할 수 있어야 하므로 지연 로딩 대상이 되는 @Entity와 @Embeddable의 기본 생성자는 private이 아닌 protected로 지정해야 합니다.
 
 ### 필드 접근 방식 사용
 
