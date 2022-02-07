@@ -13,7 +13,7 @@ sidebar_position: 4
 
 - 인터페이스는 애그리거트와 같이 도메인 영역에 속하고, 리포지터리를 구현한 클래스는 인프라스트럭처 영역에 속합니다.
 
-[그림 4.1]
+![DIP에 따른 리포지터리 구현](https://user-images.githubusercontent.com/42582516/152886207-cad43503-ffec-43be-a2b8-faf4a834b752.png)
 
 ### 리포지터리 기본 기능 구현
 
@@ -54,7 +54,7 @@ public interface OrderRepository {
   - 밸류는 @Embeddable로 매핑 설정합니다.
   - 밸류 타입 프로퍼티는 @Embedded로 매핑 설정합니다.
 
-[그림 4.2]
+![엔티티와 밸류가 한 테이블로 매핑](https://user-images.githubusercontent.com/42582516/152887046-8700a2d6-1b65-4cdb-83b6-5959ead5ffcd.png)
 
 - 주문 애그리거트의 경우, 루트 엔티티는 Order이고 이에 속한 Orderer와 ShippingInfo는 밸류입니다. 이를 표현하면 다음과 같습니다.
 
@@ -173,6 +173,50 @@ public class Order {
 ```
 
 ### AttributeConverter를 이용한 밸류 매핑 처리
+
+- int, long, String, LocalDate와 같은 타입은 DB 테이블의 한 개 칼럼과 매핑됩니다.
+- AttributeConverter는 JPA 2.1에 추가된 인터페이스로 다음과 같이 밸류 타입과 칼럼 데이터 간의 변환 처리를 위한 기능을 정의하고 있습니다.
+
+```java
+package javax.persistence;
+
+public interface AttributeConverter<X,Y> {
+  public Y convertToDatabaseColumn (X attribute);
+  public X convertToEntityAttribute (Y dbData);
+}
+```
+
+```java
+import ...
+
+@Converter(autoApply = true)
+public class MoneyConverter implements AttributeConverter<Money, Integer> {
+
+  @Override
+  public integer convertToDatabaseColumn(Money money) {
+    if(money == null) return null;
+    else return money.getValue();
+  }
+
+  @Override
+  public Money convertToEntityAttribute(Integer value) {
+    if(value == null) return null;
+    else return new Money(value);
+  }
+}
+```
+
+- `@Conveter`의 autoApply 속성이 false인 경우, 프로퍼티 값을 변환할 때 사용할 컨버터를 직접 지정할 수 있습니다.
+
+```java
+public class Order {
+  @Column(name = "total_amounts")
+  @Convert(converter = MoneyConverter.class)
+  private Money totalAmounts;
+
+  ...
+}
+```
 
 ### 밸류 컬렉션: 별도 테이블 매핑
 
