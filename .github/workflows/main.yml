@@ -14,9 +14,9 @@ jobs:
           lfs: true
           token: ${{ secrets.ACCESS_TOKEN }}
       - name: Setup Node
-        uses: actions/setup-node@v2.1.2
+        uses: actions/setup-node@v2
         with:
-          node-version: '12.x'
+          node-version: '14'
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
@@ -26,8 +26,8 @@ jobs:
           git config --global user.email "mh97888@gmail.com"
           git config --global user.name "Azderica"
           # npm ci
-          npm install
-          npm run build
+          yarn install
+          yarn run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
