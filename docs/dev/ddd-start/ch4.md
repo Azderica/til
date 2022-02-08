@@ -220,7 +220,126 @@ public class Order {
 
 ### 밸류 컬렉션: 별도 테이블 매핑
 
+- Order 엔티티는 한 개 이상의 OrderLine을 가질 수 있으면 아래처럼 구성할 수 있습니다.
+
+```java
+public Order {
+
+  private List<OrderLine> orderLines;
+}
+```
+
+- 밸류 컬렉션을 별도 테이블로 매핑할 때는 `@ElementCollection`과 `@CollectionTable` 을 함께 사용합니다.
+
+```java
+import ...
+
+@Entity
+@Table(name = "purchase_order")
+public class Order {
+  ...
+  @ElementCollection
+  @CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_number"))
+  @OrderColumn(name = "line_idx")
+  private List<OrderLine> orderLines;
+
+  ...
+}
+
+@Embeddable
+public class OrderLine {
+  @Embedded
+  private ProductId productId;
+
+  @Column(name = "price")
+  private Money price;
+
+  @Column(name = "quantity")
+  private int quantity;
+
+  @Column(name = "amounts")
+  private Money amounts;
+
+  ...
+}
+```
+
+- `@CollectionTable`은 밸류를 저장할 테이블을 지정할 때 사용합니다.
+
+### 뺄류 컬렉션: 한 개 칼럼 매핑
+
+- 밸류 컬렉션을 별도 테이블이 아닌 한 개 칼럼에 저장해야 할 때가 있습니다.
+- AttributeConverter를 사용하면 배률 컬렉션을 한 개 칼럼에 쉽게 매핑할 수 있습니다.
+
+### 밸류를 이용한 아이디 매핑
+
+- 식별자는 최종적으로 문자열이나 숫자와 같은 기본 타입이기 때문에 String이나 Long 타입을 이용해서 식별자를 매칭합니다.
+
+```java
+public class Article {
+  @Id
+  private Long id;
+  ...
+}
+```
+
+- 밸류 타입을 식별자로 매핑하면 `@Id` 대신 `@EmbeddedId` 애노테이션을 사용합니다.
+
+```java
+@Entity
+@Table(name = "purchase_order")
+public class Order {
+  @EmbeddedId
+  private OrderNo number;
+  ...
+}
+
+@Embeddable
+public class OrderNo implements Serializable {
+  @Column(name="order_number")
+  private String number;
+  ...
+}
+```
+
+- 밸류 타입으로 식별자를 구현할 때 얻을 수 있는 장점은 식별자에 기능을 추가할 수 있습니다.
+
 ### 별도 테이블에 저장하는 밸류 매핑
+
+- 애그리거트에서 루트 엔티티를 뺀 나머지 구성요소는 대부분 밸류입니다.
+- 밸류가 아니라 엔티티가 확실하다면 다른 애그리거트는 아닌지 확인해야 합니다.
+- 애그리거트에 속한 객체가 밸류인지 엔티티인지 구분하는 방법은 고유 식별자를 갖는지 여부를 확인하는 것 입니다.
+
+```java
+import ...
+
+@Entity
+@Table(name = "article")
+@SecondaryTable(
+  name = "article_content",
+  pkJoinColumns = @PrimaryKeyJoinColumn(name = "id")
+)
+public class Article {
+  @Id
+  private Long id;
+  private String title;
+  ...
+  @AttributeOverrides({
+    @AttributeOverride(name = "content", column = @Column(table = "article_content")),
+    @AttributeOverride(name = "contentType", column = @Column(table = "article_content"))
+  })
+  private ArticleContent content;
+}
+```
+
+- `@SecondaryTable` 을 통해 테이블을 조인해서 조회할 수 있습니다.
+
+```java
+// @SecondaryTable로 매핑된 article_content 테이블을 조인
+Article article = entityManager.find(Article.class, 1L);
+```
+
+- 이 문제를 해소하고자 ArticleContent를 엔티티로 매핑하고 Article에서 ArticleContent로의 로딩을 지연 로딩 방식으로 설정할 수도 있습니다.
 
 ### 밸류 컬렉션을 @Entity로 매핑하기
 
@@ -237,3 +356,7 @@ public class Order {
 <br/>
 
 ## 식별자 생성 기능
+
+```
+
+```
