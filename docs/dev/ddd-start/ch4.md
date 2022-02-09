@@ -343,7 +343,29 @@ Article article = entityManager.find(Article.class, 1L);
 
 ### 밸류 컬렉션을 @Entity로 매핑하기
 
+- 개념적으로 밸류이나 구현 기술의 한계나 팀 표준 때문에 @Entity를 사용할 경우가 있습니다.
+- JPA는 @Embeddable 타입의 클래스 상속 매핑을 지원하지 않습니다.
+- 코드 유지보수와 성능의 두 가지 측면을 고려해서 구현 방식을 선택해야 합니다.
+
 ### ID 참조와 조인 테이블을 이용한 단방향 M-N 매핑
+
+- 애그리거트 간 집합 연관은 성능상의 이유로 피해야 하나, 요구사항을 구현하는데 유리하다면 ID 참조를 이용한 단방향 집합 연관 적용이 가능합니다.
+
+```java
+@Entity
+@Table(name = "product")
+public class Product {
+  @EmbeddedId
+  private ProductId id;
+
+  @ElementCollection
+  @CollectionTable(name = "product_category" joinColumns = @JoinColumn(name = "product_id"))
+  private Set<CategoryId> categoryIds;
+}
+```
+
+- 위 코드는 Product에서 Category로의 단방향 M:N 연관을 ID 참조 방식으로 구현한 것입니다.
+- 애그리거트를 직접 참조하는 방식을 사용하면 영속성 전파나 로딩 전략을 고민해야 하지만 ID 탐조 방식은 이를 고민할 필요가 없습니다.
 
 <br/>
 
