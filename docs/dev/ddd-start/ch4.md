@@ -371,6 +371,62 @@ public class Product {
 
 ## 애그리거트 로딩 전략
 
+- JPA 매핑을 설정할 때 기억해야 할 점은 애그리거트에 속한 객체가 모두 모여야 완전한 하나가 된다는 것입니다.
+
+```java
+Product product = productRepository.findById(id);
+```
+
+- 조회 시점에서 애그리거트를 완전한 상태가 되도록 하려면 애그리거트 루트에서 연관 매핑의 조회 방식을 즉시 로딩(FetchType.EAGER)으로 설정하면 됩니다.
+
+```java
+// @Entity 컬렉션에 대한 즉시 로딩 설정
+@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.EAGER)
+@JoinColumn(name = "product_id")
+@OrderColumn(name = "list_idx")
+private List<Image> images = new ArrayList<>();
+
+// @Embeddable 컬렉션에 대한 즉시 로딩 설정
+@ElementCollection(fetch = FetchType.EAGER)
+@CollectionTable(name = "order_line", joinColumns = @JoinColumn(name = "order_number"))
+@OrderColumn(name = "line_idx")
+private List<OrderLine> orderLines;
+```
+
+- 즉시 로딩 방식으로 설정하면 애그리거트 루트를 로딩하는 시점에 애그리거트에 속한 모든 객체를 함께 로딩할 수 있는 장점이 있습니다.
+- 그러나 컬렉션에 대한 로딩 전략을 EAGER로 설정하면 문제가 될 수 있습니다. (중복 등의 이슈)
+- 애그리거트는 개념적으로 하나여야 합니다. 하지만 루트 엔티티를 로딩하는 시점에 애그리거트에 속한 객체를 모두 로딩해야 하는 것은 아닙니다.
+- 애그리거트가 완전해야하는 이유는 크게 두가지 입니다.
+  - 상태를 변경하는 기능을 실행할 때 애그리거트 상태가 완전해야 함
+  - 표현 영역에서 애그리거트의 상태 정보를 보여줄 때 필요합니다.
+- 상태 변화는 필요한 구성요소만 로딩해도 문제가 되지 않습니다.
+
+```java
+@Transactional
+public void removeOptions(ProductId id, int optIdxToBeDeleted) {
+  Product product = productRepository.findById(id);
+  product.removeOption(optIdxToBeDeleted);
+}
+```
+
+```java
+@Entity
+public class Product {
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "production_option", joinColumns = @JoinColumn(name = "product_id"))
+  @OrderColumn(name = "list_idx")
+  private List<Option> options = new ArrayList<>();
+
+  public void removeOption(int optIdx) {
+    this.options.remove(optIdx);
+  }
+}
+```
+
+- 일반적인 애플리케이션은 상태 변경보다는 조회 기능 실행 빈도가 높으므로, 추가 쿼리로 인한 실행 속도 저하는 문제가 되지 않습니다.
+- 애그리거트 내의 모든 연관을 즉시 로딩으로 설정할 필요는 없습니다.
+- 따라서, **애그리거트에 맞게 즉시 로딩과 지연 로딩을 선택해야 합니다.**
+
 <br />
 
 ## 애그리거트의 영속성 전파
