@@ -431,9 +431,27 @@ public class Product {
 
 ## 애그리거트의 영속성 전파
 
+애그리거트가 완전한 상태여야 한다는 것은 애그리거트 루트를 조회할 때뿐만 아니라 저장하고 삭제할 때도 하나로 처리해야 함을 의미합니다.
+
+- 저장 메서드는 애그리거트 루트만 저장하면 안 되고 애그리거트에 속한 모든 객체를 저장해야 합니다.
+- 삭제 메서드는 애그리거트 루트뿐만 아니라 애그리거트에 속한 모든 객체를 삭제해야 합니다.
+
+```java
+@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+@JoinColumn(name = "product_id")
+@OrderColumn(name = "list_idx")
+private List<Image> images = new ArrayList<>();
+```
+
 <br/>
 
 ## 식별자 생성 기능
+
+식별자는 크게 세 가지 방식 중 하나로 생성합니다.
+
+- 사용자가 직접 생성
+- 도메인 로직으로 생성
+- DB를 이용한 일련번호 사용
 
 ```
 
