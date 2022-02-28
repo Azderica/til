@@ -25,9 +25,50 @@ sidebar_position: 5
 
 ### JPA 스펙 구현
 
+- 응용 서비스는 원하는 스펙을 생성하고 리포지터리에 전달해서 필요한 애그리거트를 검색하면 됩니다.
+
+```java
+Specification<Order> ordererSpec = new OrdererSpec("madvirus");
+List<Order> orders = orderRepository.findAll(ordererSpec)
+```
+
+- 스펙 생성이 필요한 코드는 스펙 생성 기능을 제공하는 클래스를이용해서 조금 더 간결하게 스펙을 생성할 수 있습니다.
+
+```java
+Specification<Order> betweenSpec = orderSpecs.between(fromTime, toTime);
+```
+
 ### AND/OR 스펙 조합을 위한 구현
 
+- AND를 위한 JPA 스펙
+
+```java
+...
+Predicate[] predicates = specs.stream()
+        .map(spec -> spec.toPredicate(root, cb))
+        .toArray(size -> new Predicate[size]);
+return cb.and(predicates);
+...
+```
+
+- OR을 위한 JPA 스펙
+
+```java
+Predicate[] predicates = specs.stream()
+        .map(spec -> spec.toPredicate(root, cb))
+        .toArray(Predicate[]::new);
+return cb.or(predicates);
+```
+
 ### 스펙을 사용하는 JPA 리포지터리 구현
+
+- 스펙을 사용한 리포지터리 구현은 스펙을 사용하는 메서드를 제공합니다.
+
+> 리포지터리 구현 기술 의존
+
+- 도메인 모델은 구현 기술에 의존하지 않아야합니다.
+  - 다만, 완전 중립적인 형태로 할 노력까지는 없습니다.
+- 스펙 구현을 추상화하기 위해 많은 노력을 기울이는 것에 비해 실제 얻는 이점은 크지 않습니다.
 
 <br/>
 
