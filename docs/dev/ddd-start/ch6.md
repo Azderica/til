@@ -21,6 +21,31 @@ sidebar_position: 6
 
 ## 응용 서비스의 역할
 
+- 응용 서비스는 사용자가 요청한 기능을 실행합니다.
+  - 응용 서비스는 사용자의 요청을 처리하기 위해 리포지터리로부터 도메인 객체를 구하고, 도메인 객체를 사용합니다.
+- 응용 서비스의 주요 역할은 도메인 객체를 사용해서 사용자의 요청을 처리하는 것이므로 사용자 영역 입장에서 보았을 때 파사드(facade) 역할을 합니다.
+- 응용 서비스는 주로 도메인 객체 간의 흐름을 제어하기 때문에 다음과 같이 단순한 형태를 갖습니다.
+
+```java
+public Result doSomeFunc(SomeReq req) {
+  SomeAgg agg = someAggRepository.findById(req.getId());
+  checkNull(agg);
+  agg.doFunc(req.getValue());
+  return createSuccessResult(agg);
+}
+```
+
+```java
+public Result domSomeCreation(CreateSomeReq req) {
+  checkValid(req);
+  SomeAgg newAgg = createSome(req);
+  someAggRepository.sav(newAgg);
+  return createSuccessResult(newAgg);
+}
+```
+
+- 응용 서비스의 주된 역할은 **도메인 객체 간의 실행 흐름을 제어하는 것과 트랜잭션 처리**입니다.
+
 ### 도메인 로직 넣지 않기
 
 <br/>
