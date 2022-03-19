@@ -89,6 +89,26 @@ public class OrderController {
 
 ## 오프라인 선점 잠금
 
+- Jira로 유명한 아틀라시안의 컨플루언스 위키는 사전에 충돌 여부를 알려주시만 수정을 막지는 않습니다.
+- 단일 트랜잭션에서 동시 변경을 막는 선점 잠금 방식과 달리 오프라인 선점 잠금은 여러 트랜잭션에 걸쳐 동시 변경을 막습니다.
+
 ### 오프라인 선점 잠금을 위한 LockManager 인터페이스와 관련 클래스
 
+- 오프라인 선점 잠금은 크게 잠금 선점 시도, 잠금 확인, 잠금 해제, 락 유효 시간 연장의 네가지 기능을 제공합니다.
+
+```java
+public interface LockManager {
+  LockId tryLock(String type, String id) throws LockException;  // 잠금 선점 시도
+  void checkLock(LockId lockId) throws LockException;   // 잠금 확인
+  void releaseLock(LockId lockId) throws LockException;   // 잠금 해제
+  void extendLockExpiration(LockId lockId, long inc) throws LockException;  // 락 유효 시간 연장
+}
+```
+
+- 잠금이 유효한지 검사는 다음을 체크합니다.
+  - 잠금의 유효 시간이 지났으면 이마 다른 사용자가 잠금을 선점합니다.
+  - 잠금을 선점하지 않은 사용자가 기능을 실행했다면 기능 실행을 막아야합니다.
+
 ### DB를 이용한 LockManager 구현
+
+- 코드 생략. (책 참고)
