@@ -49,11 +49,98 @@ fun main(args: Array<String>) {
 
 ## 2.2 클래스와 프로퍼티
 
+```java
+// java
+public class Person {
+  private final String name;
+
+  public Person(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
+  }
+}
+```
+
+```kotlin
+// kotlin
+class Person(val name: String)
+```
+
+- 위의 유형처럼 데이버만 저장하는 클래스를 값 객체(value object)라 부르며 다양한 언어가 값 객체를 간결하게 기술할 수 있는 구문을 제공합니다.
+
 ### 2.2.1 프로퍼티
+
+- 클래스의 목적은 데이터를 캡슐화하는 것입니다.
+- 클래스는 데이터를 private field에 저장하며 데이터에 접근하는 통로로 쓸 수 있는 접근자 메서드(access method)를 제공합니다.
+  - 대표적인 예시로 getter와 setter를 추가 제공합니다.
+- 자바에서는 필드와 접근자를 묶어 **프로퍼티(property)** 라고 부릅니다.
+
+```kotlin
+class Person {
+  val name: String,       // 읽기 전용 프로퍼티 - private field + public getter
+  var isMarried: Boolean  // 쓸 수 있는 프로퍼티 - private field + public getter + public setter
+}
+```
+
+- 자바 클래스에서 Person 클래스 사용
+
+```java
+Person person = new Person("Bob", true);
+```
+
+- 코틀린에서 Person 클래스 사용
+
+```kotlin
+val person = Person("Bob", true);
+```
+
+- 대부분의 프로퍼티에는 그 값을 뒷받침하는 backing field가 있습니다. (커스텀 게터)
 
 ### 2.2.2 커스텀 접근자
 
+```kt
+class Rectangle(val height: Int, val width Int) {
+  val isSquare: Boolean
+    get() { // property getter 선언
+      return height == width
+    }
+}
+
+```
+
 ### 2.2.3 코틀린 소스코드 구조: 디렉토리와 패키지
+
+- 코틀린도 자바처럼 패키지의 개념이 있습니다.
+- 모든 파일의 맨앞에 package 문을 넣을 수 있습니다.
+
+```kt
+package geometry.shapes
+
+import java.util.Random
+
+class Rectangle(val height: Int, val width: Int) {
+  val isSquare: Boolean
+    get() = height == width
+}
+
+fun createRandomRectangle(): Rectangle {
+  val random = Random()
+  return Rectangle(random.nextInt(), random.nextInt())
+}
+```
+
+```kt
+package geometry.shapes
+
+import geometry.shapes.createRandomRectangle
+
+fun main(args: Array<String>) {
+  println(createRandomRectangle().isSquare)
+}
+```
 
 <br/>
 
