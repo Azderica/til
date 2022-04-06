@@ -148,11 +148,83 @@ fun main(args: Array<String>) {
 
 ### 2.3.1 enum 클래스 정의
 
+- 간단한 enum 클래스
+
+```kt
+enum class Color {
+  RED, ORANGE, YELLOW
+}
+```
+
+- 프로퍼티와 메서드가 있는 enum 클래스
+
+```kt
+enum class Color (
+  val r: Int, val g: Int, val b: Int
+) {
+  RED(255, 0, 0), ORANGE(255, 165, 0),
+  YELLOW(255, 255, 0), GREEN(0, 255, 0);
+
+  fun rgb() = (r * 256 + g) * 256 + b
+}
+
+>>> println(Color.BLUE.rgb())
+```
+
+- enum에서도 일반적인 클래스와 마찬가지로 생성자와 프로퍼티를 선언합니다.
+
 ### 2.3.2 when으로 enum 클래스 다루기
+
+```kt
+fun getMnemonic(color: Color) =
+  when (color) {
+    Color.RED -> "Richard"
+    Color.ORANGE -> "Of"
+    Color.YELLOW -> "Yellow"
+    Color.GREEN -> "Gave"
+    Color.BLUE -> "Battle"
+  }
+```
+
+```kt
+fun getWarmth(color: Color) = when(color) {
+  RED, ORANGE, YELLOW -> "warm"
+  GREEN -> "neutral"
+  BLUE, INDIGO, VIOLET -> "cold"
+}
+```
 
 ### 2.3.3 when과 임의의 객체를 함께 사용
 
+- wen은 자바의 switch 보다 더 강력합니다.
+
+```kt
+fun mix(c1: Color, c2: Color) =
+  when (setOf(c1, c2)) {
+    setOf(RED, YELLOW) -> ORANGE
+    setOf(YELLOW, BLUE) -> GREEN
+    setOf(BLUE, VIOLET) -> INDIGO
+    else -> throw Exception("Dirty color")
+  }
+
+>> println(mix(BLUE, YELLOW))
+```
+
 ### 2.3.4 인자 없는 when 사용
+
+- 코드가 읽기 어려워지지 않고 성능을 향상시키는 경우가 있습니다.
+
+```kt
+fun mixOptimized(c1: Color, c2: Color) =
+  when {
+    (c1 == RED && c2 == YELLOW) || (c1 == YELLOW && c2 == RED) -> ORANGE
+    (c1 == YELLOW && c2 == BLUE) || (c1 == BLUE && c2 == YELLOW) -> GREEN
+    (c1 == BLUE && c2 == VIOLET) || (c1 == VIOLET && c2 == BLUE) -> INDIGO
+    else -> throw Exception("Dirty color")
+  }
+
+>>> println(mixOptimized(BLUE, YELLOW))
+```
 
 ### 2.3.5 스마트 캐스트: 타입 검사와 타입 캐스트를 조합
 
