@@ -212,7 +212,7 @@ fun mix(c1: Color, c2: Color) =
 
 ### 2.3.4 인자 없는 when 사용
 
-- 코드가 읽기 어려워지지 않고 성능을 향상시키는 경우가 있습니다.
+- 코드가 읽기 어려워지지만 성능을 향상시키는 경우가 있습니다.
 
 ```kt
 fun mixOptimized(c1: Color, c2: Color) =
@@ -228,9 +228,84 @@ fun mixOptimized(c1: Color, c2: Color) =
 
 ### 2.3.5 스마트 캐스트: 타입 검사와 타입 캐스트를 조합
 
+- 식을 표현할 때는 다음과 같이 할 수 있습니다.
+
+```kt
+interface Expr
+class Num(val value: Int) : Expr
+class Sum(val left: Expr, val right: Expr) : Expr
+```
+
+- Expr 인터페이스는 두가지 구현 클래스가 존재합니다.
+  - 어떤 식이 수라면 그 값을 반환합니다.
+  - 어떤 식이 합계라면 좌항과 우항의 값을 계산한 다음에 그 두 값을 합한 값을 반환합니다.
+
+```kt
+fun eval(e: Expr): Int {
+  if(e is Num) {
+    val n = e as Num
+    return n.value
+  }
+  if(e is Sum) {
+    return eval(e.right) + eval(e.left)
+  }
+  throw IllegalArgumentException("Unknown expression")
+}
+```
+
+- kotlin에서는 is를 사용해 변수 타입을 검사합니다.
+- 명시적인 타입 캐스팅하려면 as 키워드를 사용합니다.
+  - `val n = e as Num`
+
 ### 2.3.6 리팩토링: if를 when으로 변경
 
+- 코틀린은 자바와 달리 3항 연산자가 없습니다.
+
+```kt
+fun eval(e: Expr): Int =
+  if(e is Num) {
+    e.value
+  } else if(e is Sum) {
+    eval(e.right) + eval(e.left)
+  } else {
+    throw IllegalArgumentException("Unknown expression")
+  }
+
+>>> printLn(eval(Sum(Num(1), Num(2))))
+```
+
+```kt
+fun eval(e: Expr): Int =
+  when (e) {
+    is Num ->
+      e.value
+    is Sum ->
+      eval(e.right) + eval(e.left)
+    else ->
+      throw IllegalArgumentException("Unknown expression")
+  }
+```
+
 ### 2.3.7 if와 when의 분기에서 블록 사용
+
+- 복잡한 경우, 다음의 블록을 사용할 수 있습니다.
+
+```kt
+fun evalWithLogging(e: Expr): Int =
+  when (e) {
+    is Num -> {
+      println("num: ${value}")
+      e.value
+    }
+    is Sum -> {
+      val left = evalWithLogging(e.left)
+      val right = evalWithLogging(e.right)
+      println("sum: $left + $right")
+      left + right
+    }
+    else -> throw IllegalArgumentException("Unknown expression")
+  }
+```
 
 <br/>
 
