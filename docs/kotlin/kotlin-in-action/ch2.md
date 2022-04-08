@@ -313,11 +313,48 @@ fun evalWithLogging(e: Expr): Int =
 
 ### 2.4.1 while 루프
 
+- 코틀린은 while과 do-while 루프가 있으며 문법은 큰 차이가 없습니다.
+
 ### 2.4.2 수에 대한 이터레이션: 범위와 수열
+
+- for 문 예시
+
+```kt
+for(i in 1..100) {
+  print(...)
+}
+```
+
+- 증가 값을 갖고 범위 이터레이션
+
+```kt
+for(i in 100 downTo 1 step 2) {
+  ...
+}
+```
 
 ### 2.4.3 맵에 대한 이터레이션
 
+ㅡ map은 다음과 같이 합니다.
+
+```kt
+val list = arrayListOf("10", "11", "1001")
+for ((index, element) in list.withIndex()) {
+ print("$index: $element")
+}
+```
+
 ### 2.4.4 in으로 컬렉션이나 범위의 원소 검사
+
+- in 연산자를 사용해 어떤 값이 범위에 속하는지 여부를 알 수 있습니다.
+
+```kt
+fun recognize(c: Char) = when(c) {
+  in '0'..'9' -> "It's a digit!"
+  in 'a'..'z', in 'A'..'Z' > "It's a letter!"
+  else -> "I don't know"
+}
+```
 
 <br/>
 
