@@ -360,10 +360,57 @@ fun recognize(c: Char) = when(c) {
 
 ## 2.5 코틀린의 예외 처리
 
+- 코틀린의 예외처리는 다른 언어의 예외 처리와 비슷합니다.
+
+```kt
+if(percentage !in 0..100) {
+  throw IllegalArgumentException {
+    "Error"
+  }
+}
+```
+
 ### 2.5.1 try, catch, finally
 
+- try, catch, finally를 함께 사용해 사용할 수도 있습니다.
+
+```kt
+fun readNumber(reader: BufferedReader): Int? {
+  try {
+    val line = reader.readLine()
+    return Integer.parseInt(line)
+  }
+  catch(e: NumberFormatException) {
+    return null
+  }
+  finally{
+    reader.close()
+  }
+}
+```
+
 ### 2.5.2 try를 식으로 사용
+
+```kt
+fun readNumber(reader: BufferedReader) {
+  val number = try {
+    Integer.parseInt(reader.readLine())
+  } catch(e: NumberFormatException) {
+    return
+  }
+}
+```
 
 <br/>
 
 ## 2.6 요약
+
+- 함수를 정의할 때 fun 키워드 사용, val과 var은 각각 읽기 전용 변수와 변경 가능한 변수를 선언할 때 씁니다.
+- 문자열 탬플릿을 통해 코드를 간결하게 쓸 수 있습니다. (`${}`)
+- 코틀린에서는 값 객체 클래스를 아주 간결하게 표현할 수 있습니다.
+- 다른 언어에도 있는 if는 코틀린에서 식이며 값을 만들어냅니다.
+- 코틀린의 when은 switch 와 비슷하지만 더 강력합니다.
+- 어떤 변수의 타입을 검사하고 나면 굳이 그 변수를 캐스팅하지 않아도 검사한 타입의 변수처럼 사용할 수 있습니다.
+- 코틀린의 for은 자바의 for보다 편합니다.
+- 1..5와 같은 식은 범위를 만듭니다.
+- 코틀린의 예외 처리는 자바와 비슷하나 함수가 던질 수 있는 예외를 선언하지 않습니다.
