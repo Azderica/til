@@ -6,6 +6,23 @@ sidebar_position: 3
 
 ## 3.1 코틀린에서 컬렉션 만들기
 
+```kt
+val set = hashSetOf(1, 7, 53)
+val list = arrayListOf(1, 7, 53)
+val map = hashMapOf(1 to "one", 7 to "seven", 53 to "fifty-three")
+```
+
+- to는 특별한 키워드가 아닌 일반 함수입니다.
+
+```kt
+>>> println(set.javaClass)    // class java.util.HashSet
+>>> println(list.javaClass)   // class java.util.ArrayList
+>>> println(map.javaClass)    // class java.util.HashMap
+```
+
+- 위의 예시를 보면 코틀린이 자신만의 컬렉션 기능을 제공하지 않음을 알 수 있습니다.
+- 즉, 자바 코드와 상호작용하기가 훨씬 더 편합니다.
+
 <br/>
 
 ## 3.2 함수를 호출하기 쉽게 만들기
