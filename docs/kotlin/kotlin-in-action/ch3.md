@@ -27,11 +27,86 @@ val map = hashMapOf(1 to "one", 7 to "seven", 53 to "fifty-three")
 
 ## 3.2 함수를 호출하기 쉽게 만들기
 
+- 다음과 같이 직접 코드를 구현할 수 있습니다.
+
+```kt
+fun <T> joinToString(
+  collection: Collection<T>,
+  separator: String,
+  prefix: String,
+  postfix: String
+): String {
+  val result = StringBuilder(prefix)
+  for((index, element) in collection.withIndex()) {
+    if(index > 0) result.append(separator)
+    result.append(element)
+  }
+  result.append(postfix)
+  return result.toString()
+}
+```
+
+```kt
+val list = listOf(1, 2, 3)
+println(joinToString(list, ";", "(", ")"))
+```
+
 ### 3.2.1 이름 붙인 인자
+
+- 위의 예시는 파라미터가 어떤 역할을 하는지 몰랐기 때문에 아래의 예시처럼 할 수 있습니다.
+
+```kt
+joinToString(collection, separator = " ", prefix = ",", postfix = ".")
+```
 
 ### 3.2.2 디폴트 파라미터 값
 
+- 코틀린에서 디폴트 파라미터를 쓸수도 있습니다.
+
+```kt
+fun <T> joinToString(
+  collection: Collection<T>,
+  separator: String = ", ",
+  prefix: String = "",
+  postfix: String = ""
+): String
+```
+
 ### 3.2.3 정적인 유틸리티 클래스 없애기: 최상위 함수와 프로퍼티
+
+- 코틀린에서는 무의미한 클래스가 필요없습니다.
+
+```kt
+// kotlin
+package strings
+
+fun joinToString(...): String {...}
+```
+
+```java
+// java
+package strings
+
+public class JoinKt {
+  public static String joinToString(...) {...}
+}
+```
+
+#### 최상위 프로퍼티
+
+- 함수와 마찬가지로 프로퍼티도 파일의 최상위 수준에 놓일 수 있습니다.
+
+```kt
+var opCount = 0
+fun performOperation() {
+  opCount++
+  // ...
+}
+
+fun reportOperationCount() {
+  println("Operation performed $opCount times")
+}
+```
 
 <br/>
 
