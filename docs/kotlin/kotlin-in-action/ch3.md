@@ -236,11 +236,54 @@ var StringBuilder.lastChar: Char
 
 ## 3.4 컬렉션 처리: 가변 길이 인자, 중위 함수 호출, 라이브러리 지원
 
+- varang 키워드를 사용하면 호출 시 인자 개수가 달라질 수 있는 함수를 정의할 수 있습니다.
+- 중의 함수 호출 구문을 사용하면 인자가 하나뿐인 메서드를 간편하게 호출할 수 있습니다.
+- 구조 분해 선언을 통해 복합적인 값을 분해해서 여러 변수에 나눠 담을 수 있습니다.
+
 ### 3.4.1 자바 컬렉션 API 확장
+
+- 대표적인 예시로 last와 max는 모두 확장 함수 입니다.
+
+```kt
+fun <T> List<T>.last(): T { /* 마지막 원소를 반환함 */}
+fun Collection<Int>.max(): Int { /* 컬렉션의 최댓값을 찾음 */ }
+```
 
 ### 3.4.2 가변 인자 함수: 인자의 개수가 달라질 수 없는 함수 정의
 
+- 리스트 생성함수가 대표적인 예시입니다.
+
+```kt
+val list = listOf(2, 3, 5, 7, 11)
+```
+
+```kt
+fun listOf<T>(varang values: T): List<T> {...}
+```
+
+- 자바의 가변 인지와 비슷합니다.
+
 ### 3.4.3 값의 쌍 다루기: 중위 호출과 구조 분해 선언
+
+```kt
+val map = mapOf(1 to "one", 7 to "seven", 53 to "fifty-three")
+```
+
+- 위 코드는 중위 호출(infix call)이라는 방식으로 to라는 일반 메서드를 호출합니다.
+
+```kt
+infix fun Any.to(other: Any) = Pair(this, other)
+```
+
+```kt
+val (number, name) = 1 to "one
+```
+
+- 위 기능을 구조 분해 선언(destructuring declaration) 이라고 부릅니다.
+
+```kt
+fun <K, V> mapOf(varang values: pair<K, V>): Map<K, V>
+```
 
 <br/>
 
