@@ -289,11 +289,68 @@ fun <K, V> mapOf(varang values: pair<K, V>): Map<K, V>
 
 ## 3.5 문자열과 정규식 다루기
 
+- 코틀린은 다양한 확장 함수를 제공합니다.
+
 ### 3.5.1 문자열 나누기
+
+- 자바와 코틀린 모두 정규식 문법은 똑같으며, String 타입이 아닌 Regex 타입의 값을 받습니다.
+
+```kt
+// 마침표나 대시로 문자열을 분리하는 예시
+println("12.345-6.A".split("\\.|-".toRegex()))
+// [12, 345, 6, A]
+```
+
+- 다만 코틀린에서는 toRegex를 통해서 문자열을 정규식으로 변환할 수 있습니다.
+
+```kt
+println("12.345-6.A".split(".", ","))
+// [12, 345, 6, A]
+```
 
 ### 3.5.2 정규식과 3중 따옴표로 묶은 문자열
 
+```kt
+"/Users/yole/kotlin-book/chapter.adoc"
+// Users/yole/kotlin-book : 디렉토리
+// / : 마지막 슬래쉬
+// chapter : 파일 이름
+// . : 마지막 마침표
+// adoc : 확장표
+```
+
+- 위의 경우처럼 나누는 경우는 다음처럼 할 수 있습니다.
+
+```kt
+fun parsePath(path: String) {
+  val directory = path.substringBeforeLast("/")
+  val fullName = path.substringAfterLast("/")
+  val fileName = fullName.substringBeforeLast(".")
+  val extension = fullName.substringAfterLast(".")
+  println("Dir: $directory, name: $fileName, ext: $extension")
+}
+
+>>> parsePath("/Users/yole/kotlin-book/chapter.adoc")
+// Dir: Users/yole/kotlin-book, name: chapter, ext: adoc
+```
+
+- 이를 정규식을 통하면 더 편리하게 구성할 수 있습니다.
+
+```kt
+fun parsePath(path: String) {
+  val regex = """(.+)/(.+)\.(.+)""".toRegex()
+  val matchResult = regex.matchEntire(path)
+  if(matchResult != null) {
+    val (directory, filename, extension) = matchResult.destructured
+    println("Dir: $directory, name: $fileName, ext: $extension")
+  }
+}
+```
+
 ### 3.5.3 여러 줄 3중 따옴표 문자열
+
+- 3중 따옴표 문자열은 문자열 이스케이프를 피하기 위해서만 사용하지 않습니다.
+- 3중 따옴표 문자열은 줄 바꿈을 표현하는 아무 문자열이 그대로 들어갑니다.
 
 <br/>
 
