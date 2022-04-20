@@ -356,6 +356,41 @@ fun parsePath(path: String) {
 
 ## 3.6 코드 다듬기: 로컬 함수와 확장
 
+- 좋은 코드의 중요한 특징 중 하나는 DRY 원칙입니다.
+- 코틀린은 함수에서 추출한 함수를 원 함수 내부에 추출한 함수를 원 함수 내부에 중첩시킬 수 있습니다.
+
+```kt
+// 코드 중복
+class User(val id: Int, val name: String, val address: String)
+
+fun saveUser(user: User) {
+  if(user.name.isEmpty()) {     // 필드 검증의 중복
+    throw IllegalArgumentException(
+      "Can't save user ${user.id}: empty Name")
+  }
+  if(user.address.isEmpty()) {
+    throw IllegalArgumentException(
+      "Can't save user ${user.id}: empty Address")
+  }
+}
+```
+
+```kt
+// 중복 코드 제거 및 불필요 파라미터 제거
+class User(val id: Int, val name: String, val address: String)
+
+fun saveUser(user: User) {
+  fun validate(value: String, fieldName: String) {
+    if(value.isEmpty()) {
+      throw IllegalArgumentException(
+      "Can't save user ${user.id}: empty $fieldName")
+    }
+  }
+  validate(user.name, "Name")
+  validate(user.address, "Address")
+}
+```
+
 <br/>
 
 ## 3.7 요약
