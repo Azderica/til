@@ -6,7 +6,54 @@ sidebar_position: 4
 
 ## 4.1 클래스 계층 정의
 
+- 코틀린 가시성/접근 변경자는 자바와 비슷하지만 아무것도 지정하지 않은 경우 기본 가시성은 다릅니다.
+- `sealed`은 클래스 상속을 제한합니다.
+
 ### 4.1.1 코틀린 인터페이스
+
+- 다음과 같은 예시가 있습니다.
+
+```kt
+interface Clickable {
+  fun click()
+}
+```
+
+```kt
+class Button: Clickable {
+  override fun click() = println("I was clicked")
+}
+```
+
+- 코틀린에서는 override 변경자를 꼭 사용해야합니다.
+- 디폴트 메서드도 사용할 수 있습니다.
+
+```kt
+interface Clickable {
+  fun click()   // 일반 메서드 선언
+  fun showoff() = println("I'm clickable!") // 디폴트 구현이 있는 메서드
+}
+```
+
+```kt
+interface Focusable {
+  fun showOff() = println("I'm focusable!")
+}
+```
+
+- 코틀린 컴파일러는 두 메서드를 아우르는 구현을 하위 클래스에 직접 구현하게 강제합니다.
+
+```kt
+class Button: Clickable, Focusable {
+  override fun click() = println("I was clicked")
+  override fun shoOff() {
+    super<Clickable>.showOff()
+    super<Focusable>.showOff()
+  }
+}
+```
+
+- 코틀린은 자바 6와 호환되게 설계되었습니다.
 
 ### 4.1.2 open, final, abstract 변경자: 기본적으로 final
 
