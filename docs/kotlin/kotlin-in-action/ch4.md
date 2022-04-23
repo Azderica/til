@@ -57,6 +57,46 @@ class Button: Clickable, Focusable {
 
 ### 4.1.2 open, final, abstract 변경자: 기본적으로 final
 
+- 취약한 기반 클래스(fragile base class)와 같은 문제는 하위 클래스가 기반 클래스에 대해 가졌던 가정이 기반 클래스를 변경함으로 깨져버린 경우에 생깁니다.
+- 코틀린의 클래스와 메서드는 기본적으로 `final`입니다.
+- 상속을 허용하려면 클래스 앞에 `open` 변경자를 붙여야 합니다.
+
+```kt
+open class RichButton: Clickable {
+  fun disable() {}      // 이 함수는 파이널입니다.
+  open fun animate() {} // 하위 클래스에서 이 메서드를 오버라이드해도 됩니다.
+  override fun click() {} // 이 함수는 상위 클래스에서 열려있는 메서드를 오버라이드합니다.
+}
+```
+
+- 오버라이드를 금지하려면 `final`을 명시해야 합니다.
+
+```kt
+open class RichButton: Clickable {
+  final override fun click() {}
+}
+```
+
+- final을 통해 다양한 경우에 스마트 캐스트가 가능합니다.
+- abstract로 선언한 추상 클래스는 인스턴스화할 수 없습니다.
+
+```kt
+abstract class Animated {   // 추상 클래스
+  abstract fun animate()    // 추상 함수
+  open fun stopAnimating() {}
+  fun animateTwice() {}
+}
+```
+
+- 위를 요약하면 다음과 같습니다.
+
+| 변경자     | 오버라이드 관련                                 | 설명                                         |
+| ---------- | ----------------------------------------------- | -------------------------------------------- |
+| `final`    | 오버라이드할 수 없음                            | 클래스 멤버의 기본 변경자                    |
+| `open`     | 오버라이드할 수 있음                            | 반드시 open을 명시해야 오버라이드할 수 있음  |
+| `abstract` | 반드시 오버라이드해야함                         | 추상 클래스의 멤버에만 변경자를 붙일 수 있음 |
+| `override` | 상위 클래스나 상위 인스턴스의 멤버를 오버라이드 | 오버라이드하는 멤버는 기본적으로 열려있음    |
+
 ### 4.1.3 가시성 변경자: 기본적으로 공개
 
 ### 4.1.4 내부 클래스와 중첩된 클래스: 기본적으로 중첩 클래스
