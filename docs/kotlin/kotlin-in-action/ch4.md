@@ -113,6 +113,33 @@ abstract class Animated {   // 추상 클래스
 
 ### 4.1.4 내부 클래스와 중첩된 클래스: 기본적으로 중첩 클래스
 
+- 자바처럼 코틀린에서도 클래스 안에 다른 클래스를 선언할 수 있습니다.
+
+```kt
+class Button : View {
+  override fun getCurrentState() : State = ButtonState()
+  override fun restoreState(state: State) { /*...*/ }
+  class ButtonState : State { /*...*/ }
+}
+```
+
+- 자바와 코틀린의 중첩 클래스와 내부 클래스의 관계입니다.
+
+| 클래스 B 안에 정의된 클래스 A                          | 자바             | 코틀린          |
+| ------------------------------------------------------ | ---------------- | --------------- |
+| 중첩 클래스(바깥쪽 클래스에 대한 참조를 저장하지 않음) | `static class A` | `class A`       |
+| 내부 클래스(바깥쪽 클래스에 대한 참조를 저장함)        | `class A`        | `inner class A` |
+
+- Inner 안에서 바깥쪽 클래스 Outer의 참조에 접근하려면 `this@Outer`라고 써야 합니다.
+
+```kt
+class Outer {
+  inner class Inner {
+    fun getOuterReference(): Outer = this@Outer
+  }
+}
+```
+
 ### 4.1.5 봉인된 클래스: 클래스 계층 정의 시 계층 확장 제한
 
 <br/>
