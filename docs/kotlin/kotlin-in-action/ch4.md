@@ -161,9 +161,45 @@ fun eval(e: Expr): Int =
 
 ## 4.2 뻔하지 않은 생성자와 프로퍼티를 갖는 클래스 선언
 
+- 코틀린은 주(primary) 생성자와 부(secondary) 생성자를 구분합니다.
+
 ### 4.2.1 클래스 초기화: 주 생성자와 초기화 블록
 
+```kt
+class User constructor(_nickname: String) { // 주 생성자
+  val nickname: String
+  init {    // 초기화 블록
+    nickname = _nickname
+  }
+}
+```
+
+- `constructor` 키워드는 주 생성자나 부 생성자 정의를 시작할 때 사용하고, `init` 키워드는 초기화 블록을 시작합니다
+- 초기화 블록은 주 생성자와 함께 사용됩니다.
+- 클래스 정의 시 별도로 생성자를 정의하지 않으면 컴파일러가 자동으로 인자가 없는 디폴트 생성자를 만듭니다.
+- 클래스를 외부에서 인스턴스화하지 못하게 하려면 private으로 만들면 됩니다.
+
 ### 4.2.2 뷰 생성자: 상위 클래스를 다른 방식으로 초기화
+
+> 인자에 대한 디폴트 값을 제공하기 위해 부 생성자를 여러개 만들지 말고 파라미터의 디폴트 값을 생성자 시그니처에 명시해야 합니다.
+
+- 생성자는 여러 필요한 경우가 있습니다.
+
+```kt
+open class View {
+  constructor(ctx: Context) { /* 코드 */ }  // 부 생성자
+  constructor(ctx: Context, attr: AttributeSet) { /* 코드 */ }  // 부 생성자
+}
+```
+
+```kt
+class MyButton: View {
+  constructor(ctx: Context) : super(ctx) { /* 코드 */}
+  constructor(ctx: Context, attr: AttributeSet) : super(ctx, attr) { /* 코드 */}
+}
+```
+
+- 위는 생성자를 위임한 예시입니다.
 
 ### 4.2.3 인터페이스에 선언된 프로퍼티 구현
 
