@@ -203,6 +203,21 @@ class MyButton: View {
 
 ### 4.2.3 인터페이스에 선언된 프로퍼티 구현
 
+- 인터페이스는 아무 상태를 포함할 수 없으므로 상태를 저장할 필요가 있다면 인터페이스를 구현한 하위 클래스에서 상태 저장을 위한 프로퍼티를 만들어야 합니다.
+
+```kt
+class PrivateUser(override val nickname: String) : User // 주 생성자에 있는 프로퍼티
+class SubscribingUser(val email: String) : User {
+  override val nickname: String
+    get() = email.substringBefore('@')  // 커스텀 게터
+}
+class FacebookUser(val accountId: Int) : User {
+  override val nickname = getFacebookName(accountId)  // 프로퍼티 초기화 식
+}
+```
+
+- 인터페이스에 선언된 프로퍼티와 달리 클래스에 구현된 프로퍼티는 뒷받침하는 필드를 원하는 대로 사용할 수 있습니다.
+
 ### 4.2.4 게터와 세터에서 뒷받침하는 필드에 접근
 
 ### 4.2.5 접근자의 가시성 변경
