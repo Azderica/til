@@ -142,6 +142,21 @@ class Outer {
 
 ### 4.1.5 봉인된 클래스: 클래스 계층 정의 시 계층 확장 제한
 
+- 코틀린은 상위 클래스에 sealed 변경자를 통해 상위 클래스를 상속환 하위 클래스 정의를 제한할 수 있습니다.
+
+```kt
+sealed class Expr {
+  class Num(val value: Int) : Expr()
+  class Sum(val left: Expr, val right: Expr) : Expr()
+}
+
+fun eval(e: Expr): Int =
+  when (e) {
+    is Expr.Num -> e.value
+    is Expr.Sum -> eval(e.right) + eval(e.left)
+  }
+```
+
 <br/>
 
 ## 4.2 뻔하지 않은 생성자와 프로퍼티를 갖는 클래스 선언
