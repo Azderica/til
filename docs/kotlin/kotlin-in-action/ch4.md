@@ -237,6 +237,19 @@ class User(val name: String) {
 
 ### 4.2.5 접근자의 가시성 변경
 
+- `get`이나 `set` 앞에 가시성 변경자를 추가해서 접근성의 가시성을 변경할 수 있습니다.
+
+```kt
+// 비공개 세터가 있는 프로퍼티 선언하기
+class LengthCounter {
+  var counter: Int = 0
+    private set
+  fun addWord(word: String) {
+    counter += word.length
+  }
+}
+```
+
 <br/>
 
 ## 4.3 컴파일러가 생성한 메서드: 데이터 클래스와 클래스 위임
