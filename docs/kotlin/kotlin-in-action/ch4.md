@@ -220,6 +220,21 @@ class FacebookUser(val accountId: Int) : User {
 
 ### 4.2.4 게터와 세터에서 뒷받침하는 필드에 접근
 
+- 코틀린에서 프로퍼티의 값을 바꿀 때는 `user.address = "new value"`처럼 필드 설정 구문을 사용합니다.
+
+```kt
+// 새터에서 뒷받침하는 필드 접근
+class User(val name: String) {
+  var address: String = "unspecified"
+    set(value: String) {
+      println("""Address was changed for $name: "$field" -> "$value".""".trimIndent())
+      field = value
+    }
+}
+```
+
+- 변경 가능 프로퍼티의 게터와세터 중 한쪽만 직접 정의해도 됩니다.
+
 ### 4.2.5 접근자의 가시성 변경
 
 <br/>
