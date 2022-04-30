@@ -302,6 +302,41 @@ println(lee.copy(postalCode = 4000))
 
 ### 4.3.3 클래스 위임: by 키워드 사용
 
+- 대규모 객체지향 시스템을 설계할 때 시스템을 취약하게 하는 문제는 보통 **구현 상속(implementation inheritance)** 에 의해 발생합니다.
+- 하위 클래스가 상위 클래스의 메서드 중 일부를 오버라이드하면 하위 클래스는 상위 클래스의 세부 구현 사항에 의존합니다.
+- 코틀린은 위의 문제를 해결하기 위해 기본적으로 클래스를 `final`로 취급합니다.
+  - 상속을 염두에 두고 open 변경자로 열어둔 클래스만 확장할 수 있습니다.
+- 상속을 허용하지 않는 클래스에 새로운 동작을 추가할 때가 있으며 이때 `데코레이터(Decorator)` 패턴을 사용합니다.
+  - 상속을 허용하지 않는 클래스 대신 사용할 수 있는 새로운 클래스를 만들되 기존 클래스와 같은 인터페이스를 데코레이터가 제공하게 만들고, 기존 클래스를 데코레이터 내부에 필드로 유지합니다.
+  - **새로 정의해야 하는 기능은 데코레이터의 메서드에 새로 정의하고 기존 기능이 그대로 필요한 부분은 데코레이터의 메서드가 기존 클래스의 메서드에게 요청을 전달**합니다.
+- by 키워드를 통해 인터페이스에 대한 구현을 다른 객체에 위임중을 명시할 수 있습니다.
+
+```kt
+class DelegatingCollection<T> {
+  innerList: Collection<T> = ArrayList<T>()
+} : Collection<T> by innerList()
+```
+
+- 불필요한 메서드 정의를 위처럼 없앨 수 있습니다.
+
+```kt
+class CountingSet<T> {
+  val innerSet: MutableCollection<T> = HashSet<T>()
+} : MutableCollection<T> by innerSet {
+  var objectAdded = 0
+  override fun add(element: T): Boolean {
+    objectsAdded++
+    return innerSet.add(element)
+  }
+  override fun addAll(c: Collection<T>): Boolean {
+    objectsAdded += c.size
+    return innerSet.addAll(c)
+  }
+}
+```
+
+- 이 경우는 구현 방식에 대한 의존관계가 생기지 않는 장점이 있습니다.
+
 <br/>
 
 ## 4.4 object 클래스: 클래스 선언과 인스턴스 생성
