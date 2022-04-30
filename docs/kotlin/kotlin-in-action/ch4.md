@@ -227,7 +227,9 @@ class FacebookUser(val accountId: Int) : User {
 class User(val name: String) {
   var address: String = "unspecified"
     set(value: String) {
-      println("""Address was changed for $name: "$field" -> "$value".""".trimIndent())
+      println("""
+        Address was changed for $name:
+        "$field" -> "$value".""".trimIndent())
       field = value
     }
 }
@@ -254,9 +256,49 @@ class LengthCounter {
 
 ## 4.3 컴파일러가 생성한 메서드: 데이터 클래스와 클래스 위임
 
+- 코틀린은 유용한 메서드를 자동으로 만들어주는 예와 클래스 위임 패턴을 아주 간단하게 쓸 수 있게 해줍니다.
+
 ### 4.3.1 모든 클래스가 정의해야 하는 메서드
 
+- 자바와 마찬가지로 코틀린 클래스도 `toString, equals, hashCode` 등을 오버라이드할 수 있습니다.
+
+```kt
+class Client(val name: String, val postalCode: Int) {
+  // equals
+  override fun equals(other: Any?): Boolean {
+    if(other == null || other !is Client)
+      return false
+    return name == other.name && postalCode == other.postalCode
+  }
+
+  // toString
+  override fun toString() = "client(name=$name, postalCode=$postalCode)"
+
+  // hashCode
+  override fun hashCode(): Int = name.hashCode() * 31 + postalCode
+}
+```
+
 ### 4.3.2 데이터 클래스: 모든 클래스가 정의해야 하는 메서드 자동 생성
+
+```kt
+data class Client(val name: String, val postalCode: Int)
+```
+
+- 자바에서 요구하는 모든 메서드를 포함합니다.
+  - 인스턴스 간 비교를 위한 equals
+  - Hashmap과 같은 해시 기반 컨테이너에서 키로 사용할 수 있는 hashCode
+  - 클래스의 각 필드를 선언 순서대로 표시하는 문자열 표현을 만들어주는 toString
+
+#### 데이터 클래스와 불면성: copy() 메서드
+
+- 데이터 클래스의 프로퍼티가 꼭 val일 필요는 없으나, 데이터 클래스의 모든 프로퍼티를 읽기 전용으로 만들어서 데이터 클래스를 불변 클래스로 만드는 것이 권장됩니다.
+- 이 대표적인 예시로 `copy`메서드이며 객체를 복사하면서 일부 프로퍼티를 바꿀 수 있습니다.
+
+```kt
+val lee = Client("lee", 4122)
+println(lee.copy(postalCode = 4000))
+```
 
 ### 4.3.3 클래스 위임: by 키워드 사용
 
