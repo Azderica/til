@@ -341,7 +341,35 @@ class CountingSet<T> {
 
 ## 4.4 object 클래스: 클래스 선언과 인스턴스 생성
 
+- object 키워드를 사용하는 여러 상황을 살펴봐야합니다.
+  - 객체 선언(object declaration)
+  - 동반 객체(companion object)
+  - 객체 식은 자바의 무명 내부 클래스(anonymous inner class) 대신 사용합니다.
+
 ### 4.4.1 객체 선언: 싱글턴을 쉽게 만들기
+
+- 객체지향 시스템을 설계하다 보면 인스턴스가 하나만 필요한 클래스가 유용한 경우가 많습니다.
+- 코틀린은 `객체 선언` 기능을 통해 싱글턴을 언어에서 기본 지원합니다.
+  - 객체 선언은 클래스 선언과 그 클래스에 속한 단일 인스턴스의 선언을 합친 선언입니다.
+
+```kt
+// 객체 선언을 사용해 Comparator 구현
+object CaseInsensitiveFileComparator : Comparator<File> {
+  override fun compare(file1: File, file2: File): Int {
+    return file1.path.compareTo(file2.path, ignoreCase = true)
+  }
+}
+```
+
+- 싱글턴 패턴과 마찬가지 이유로 대규모 소프트웨어 시스템에서는 객체 선언이 항상 적합하지는 않습니다.
+
+```kt
+data class Person(val name: String) {
+  object NameComparator : Comparator<Person> {
+    override fun compare(p1: Person, p2: Person): Int = p1.name.compareTo(p2.name)
+  }
+}
+```
 
 ### 4.4.2 동반 객체: 팩토리 메서드와 정적 멤버가 들어갈 장소
 
