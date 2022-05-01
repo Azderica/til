@@ -431,6 +431,40 @@ fun Person.Companion.fromJSON(json: String): Person { // 확장함수 선언
 
 ### 4.4.4 객체 식: 무명 내부 클래스를 다른 방식으로 작성
 
+- 무명 객체(anonymous object)를 정의할 때 object 키워드를 사용합니다.
+
+```kt
+// 무명 객체로 이벤트 리스너 구현
+window.addMouseListener(  // MouseAdapter를 확장하는 무명 객체를 선언합니다.
+  object : MouseAdapter() {
+    // MouseAdapter의 메서드 오버라이드
+    override fun mouseClicked(e: MouseEvent) {
+      // ...
+    }
+    override fun mouseEntered(e: MouseEvent) {
+      // ...
+    }
+  }
+)
+```
+
+> 객체 선언과 달리 무명 객체는 싱클턴이 아니며, 객체 식이 쓰일 때마다 새로운 인스턴스가 생성됩니다.
+
+- 무명 객체 식 안에서 변수의 값을 변경할 수도 있습니다.
+
+```kt
+fun countClicks(window: Window) {
+  var clickCount = 0
+  window.addMouseListener(object: MouseAdapter() {
+    override fun mouseClicked(e: MouseEvent) {
+      clickCount++
+    }
+  })
+}
+```
+
+> 객체 식은 무명 객체 안에서 여러 메서드를 오버라이드해야하는 경우에 유용합니다.
+
 <br/>
 
 ## 4.5 요약
