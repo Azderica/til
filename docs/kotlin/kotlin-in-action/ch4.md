@@ -392,6 +392,43 @@ class User private constructor(val nickname: String) {  // 주 생성자를 비�
 
 ### 4.4.3 동반 객체를 일반 객체처럼 사용
 
+- 동반 객체는 클래스 안에 정의된 일반 객체입니다.
+
+```kt
+class Person(val name: String) {
+  companion object Loader { // 동반 객체에 이름을 붙입니다.
+    fun fromJson(jsonText: String): Person = ...
+  }
+}
+```
+
+- 동반 객체도 인터페이스를 구현할 수 있습니다.
+
+```kt
+interface JSONFactory<T> {
+  fun fromJSON(jsonText: String): T
+}
+class Person(val name: String) {
+  companion object : JSONFactory<Person> { // 동반 객체가 인터페이스를 구현합니다.
+    override fun fromJson(jsonText: String): Person = ...
+  }
+}
+```
+
+- 클래스에 동반 객체가 있으면 그 객체 안에 함수를 정의함으로써 클래스에 대해 호출할 수 있는 확장 함수를 만들 수 있습니다.
+
+```kt
+// 비지니스 모듈
+class Person(val firstName: String, val lastName: String) {
+  companion object {}
+}
+
+// 클라이언트/서버 통신 모듈
+fun Person.Companion.fromJSON(json: String): Person { // 확장함수 선언
+  ...
+}
+```
+
 ### 4.4.4 객체 식: 무명 내부 클래스를 다른 방식으로 작성
 
 <br/>
