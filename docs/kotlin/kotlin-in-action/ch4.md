@@ -373,6 +373,23 @@ data class Person(val name: String) {
 
 ### 4.4.2 동반 객체: 팩토리 메서드와 정적 멤버가 들어갈 장소
 
+- 코틀린 클래스 안에는 정적인 멤버가 없으며 자바의 static 키워드를 지원하지 않스빈다. 대신 패키지 수준의 최상위 함수와 객체 선언을 활용합니다.
+- 최상위 함수는 private 클래스에 접근할 수 없스빈다.
+- 내부 정보에 접근이 필요한 경우 중첩된 객체 선언의 멤버 함수로 정의해야 합니다.
+  - 대표적인 예시로 팩토리 메서드를 예시로 들 수 있습니다.
+
+```kt
+// 부 생성자를 팩토리 메서드로 대신하기
+class User private constructor(val nickname: String) {  // 주 생성자를 비공개로 만듦
+  companion object {  // 동반 객체 선언
+    fun newSubscribingUser(email: String) = User(email.substringBefore('@'))
+    fun newFacebookUser(accountId: Int) = User(getFacebookName(accountId))
+  }
+}
+```
+
+- **팩토리 메서드**는 목적에 따라 이름을 정할 수 있으며, 선언된 클래스의 하위 클래스 객체도 반환이 가능합니다.
+
 ### 4.4.3 동반 객체를 일반 객체처럼 사용
 
 ### 4.4.4 객체 식: 무명 내부 클래스를 다른 방식으로 작성
