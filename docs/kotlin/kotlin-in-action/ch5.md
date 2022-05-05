@@ -8,9 +8,65 @@ sidebar_position: 5
 
 ### 5.1.1 람다 소개: 코드 블록을 함수 인자로 넘기기
 
+- 무명 내부 클래스를 코드를 함수에 넘기거나 변수에 저장할 수 있지만 상당히 번거로우나, 함수형 프로그래밍에서는 함수를 값처럼 다루면서 문제를 해결합니다.
+
+```java
+// 무명 클래스
+button.setOnClickListener(new OnClickListener() {
+  @Override
+  public void onClick(View view) { /* 클릭시 수행할 동작 */ }
+})
+```
+
+```kt
+button.setOnClickListener{ /* 클릭시 수행할 동작 */ }
+```
+
+- 람다를 메서드가 하나뿐인 무명 객체 대신 사용할 수 있습니다.
+
 ### 5.1.2 람다와 컬렉션
 
+- 코드에서 중복을 제거하는 것은 프로그래밍 스타일을 개선하는 중요한 방법 중 하나입니다.
+- 때로는 람다를 멤버 참조로 대치가 가능합니다.
+
+```kt
+val people = listOf(Person("Alice", 29), Person("Bob", 31))
+println(people.maxBy{ it.age })
+```
+
+```kt
+people.maxBy(Person::age)
+```
+
 ### 5.1.3 람다 식의 문법
+
+- 람다 식을 선언하는 문법은 다음과 같습니다.
+
+```kt
+{ x: Int, y: Int -> x + y }
+// x: Int, y: Int : 파라미터
+// x + y : 본문
+```
+
+- 코드의 일부분을 블록으로 둘러싸 실행할 필요가 있다면 `run`을 사용합니다.
+
+```kt
+people.maxBy({ p: Person -> p.age })
+```
+
+- 람다가 함수의 유일한 인자라면 괄호 없이 람다를 쓰는 것이 좋은 방법 중 하나입니다.
+
+```kt
+people.maxBy { p: Person -> p.age } // 파라미터 타입을 명시
+people.maxBy { p -> p.age } // 파라미터 타입을 생략
+```
+
+- 파라미터 중 일부의 타입은 지정하고 나머지 파라미터는 타입을 지정하지 않고 이름만 남겨둬도 됩니다.
+- 람다의 파라미터 이름을 디폴트 이름인 `it`으로 바꾸면 람다 식을 더 간단하게 만들 수 있습니다.
+
+```kt
+people.maxBy { it.age }
+```
 
 ### 5.1.4 현재 영역에 있는 변수에 접근
 
