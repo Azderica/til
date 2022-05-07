@@ -70,7 +70,67 @@ people.maxBy { it.age }
 
 ### 5.1.4 현재 영역에 있는 변수에 접근
 
+- 자바 메서드 안에서 무명 내부 클래스를 정의할 때 메서드의 로컬 변수를 무명 내부 클래스에서 사용할 수 있습니다.
+
+```kt
+fun printMessagesWithPrefix(messages: Collection<String>, prefix: String) {
+  messages.forEach { println("$prefix $it") }
+}
+```
+
+- 자바와 다른 점 중 중요한 한 가지는 코틀린 람다 안에서 파이널 변수가 아닌 변수에 접근할 수 없습니다.
+
+```kt
+fun printProblemCounts(responses: Collection<String>) {
+  var clientErrors = 0
+  var serverErrors = 0
+  responses.forEach {
+    if(it.startsWith("4")) {
+      clientErrors++
+    } else if(it.startsWith("5")) {
+      serverErrors++
+    }
+  }
+  println("$clientErrors client errors, $serverErrors server errors")
+}
+```
+
+- 코틀린에서는 자바와 달리 람다에서 람다 밖 함수에 있는 파이널이 아닌 변수에 접근할 수 있고, 그 변수를 변경할 수 있습니다.
+
 ### 5.1.5 멤버 참조
+
+- 코틀린에서는 자바 8과 마찬가지로 함수를 값으로 바꿀 수 있습니다.
+- `::`를 사용하는 식을 멤버 참조(member references)라고 부릅니다.
+
+```kt
+Person::age
+// Person : 클래스
+// age : 멤버
+```
+
+```kt
+people.maxBy {Person::age}
+people.maxBy {p -> p.age}
+people.maxBy {it.age}
+```
+
+- **생성자 참조(constructor reference)**를 사용하면 클래스 생성 작업을 연기하거나 저장해둘 수 있습니다.
+
+```kt
+val createPerson = ::Person
+val p = createPerson("Alice", 29)
+println(p)
+```
+
+> 바운드 멤버 참조
+
+- 바운드 멤버 참조를 사용하면 멤버 참조를 생성할 때 클래스 인스턴스를 함께 저장한 다음 나중에 인스턴스에 대해 멤버를 호출해줍니다.
+
+```kt
+val p = Person("Dmitry", 34)
+val dmitrysAgeFunction = p::age
+println(dmitrysAgeFunction())
+```
 
 <br/>
 
