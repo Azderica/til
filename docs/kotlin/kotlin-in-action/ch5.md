@@ -138,11 +138,57 @@ println(dmitrysAgeFunction())
 
 ### 5.2.1 필수적인 함수: filter와 map
 
+```kt
+// filter 예제
+val people = listOf(Person("Alice", 29), Person("Bob", 31))
+println(people.filter{it.age > 30}) // [Person(name=Bob, age=31)]
+
+// map 예제
+val list = listOf(1, 2, 3, 4)
+println(list.map{it * it})  // {1, 4, 9, 16}
+```
+
 ### 5.2.2 all, any, count, find,: 컬렉션에 술어 적용
+
+```kt
+val canBeInClub27 = { p: Person -> p.age <= 27 }
+val people = listOf(Person("Alice", 27), Person("Bob", 31))
+
+// all 예시
+println(people.all(canBeInClub27))  // false
+
+// any 예시
+println(people.any(canBeInClub27))  // true
+
+// count 예시
+println(people.count(canBeInClub27))  // 1
+
+// find 예시
+println(people.find(canBeInClub27))  // Person(name=Alice, age=27)
+```
 
 ### 5.2.3 groupBy: 리스트를 여러 그룹으로 이뤄진 맵으로 변경
 
+```kt
+// groupBy
+val people = listOf(Person("Alice", 31), Person("Bob", 29), Person("Carol", 31))
+println(people.groupBy{ it.age }) // 29=[Person(name=Bob, age=29)], 31=[...]
+
+val list = listOf("a", "ab", "b")
+println(list.groupBy(String::first))  // a=[a, ab], b=[b]
+```
+
 ### 5.2.4 flatMap과 flatten: 중첩된 컬렉션 안의 원소처리
+
+-`flatMap` 함수는 인자로 주어진 람다를 컬렉션의 모든 객체에 적용하고 람다를 적용한 결과 얻어지는 여러 리스트를 한 리스트로 모읍니다.
+
+```kt
+val strings = listOf("abc", "def")
+println(strings.flatMap{ it.toList() }) // [a, b, c, d, e, f]
+// map 과 flatten 함수를 적용한 결과입니다.
+```
+
+- 특별히 변환해야 할 내용이 없는 경우, 리스트를 평평하게 펼치면 되는 `flatten` 함수를 사용할 수 있습니다.
 
 <br/>
 
