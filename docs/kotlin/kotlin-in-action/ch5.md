@@ -194,9 +194,44 @@ println(strings.flatMap{ it.toList() }) // [a, b, c, d, e, f]
 
 ## 5.3 지연 계산(lazy) 컬렉선 연산
 
+- `map`이나 `filter` 같은 몇 가지 컬렉션 함수는 결과 컬렉션을 **즉시(eagerly)** 생성합니다.
+- 효율적으로 사용하기 위해서는 시퀀스를 사용하는 것이 중요합니다.
+
+```kt
+// 성능에 이점이 있습니다.
+people.asSequence()
+  .map(Person::name)
+  .filter { it.startsWith("A")}
+  .toList()
+```
+
+> 큰 컬렉션에 대해서 연산을 연쇄시킬 때는 시퀀스를 사용하는 것을 규칙으로 삼습니다.
+
 ### 5.3.1 시퀀스 연산 실행: 중간연산과 최종 연산
 
+- 시퀀스에 대한 연산은 **중간(intermediate) 연산**과 **최종(terminal) 연산**으로 나뉩니다.
+
+```kt
+sequence.map {...}.filter {...}.toList()
+// map {...}.filter {...} : 중간 연산
+// toList() : 최종 연산
+```
+
+- 시퀀스를 사용하면 지연 계산으로 인해 원소 중 일부의 계산이 이뤄지지는 않습니다.
+- 컬렉션에 대해 수행하는 연산의 순서도 성능에 영향을 끼칩니다.
+
+> > 자바 스트림과 코틀린 시퀀스의 개념이 비슷합니다.
+
 ### 5.3.2 시퀀스 만들기
+
+- 시퀀스를 만드는 예제로 `asSequence()`를 호출할 수도 잇고, `generateSequence` 함수를 사용할 수도 있습니다.
+
+```kt
+fun File.isInsideHiddenDirectory() =
+    generateSequence(this) { it.parentFile }.any {it.isHidden}
+val file = File("/Users/svtk/.HiddenDir/a.txt")
+println(file.isInsideHiddenDirectory())   // true
+```
 
 <br/>
 
