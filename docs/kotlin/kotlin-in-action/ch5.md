@@ -237,6 +237,15 @@ println(file.isInsideHiddenDirectory())   // true
 
 ## 5.4 자바 함수형 인터페이스 활용
 
+- 코틀린에서는 무명 클래스 인스턴스 대신 람다를 넘길 수 있습니다.
+
+```kt
+button.setOnClickListener {view -> ...}
+```
+
+- 위의 코드가작동하는 이유는 추상 메서드가 단 하나만 있기 때문이며, 이러한 인터페이스를 **함수형 인터페이스(functional interface)** 혹은 **SAM 인터페이스(single abstract method interface)**라고 합니다.
+- 자바와 달리 코틀린에는 함수 타입이 존재합니다.
+
 ### 5.4.1 자바 메서드에 람다를 인자로 전달
 
 ### 5.4.2 SAM 생성자: 람다를 함수형 인터페이스로 명시적으로 변경
