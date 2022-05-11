@@ -304,10 +304,89 @@ val listener = OnClickListener { view ->
 
 ## 5.5 수신 객체 지정 람다: with와 apply
 
+- 수신 객체를 명시하지 않고 람다의 본문 안에서 다른 객체의 메서드를 호출할 수 있게 하는 것입니다. 이러한 람다를 `수신 객체 지정 람다(lambda with receiver)` 라고 부릅니다.
+
 ### 5.5.1 with 함수
 
+```kt
+// 알파벳 만들기
+fun alphabet(): String {
+  val result = StringBuilder()
+  for(letter in 'A'..'Z') {
+    result.append(letter)
+  }
+  result.append("\nNow I know the alphabet!")
+  return result.toString()
+}
+```
+
+```kt
+// with을 사용해 알파벳 만들기
+fun alphabet(): String {
+  val stringBuilder = StringBuilder()
+  return with(StringBuilder) {  // 메서드를 호출하려는 수신 객체를 지정합니다.
+    for(letter in 'A'..'Z') {
+      this.append(letter)       // `this`를 명시해서 앞에서 지정한 수신 객체의 메서드를 호출합니다.
+    }
+    append("\nNow I know the alphabet!")  // `this`를 생략하고 메서드를 호출합니다.
+    this.toString()   // 람다에서 값을 반환합니다.
+  }
+}
+```
+
+- with 함수는 첫번째 인자로 받은 객체를 두 번째 인자로 받은 람다의 수신 객체로 만듭니다.
+
+> 수신 객체 지정 람다와 확장 함수 비교
+
+| 일반 함수 | 일반 람다           |
+| --------- | ------------------- |
+| 확장함수  | 수신 객체 지정 람다 |
+
+> - 람다는 일반 함수와 비슷한 동작을 정의하는 한 방법입니다.
+
+```kt
+// with을 사용해 알파벳 만들기
+fun alphabet() = with(StringBuilder()) {
+  for(letter in 'A'..'Z') {
+    append(letter)
+  }
+  append("\nNow I know the alphabet!")
+  toString()
+}
+```
+
+- 불필요한 stringBuilder 변수를 없애면 alphabet 함수가 식의 결과를 바로 반환하게 됩니다.
+
+> 메서드 이름 충돌
+
+> - 바깥쪽 클래스에 정의된 함수를 사용하고 싶으면, `this@OuterClass.method()`와 같이 사용해야합니다.
+
 ### 5.5.2 apply 함수
+
+- apply 함수는 거의 with과 같으나, 항상 자신에게 전달된 객체를 반환한다는 점입니다.
+
+```kt
+// apply을 사용해 알파벳 만들기
+fun alphabet() = StringBuilder().apply {
+    for(letter in 'A'..'Z') {
+      append(letter)
+    }
+    append("\nNow I know the alphabet!")
+  }.toString()
+```
+
+- with과 apply는 수신 객체 지정 람다를 사용하는 일반적인 예제 중 하나입니다.
 
 <br/>
 
 ## 5.6 요약
+
+- 람다를 사용하면 코드 조각을 다른 함수에게 인자로 넘길 수 있습니다.
+- 코틀린에서는 람다가 함수 인자인 경우 괄호 밖으로 람다를 빼낼 수 있고, 람다의 인자가 단 하나뿐인 경우 인자 이름을 지정하지 않고 `it`이라는 디폴트 이름으로 부를 수 있습니다.
+- 람다 안에 있는 코드는 그 람다가 들어있는 바깥 함수의 변수를 읽거나 쓸 수 있습니다.
+- 메서드, 생성자, 프로퍼티의 이름 앞에 ::을 붙이면 각각에 대한 참조를 맏르 수 있습니다. 이러한 참조를 람다 대신 다른 함수에게 넘길 수 있습니다.
+- `filter, map, all, any` 등의 함수를 활용하면 컬렉션에 대한 대부분의 연산을 직접 원소를 이터레이션하지 않고 수행할 수 있습니다.
+- 시퀀스를 사용하면 중간 결과를 담는 컬렉션을 생성하지 않고도 컬렉션에 대한 여러 연산을 조합할 수 있습니다.
+- 함수형 인터페이스를 인자로 받는 자바 함수를 호출할 경우 람다를 함수형 인터페이스 인자 대신 넘길 수 있습니다.
+- 수신 객체 지정 람다를 사용하면 람다 안에서 미리 정해둔 수신 객체의 메서드를 직접 호출할 수 있습니다.
+- 표준 라이브러리의 `with` 함수를 사용하면 어떤 객체에 대한 참조를 반복해서 언급하지 않으면서 그 객체의 메서드를 호출할 수 있습니다. `apply`를 사용하면 어떤 객체라도 빌더 스타일의 API를 사용해 생성하고 초기화할 수 있습니다.
