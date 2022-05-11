@@ -248,7 +248,57 @@ button.setOnClickListener {view -> ...}
 
 ### 5.4.1 자바 메서드에 람다를 인자로 전달
 
+- 함수형 인터페이스를 인자로 원하는 자바 메서드에 코틀린 람다를 전달할 수 있습니다.
+
+```kt
+postponeComputation(1000, object : Runnable {
+  // 객체 식을 함수형 인터페이스 구현으로 넘깁니다.
+  override fun run() {
+    println(42)
+  }
+})
+```
+
+- 람다와 무명 객체 사이에는 차이가 있습니다. 객체를 명시적으로 선언하는 경우 메서드를 호출할 때마다 새로운 객체가 생성됩니다. 람다는 반복 사용합니다.
+
+```kt
+val runnable = Runnable { println(42) }
+fun handleComputation() {
+  postponeComputation(1000, runnable)
+}
+```
+
+> 코틀린 1.0에서 인라인(inline) 되지 않은 모든 람다 식은 무명 클래스로 컴파일됩니다.
+
+- 대부분의 경우, 람다와 자바 함수형 인터페이스 사이의 변환은 자동으로 이뤄집니다.
+
 ### 5.4.2 SAM 생성자: 람다를 함수형 인터페이스로 명시적으로 변경
+
+- SAM 생성자는 람다를 함수형 인터페이스의 인스턴스로 변환할 수 있게 컴파일러가 자동으로 생성한 함수입니다.
+
+```kt
+fun createAllDoneRunnable(): Runnable {
+  return Runnable { println("All done!) }
+}
+createAllDoneRunnable().run()
+```
+
+- 람다로 생성한 함수형 인터페이스 인스턴스를 변수에 저장해야 하는 경우에도 SAM 생성자를 사용할 수 있습니다.
+
+```kt
+val listener = OnClickListener { view ->
+  val text = when (view.id) { // view.id를 사용해 어떤 버튼이 클릭됐는지 판단합니다.
+    R.id.button1 -> "First button"
+    R.id.button2 -> "Second button"
+    else -> "Unknown button"
+  }
+  toast(text) // "text"의값을 사용자에게 보여줍니다.
+}
+```
+
+- 람다에는 무명 객체와 달리 인스턴스 자신을 가리키는 `this`가 없습니다.
+- 람다안에서 `this` 는 그 람다를 둘러싼 클래스의 인스턴스를 가리킵니다.
+- 이벤트 리스너가 이벤트를 처리하다가 자기 자신의 리스너 등록을 해제해야 한다면 람다를 사용할 수 없으므로, 무명 객체를 통해 리스너를 구현해야 합니다.
 
 <br/>
 
