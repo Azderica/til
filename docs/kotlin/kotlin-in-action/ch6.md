@@ -4,13 +4,79 @@ sidebar_position: 6
 
 # 6. 코틀린 타입 시스템
 
+- 코틀린은 `널이 될수 있는 타입(nullable type)`과 `읽기 전용 컬렉션`을 제공해줍니다.
+
 ## 6.1 널 가능성
+
+- `널 가능성(nullability)`은 `NullPointerException` 오류를 필할 수 있게 돕기 위한 코틀린 타입 시스템의 특성입니다.
+- 코틀린을 비롯한 최신 언어에서 null에 대한 접근 방법은 가능한 이 문제를 실행 시점에서 컴파일 시점으로 옮기는 것입니다.
 
 ### 6.1.1 널이 될 수 있는 타입
 
+- 코틀린과 자바의 첫 번째이자 가장 중요한 차이는 코틀린 타입 시스템이 널이 될 수 있는 타입을 명시적으로 지원한다는 점입니다.
+
+```java
+int strLen(String s) { return s.length(); }
+```
+
+```kt
+fun strLen(s: String) = s.length
+strLen(null)  // error
+```
+
+- 널과 문자열을 인자로 받을 수 있게 하려면 타입 이름 뒤에 물음표(?)를 명시해야 합니다.
+- 널이 될 수 있는 타입의 변수가 있다면 그에 대한 수행할 수 있는 연산이 제한됩니다.
+
+```kt
+// 예시
+val x: String? = null
+val y: String = x
+// Error: Type mismatch: inferred type is String? but Strign was expected
+```
+
+```kt
+// if 검사를 통해서는 null 값을 다룰 수 있습니다.
+fun strLenSafe(s: String?): Int = if(s != null) x.length else 0
+```
+
 ### 6.1.2 타입의 의미
 
+- null이 들어있는 경우에는 사용할 수 있는 연산이 많지 않습니다.
+- 이러한 의미로 자바의 타입 시스템은 널을 제대로 다루지 못합니다.
+
+> NullPointerException 오류를 다루는 다른 방법
+
+> - 자바에도 `NullPointerException` 문제를 해결하는 데 `@Nullable`으나 `@NotNull`과 같은 애노테이션을 쓸 수도 있습니다. 그러나 이는 모든 문제를 해결할 수도 없습니다.
+> - 자바에서 `null` 대신 자바 8의 `Optional` 타입 등의 `null`을 감싸는 특별한 래퍼 타입을 활용할 수도 있습니다.
+
+- 코틀린에서 널이 될 수 있는 타입을 처리하는 데 별도의 실행 시점 부가 비용이 들지 않습니다.
+
 ### 6.1.3 안전한 호출 연선자: ?.
+
+- `?.`은 null 검사와 메서드 호출을 한 번의 연산으로 수행합니다.
+- `s?.toUpperCase()` 는 `if(s != null) s.toUpperCase() else null`과 같습니다.
+
+```kt
+fun printAllCaps(s: String?) {
+  val allCaps: String? = s?.toUpperCase()
+  println(allCaps)
+}
+printAllCaps("abc") // ABC
+printAllCaps(null)  // null
+```
+
+- 메서드 호출 뿐 아니라, 프로퍼티를 읽을 때도 안전한 호출이 가능합니다.
+
+```kt
+class Address(val streetAddress: String, val zipCode: Int, val city: String, val country: String)
+class Company(val name: String, val address: Address?)
+class Person(val name: String, val company: Company?)
+fun Person.countryName(): String {
+  val country = this.company?.address?.country
+  return if(country != null) country else "Unknown"
+}
+println(Person("Dmitry", null).countryName()) // Unknown
+```
 
 ### 6.1.4 엘비스 연산자: ?:
 
