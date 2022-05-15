@@ -80,6 +80,45 @@ println(Person("Dmitry", null).countryName()) // Unknown
 
 ### 6.1.4 엘비스 연산자: ?:
 
+- 코틀린은 `null` 대신 사용할 디폴트 값을 지정할 때 편리하게 사용할 수 있는 연산자를 제공하며 이 연산자를 `엘비스(elvis)` 연산자라고 합니다.
+
+```kt
+fun foo(s: String?) {
+  val t: String = s ?: ""
+}
+```
+
+```kt
+fun strLenSafe(s: String?): Int = s?.length ?:0
+println(strLenSafe("abc"))  // 3
+println(strLenSafe(null))   // 0
+```
+
+```kt
+fun Person.countryName() = company?.address?.country?:"Unknown"
+```
+
+- 코틀린에서는 return 이나 throw 등의 연산도 식이므로, 엘비스 연산자를 사용할 수 있습니다.
+
+```kt
+class Address(val streetAddress: String, val zipCode: Int, val city: String, val country: String)
+class Company(val name: String, val address: Address?)
+class Person(val name: String, val company: Company?)
+fun printShippingLabel(person: Person) {
+  val address = person.company?.address?:throw illegalArgumentException("No address")
+  with (address) {
+    println(streetAddress)
+    println("$zipCode $city, $country")
+  }
+}
+
+val address = Address("Elesestr. 47", 80687, "Munich", "Germany")
+val jetbrains = Company("JetBrains", address)
+val person = Person("Dmitry", jetbrains)
+printShippingLabel(person)  // Elesestr. 47 /n 80687 Munich, Germany
+printShippingLable(Person("Alexey", null))  // Exception, No address
+```
+
 ### 6.1.5 안전한 캐스: as?
 
 ### 6.1.6 널 아님 단언: !!
