@@ -121,6 +121,25 @@ printShippingLable(Person("Alexey", null))  // Exception, No address
 
 ### 6.1.5 안전한 캐스: as?
 
+- `as?` 연산자는 어떤 값을 지정한 타입으로 캐스트합니다.
+
+```kt
+class Person(val firstName: String, val lastName: String) {
+  override fun equals(o: Any?): Boolean {
+    val otherPerson = o as? Person ?: return false
+    return otherPerson.firstName == firstName && otherPerson.lastName == lastName
+  }
+  override fun hashCode(): Int = firstName.hashCode() * 37 + lastName.hashCode()
+}
+
+val p1 = Person("Dmitry", "Jemerov")
+val p2 = Person("Dmitry", "Jemerov")
+println(p1 == p2) // true
+println(p1.equals(42))  // false
+```
+
+- 이 패턴을 사용하면 파라미터로 받은 값이 원하는 타입인지쉽게 검사하고 캐스트할 수 있으며, 타입이 맞지않으면 쉽게 false를 반환할 수 있습니다.
+
 ### 6.1.6 널 아님 단언: !!
 
 ### 6.1.7 let 함수
