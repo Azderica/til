@@ -9,4 +9,4 @@ sidebar_position: 1
 - 어제보다 좀 더 나은 사람이 되기 위해 매일 공부합니다.
 - 예술과 공부를 좋아하는 개발자입니다.
 
-![9F9C0242-65A0-4716-A973-F7F9013808F8_1_105_c](https://user-images.githubusercontent.com/42582516/120094317-9d95f500-c15a-11eb-92cd-3ece7308d3e0.jpeg)
+![220312_yellow](https://user-images.githubusercontent.com/42582516/168612347-d5bf43b0-efbe-439a-89d0-a7b762cbf02f.JPG)
