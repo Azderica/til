@@ -165,6 +165,27 @@ class CopyRowAction(val list: JList<String>): AbstractAction() {
 
 ### 6.1.7 let 함수
 
+- `let` 함수를 통해, 안전한 호출 연산자와 함께 사용하면 원하는 식을 평가해서 결과가 널인지 검사한 다음에 그 결과를 변수에 넣는 작업을 간단한 식을 통해 한꺼번에 처리할 수 있습니다.
+
+```kt
+fun sendEmailTo(email: String) {
+  println("Sending email to $email")
+}
+var email: String? = "a@example.com"
+email?.let { sendEmailTo(it) }  //  "a@example.com"
+```
+
+- 코드를 아래와 같이 간단하게 만들 수도 있습니다.
+
+```kt
+// before
+val person: Person? = getThreBestPersonInTheWorld()
+if (person != null) sendEmailTo(person.email)
+
+// after
+getThreBestPersonInTheWorld()?.let { sendEmailTo(it.email) }
+```
+
 ### 6.1.8 나중에 초기화할 프로퍼티
 
 ### 6.1.9 널이 될 수 있는 타입 확장
