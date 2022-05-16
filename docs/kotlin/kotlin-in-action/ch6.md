@@ -142,6 +142,27 @@ println(p1.equals(42))  // false
 
 ### 6.1.6 널 아님 단언: !!
 
+- `not-null assertion`은 코틀린에서 널이 될 수 있는 타입의 값을 다룰 때, 사용할 수 있는 도구 중 가장 단순한 도구 입니다.
+- `!!` 를 사용하면 어떤 값이든 널이 될 수 없는 타입으로 바꿀 수 있습니다.
+
+```kt
+fun ignoreNulls(s: String?) {
+  val sNotNull: String = s!!
+  println(sNotNull.length)
+}
+ignoreNulls(null) // exception
+```
+
+- 위와 같이 작성을 하면, null이면 예외가 발생해도 감수함을 의미합니다.
+- 일반적으로는 다음과 같이 작성하는 것이 좋습니다.
+
+```kt
+class CopyRowAction(val list: JList<String>): AbstractAction() {
+  override fun isEnabled(): Boolean = list.selectedValue != null
+  override fun actionPerformed(e: ActionEvent) { val value = list.selectedValue!! }
+}
+```
+
 ### 6.1.7 let 함수
 
 ### 6.1.8 나중에 초기화할 프로퍼티
