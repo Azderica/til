@@ -149,7 +149,7 @@ println(p1.equals(42))  // false
 fun ignoreNulls(s: String?) {
   val sNotNull: String = s!!
   println(sNotNull.length)
-}
+}9
 ignoreNulls(null) // exception
 ```
 
@@ -187,6 +187,41 @@ getThreBestPersonInTheWorld()?.let { sendEmailTo(it.email) }
 ```
 
 ### 6.1.8 나중에 초기화할 프로퍼티
+
+- 코틀린에서 클래스 안의 널이 될 수 없는 프로퍼티를 생성자 안에서 초기화하지 않고 특별한 메서드 안에서 초기화할 수 없습니다.
+
+```kt
+// Null 이 될 수 있는 프로퍼티 접근, 다만 코드가 지저분함
+class myService { fun performAction(): String = "foo" }
+class MyTest {
+  private var myService: MyService? = null
+  @Before fun setUp() {
+    myService = MyService()
+  }
+  @Test fun testAction() {
+    Assert.assertEquals("foo", myService!!.performAction())
+  }
+}
+```
+
+- 이러한 못생긴 코드를 해결하기 위해서 `late-initialized` 할 수 있습니다.
+
+```kt
+class myService { fun performAction(): String = "foo" }
+class MyTest {
+  private lateinit var myService: MyService
+  @Before fun setUp() {
+    myService = MyService()
+  }
+  @Test fun testAction() {
+    Assert.assertEquals("foo", myService.performAction())
+  }
+}
+```
+
+- 나중에 초기화하는 프로퍼티는 항상 `var` 이여야 합니다.
+- 이를 초기화하기 전에 접근하면, `lateinit preopert ... has not been initialized`라는 예외가 발생합니다.
+- 일반적으로 `lateinit` 프로퍼티를 의존관계 주입(DI) 프레임워크와 함께 사용하는 경우가 많습니다.
 
 ### 6.1.9 널이 될 수 있는 타입 확장
 
