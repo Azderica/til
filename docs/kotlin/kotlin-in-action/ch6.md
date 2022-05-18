@@ -352,15 +352,92 @@ class NullableStringPrinter : StringProcessor {
 
 ### 6.2.1 원시 타입: Int, Boolean 등
 
+- 자바는 원시 타입(primitive type)과 참조 타입(reference type)이 있지만, 코틀린은 원시 타입과 래퍼 타입을 구분하지 않으며 항상 같은 타입을 사용합니다.
+- 코틀린은 실행 시점에 숫자 타입은 가능한 가장 효율적인 방식으로 표현됩니다.
+
 ### 6.2.2 널이 될 수 있는 원시 타입: Int?, Boolean? 등
+
+- 널이 될 수 있는 코틀린 타입은 자바 원시 타입으로 표현할 수 없으므로, 자바의 래퍼 타입으로 컴파일됩니다.
+
+```kt
+data class Person(val name: String, val age: Int? = null) {
+  fun isOlderThan(other: Person): Boolean? {
+    if(age == null || other.age == null)  return null
+    return age > other.age
+  }
+}
+println(Person("Sam", 35).isOlderThan(Person("Amy", 42))) // false
+println(Person("Sam", 35).isOlderThan(Person("Jane")))    // null
+```
+
+- 제네릭 클래스의 경우 래퍼 타입을 사용합니다.
+- JVM은 타입 인자로 원시 타입을 허용하지 않기 때문에 자바나 코틀린 모두에서 제네릭 클래스는 항상 박스 타입을 사용합니다.
 
 ### 6.2.3 숫자 변환
 
+- 코틀린과 자바의 가장 큰 차이점 중 하나는 숫자를 변환하는 방식입니다.
+
+```kt
+// "Error: type mismatch" 컴파일 오류 발생
+val i = 1
+val l: Long = i
+
+// 정상
+val i = 1
+val l: Long = i.toLong()
+```
+
+- 코틀린은 모든 원시 타입에 대한 변환 함수를 제공합니다. (`Boolean` 제외)
+- 코틀린은 개발자의 혼란을 피하기 위해 **타입 변환를 명시**합니다.
+
 ### 6.2.4 Any, Any?: 최상위 타입
+
+- `Any` 타입이 **모든 널이 될 수 없는 타입의 조상 타입**입니다.
+  - `val answer: Any = 42`
 
 ### 6.2.5 Unit 타입: 코틀린의 void
 
+- 코틀린 `Unit` 타입은 자바 패ㅑㅇdhk rkxdms rlsmddmf gkqslek.
+
+```kt
+// 아래는 같은 의미힙ㄴ디ㅏ.
+fun f(): Unit { ... }
+fun f() { ... }
+```
+
+- 코틀린 `Unit`은 모든 기능을 갖는 일반적인 타입이며, `void`와 달리 타입 인자로 사용할 수 있습니다.
+- 다음과 같이 제네릭 파라미터를 반환하는 함수를 오버라이드하면서 반환 타입으로 `Unit`을 쓸 때 유용합니다.
+
+```kt
+interface Processor<T> { fun process(): T }
+class NoResultProcessor : Processor<Unit> {   
+  override fun process() {  // Unit을 반환하지만 타입 지정의 필요가 없습니다.
+    // 업무 처리 코드
+  } // return 명시 필요가 없습니다.
+}
+```
+
+- `Unit`은 **단 하나의 인스턴스만 갖는 타입**을 의미합니다.
+
 ### 6.2.6 Nothing 타입: 이 함수는 결코 정상적으로 끝나지 않는다
+
+- 코틀린에서는 반환 값이라는 개념 자체가 의미 없는 함수가 일부 존재합니다.
+- 함수가 정상적으로 끝나지 않는다는 사실을 알기 위해서 `Nothing`이라는 특별한 반환 타입이 있습니다.
+
+```kt
+fun fail(message: String): Nothing {
+  throw IllegalStateException(message)
+}
+fail("Error occurred")  // java.lang.IllegalStateException: Error occurred
+```
+
+- `Nothing` 타입은 아무 값도 포함하지 않으며, 함수의 반환 타입이나 반환 타입으로 쓰일 타입 파라미터로만 쓸 수 있습니다.
+- `Nothing` 은 아무 값도 저장할 수 없으므로 아무 의미가 없습니다.
+
+```kt
+val address = company.address ?: fail("No address")
+println(address.city)
+```
 
 <br/>
 
