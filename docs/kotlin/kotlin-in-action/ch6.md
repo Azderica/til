@@ -445,9 +445,37 @@ println(address.city)
 
 ### 6.3.1 널 가능성과 컬렉션
 
+- 널 가능성은 타입 시스템 일관성을 지키기 위해 필수적입니다.
+- `List<Int?>` 와 `List<Int>?` 는 다릅니다.
+
 ### 6.3.2 읽기 전용과 변경 가능한 컬렉션
 
+- 코틀린 컬렉션과 자바 컬렉션을 나누는 가장 중요한 특성 중 하나는 **코틀린에서는 컬렉션 안의 데이터에 접근하는 인터페이스와 컬렉션 안의 데이터를 변경하는 인터페이스를 분리한 점**입니다.
+- 컬렉션의 데이터를 수정하려면 `kotlin.collections.MutableCollection` 인터페이스를 사용해야 합니다.
+- 컬렉션의 읽기 전용 인터페이스와 변경 가능 인터페이스를 구별함으로서 프로그램에서 데이터에 어떤 일이 벌어지는지를 더 쉽게 이해할 수 있게 됩니다.
+
+```kt
+fun <T> copyElements(source: Collection<T>, target: MutableCollection<T>) {
+  for(item in source) {
+    target.add(item)
+  }
+}
+val source: Collection<Int> = arrayListOf(3, 5, 7)
+val target: MutableCollection<Int> = arrayListOf(1)
+copyElements(source, target)
+println(target) // 1, 3, 5, 7
+
+val source: Collection<Int> = arrayListOf(3, 5, 7)
+val target: Collection<Int> = arrayListOf(1)
+copyElements(source, target)  // error
+```
+
+- 위 코드에서 source 컬렉션은 변경하지 못하지만, target 컬렉션의 경우 변경가능함을 알 수 있습니다.
+- 다만, 읽기 전용 컬렉션은 항상 **스레드 안전(thread safe)** 하지는 않습니다.
+- 다중 스레드 환경에서 데이터를 다루는 경우 데이터를 적절하게 동기화하거나 동시 접근을 허용하는 데이터 구조를 활용해야 합니다.
+
 ### 6.3.3 코틀린 컬렉션과 자바
+
 
 ### 6.3.4 컬렉션을 플랫폼 타입으로 다루기
 
