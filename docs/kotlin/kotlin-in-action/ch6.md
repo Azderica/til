@@ -476,6 +476,17 @@ copyElements(source, target)  // error
 
 ### 6.3.3 코틀린 컬렉션과 자바
 
+![kotlin-collection-interface](https://user-images.githubusercontent.com/42582516/169536424-31796592-afc7-4c35-9f49-4f4edb05eb8d.png)
+
+> 초록색은 읽기 전용, 주황색은 변경 가능, 하늘색은 자바 클래스를 의미합니다.
+
+- 다른 컬렉션의 예시는 아래와 같습니다.
+
+|컬렉션 타입|읽기 전용 타입|변경 가능 타입|
+|-|-|-|
+|List|listOf|mutableListOf, arrayListOf|
+|Set|setOf|mutableSetOf, hashSetOf, linkedSetOf, sortedSetOf|
+|Map|mapOf|mutableMapOf, hashMapOf, linkedMapOf, sortedMapOf|
 
 ### 6.3.4 컬렉션을 플랫폼 타입으로 다루기
 
