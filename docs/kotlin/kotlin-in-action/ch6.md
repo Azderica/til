@@ -490,8 +490,64 @@ copyElements(source, target)  // error
 
 ### 6.3.4 컬렉션을 플랫폼 타입으로 다루기
 
+- 컴파일러는 코틀린 코드가 그 타입을 널이 될 수 있는 타입이나 널이 될 수 없는 타입 어느 쪽으로 사용할 수 있게 허용합니다.
+- 자바 인터페이스가 파일에 들어가는 텍스트를 처리하는 객체를 표현하는 예시입니다.
+
+```java
+interface FileContentProcessor {
+  void processContents(File path, byte[] binaryContents, List<String> textContents);
+}
+```
+
+```kt
+class FileIndexer : FileContentProcessor {
+  override fun processContents(path: File, binaryContents: ByteArray?, textContexts: List<String>?) {
+    //...
+  }
+}
+```
+
+- 컬렉션 파라미터가 있는 다른 자바 인터페이스 예시입니다.
+
+```java
+interface DataParser<T> {
+  void parseData(String input, List<T> output, List<String> errors);
+}
+```
+
+```kt
+class PersonParser: DataParser<Person> {
+  override fun parseData(input: String, output: MutableList<Person>, errors: MutableList<Person>) {
+    // ...
+  }
+}
+```
+
 ### 6.3.5 객체의 배열과 원시 타입의 배열
+
+- 코틀린에서 배열을 만드는 방법은 다음과 같습니다.
+  - `arrayOf` 함수에 원소를 넘기면 배열을 만들 수 있습니다.
+  - `arrayOfNulls` 함수에 정수 값을 인자로 넘기면 모든 원소가 null이고 인자로 넘긴 값과 크기가 같은 배열을 만들 수 있습니다.
+  - `Array` 생성자는 배열 크기와 람다를 인자로 받아서 람다를 호출해서 각 배열 원소를 초기화해줍니다.
+
+```kt
+val letters = Array<String>(26) { i -> ('a' + i).toString() }
+println(letters.jointToString(""))  // abcdefghijklmnopqrstuvwxyz
+```
 
 <br/>
 
 ## 6.4 요약
+
+- 코틀린은 널이 될 수 있는 타입을 지원해 `NullPointerException` 오류를 컴파일 시점에 감지할 수 있습니다.
+- 코틀린의 `?.`, `?:` `!!`, `let` 함수 등을 사용하면 널이 될 수 잇는 타입을 간결한 코드로 다룰 수 있습니다.
+- `as?` 연산자를 사용하면 값을 다른 타입으로 변환하는 것과 변환이 불가능한 경우를 처리하는 것을 한꺼번에 편리하게 처리할 수 있습니다.
+- 자바에서 가져온 타입은 코틀린에서 플랫폼 타입으로 취급됩니다.
+- 코틀린에서는 수를 표현하는 타입이 일반 클래스와 똑같이 생겼고 일반 클래스와 똑같이 동작합니다.
+- 널이 될 수 있는 원시 타입(Int? 등)은 자바의 `박싱한 원시 타입(java.lang.Integer)`에 대응합니다.
+- `Any` 타입은 다른 모든 타입의 조상 타입이며, 자바의 `Object`에 해당합니다. `Unit` 은 자바의 `void`와 비슷합니다.
+- 정상적으로 끝나지 않는 함수의 반환 타입을 지정할 때 `Nothing` 타입을 사용합니다.
+- 코틀린 컬렉션은 표준 자바 컬렉션 클래스를 사용합니다. 그러나 코틀린은 자바보다 컬렉션을 더 개선해서 읽기 전용 컬렉션과 변경 가능한 컬렉션을 구별해 제공합니다.
+- 자바 클래스를 코틀린에서 확장하거나 자바 인터페이스를 코틀린에서 구현하는 경우, 메서드 파라미터의 널 가능성과 변경 가능성에 대해 생각해야합니다.
+- 코틀린의 `Array` 클래스는 일반 제네릭 클래스처럼 보입니다.
+- 원시타입의 배열은 `IntArray`와 같이 각 타입에 대한 특별한 배열로 표현합니다.
