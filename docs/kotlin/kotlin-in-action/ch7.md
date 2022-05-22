@@ -53,7 +53,41 @@ println('a' * 3)    // aaa
 
 ### 7.1.2. 복합 대입 연산자 오버로딩
 
+- `+=`, `-=` 등의 연산자는 **복합 대입(compound assignment) 연산자**라고 부릅니다.
+
+```kt
+val numbers = ArrayList<Int>()
+numbers += 42
+println(numbers[0])
+```
+
+- 복합 대입 연산자 함수도 비슷하게 `minusAssign, timesAssign` 등의 이름을 사용합니다.
+
+```kt
+operator fun<T> MutableCollection<T>.plusAssign(element: T) { this.add(element) }
+```
+
+- `a += b`는 `a = a.plus(b)` 또는 `a.plusAssign(b)` 로 번역할 수 있습니다.
+
 ### 7.1.3. 단항 연산자 오버로딩
+
+- 코틀린은 단항 연산자도 제공합니다.
+
+```kt
+operator fun Point.unaryMinus(): Point { return Point(-x, -y) }
+val p = Point(10, 20)
+println(-p)     // Point(x=-10, y=-20)
+```
+
+- 오버로딩할 수 있는 단항 산술 연산자는 다음과 같습니다.
+
+|식|함수 이름|
+|-|-|
+|+a|unaryPlus|
+|-a|unaryMinus|
+|!a|not|
+|++a, a++|inc|
+|--a, a--|dec|
 
 <br/>
 
