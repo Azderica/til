@@ -123,11 +123,33 @@ class Person (
 
 ### 7.3.1. 인덱스로 원소에 접근: get과 set
 
+- 코틀린에서 맵의 원사에 접근할 때나 자바에서 배열 원소에 접근할 때, `[]`를 사용합니다.
+- `x[a, b]` 는 `x.get(a, b)` 로 호출됩니다.
+- `x[a, b] = c` 는 `x.set(a, b, c)` 로 호출됩니다. 
+
 ### 7.3.2. in 관례
+
+- 컬렉션이 지원하는 다른 연산자는 `in` 이 있습니다.
+- `a in c` 는 `c.contains(a)` 로 전달됩니다.
 
 ### 7.3.3. rangeTo 관례
 
+- `start..end` 는 `start.rangeTo(end)` 를 지원합니다.
+- `rangeTo` 함수는 범위를 반환합니다.
+
+```kt
+val n = 9
+println(0..(n+1))   // 0..10
+(0..n).forEach { print(it) }    // 0123456789
+```
+
 ### 7.3.4. for 루프를 위한 iterator 관례
+
+- 코틀린의 `for` 루프는 범위 검사와 똑같이 `in` 연산자를 사용하나 의미는 다르며 이때는 `list.iterator()` 를 호출합니다.
+
+```kt
+operator fun CharSequence.iterator(): CharIterator  // for (c in "abc")
+```
 
 <br/>
 
