@@ -93,9 +93,29 @@ println(-p)     // Point(x=-10, y=-20)
 
 ## 7.2 비교 연산자 오버로딩
 
+- 코틀린은 자바와 달리 모든 객체에 대해 비교 연산을 수행할 수 있습니다.
+
 ### 7.2.1. 동등성 연산자: equals
 
+- 코틀린은 `==` 연산자를 `equals` 메서드 호출로 컴파일합니다.
+- `a == b` 는 `a?.equals(b) ?: (b == null)` 을 의미합니다.
+- 식별자 비교(identity equals, `===`) 를 사용해 파라미터의 수신 객체와 같은 지 비교하며, 자바의 `==` 연산자와 동일합니다.
+
 ### 7.2.2. 순서 연산자: compareTo
+
+- 코틀린도 자바와 동일한 `Compareable` 인터페이스를 지원합니다.
+- `a >= b` 는 `a.compareTo(b) >= 0` 을 의미합니다.
+- 다음과 같은 라이브러리도 사용가능합니다.
+
+```kt
+class Person (
+    val firstName: String, val lastName: String
+): Comparable<Person> {
+    override fun compareTo(other: Person): Int {
+        return compareValuesBy(this, other, Person::lastName, Person::firstName)
+    }
+}
+```
 
 <br/>
 
