@@ -155,7 +155,37 @@ operator fun CharSequence.iterator(): CharIterator  // for (c in "abc")
 
 ## 7.4 구조 분해 선언과 component 함수
 
+- 코틀린의 특징 중 **구조 분해 선언(destructuring declaration)** 에 대해 이야기합니다.
+- `val (a, b) = p` 는 `val a = p.component1(), val b = p.component2()` 와 같습니다.
+- 다음과 같이 사용할 수 있습니다.
+
+```kt
+// 구조 분해 선언을 사용해 여러 값 반환
+data class NameComponents(val name: String, val extension: String)
+
+fun splitFilename(fullName: String): NameComponents {
+    val (name, extension) = fullName.split('.', limit = 2)
+    return NameComponents(name, extension)
+}
+val (name, ext) = splitFilename("example.kt")
+println(name)   // example
+println(ext)    // ext
+```
+
 ### 7.4.1. 구조 분해 선언과 루프
+
+- 확장 함수를 대표적으로 사용한 예제는 다음과 같습니다.
+
+```kt
+// 구조 분해 선언을 사용해 맵 이터레이션
+fun printEntries (map: Map<String, String>) {
+    for ((key, value) in map) {
+        println("$key -> $value")
+    }
+}
+val map = mapOf("Oracle" to "Java", "JetBrains" to "Kotlin")
+printEntries(map)   // Oracle -> Java \n JetBrains -> Kotlin
+```
 
 <br/>
 
