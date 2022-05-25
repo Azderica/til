@@ -191,9 +191,79 @@ printEntries(map)   // Oracle -> Java \n JetBrains -> Kotlin
 
 ## 7.5 프로퍼티 접근자 로직 재활용: 위임 프로퍼티
 
+- **위임 프로퍼티(delegated property)** 를 사용하면 값을 뒷받침하는 필드에 단순히 저장하는 것보다 더 복잡한 방식으로 작동하는 프로퍼티를 쉽게 구현할 수 있습니다.
+- 이러한 특성의 기반에는 **위임**이 있으며, 위임은 객체가 직접 작업을수행하지 않고 다른 도우미 객체가 그 작업을 처리하게 맡기는 디자인 패턴입니다.
+- 작업을 처리하는 도무이 객체를 **위임 객체(delegate)** 라 부릅니다.
+
 ### 7.5.1. 위임 프로퍼티 소개
 
+- 일반적인 위임의 문법은 다음과 같습니다.
+
+```kt
+class Foo {
+    var p: Type by Delegate()
+}
+```
+
+```kt
+class Foo {
+    private val delegate = Delegate()
+    var p: Type
+    set(value: Type) = delegate.setValue(..., value)
+    get() = delegate.getValue(...)
+}
+```
+
+- 프로퍼티 위임 관례를 따르는 Delegate 클래스는 `getValue`와 `setValue`를 제공해야합니다.
+
+```kt
+class Delegate {
+    operator fun getValue(...) {...}
+    operator fun setValue(..., value: Type) { ... }
+}
+class Foo {
+    var p: Type by Delegate()   // "by" 키워드는 프로퍼티와 위임 객체를 연결합니다.
+}
+val foo = Foo()
+val oldValue = foo.p    // delegate.getValue() 호출
+foo.p = newValue        // delegate.setValue(..., newValue)
+```
+
 ### 7.5.2. 위임 프로퍼티 사용: by lazy()를 사용한 프로퍼티 초기화 지연
+
+- **지연 초기화(lazy initialization)** 는 객체의 일부분을 초기화하지 않고 남겨뒀다가 실제로 그 부분의 값이 필요할 경우 초기화할 때 흔히 쓰이는 패턴입니다.
+- 초기화 과정에 자원을 많이 사용하거나 객체를 사용할 때마다 꼭 초기화하지 않아도 되는프로퍼티에 대해 지연 초기화 패턴을 사용할 수 있습니다.
+
+```kt
+class Email { /*...*/ }
+fun loadEmails(person: Person) : List<Email> {
+    println("${person.name}의 이메일을 가져옴")
+    return listOf(/*...*/)
+}
+
+// 지연 초기화 예제.
+class Person (val name: String) {
+    private var _emails: List<Email>? = null
+    val emails: List<Email>
+        get() {
+            if(_emails == null) { _emails loadEmails(this)}
+            return _emails!!    // 저장해 둔 데이터가 있으면 데이터 반환
+        }
+}
+
+val p = Person("Alice")
+p.emails    // Load emails for Alice
+```
+
+- 위의 예제는 **뒷받침하는 프로퍼티(backing property)** 라는 기법을 사용합니다.
+  - `_emails`라는 프로퍼티는 값을 저장하고, 다른 프로퍼티인 `emails`는 `_emails`라는 프로퍼티에 대한 읽기 연산을 저장합니다.
+- 코틀린은 이를 개선했으며, `lazy`라는 표준 라이브러리 함수가 있습니다.
+
+```kt
+class Person(val name: String) {
+    val emails by lazy { loadEmails(this) }
+}
+```
 
 ### 7.5.3. 위임 프로퍼티 구현
 
