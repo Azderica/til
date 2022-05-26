@@ -267,12 +267,96 @@ class Person(val name: String) {
 
 ### 7.5.3. 위임 프로퍼티 구현
 
+- 코틀린의 위임 방식에 대한 예제는 다음과 같습니다.
+
+```kt
+class ObservableProperty (
+    var propValue: Int, val changeSupport: PropertyChangeSupport
+) {
+    operator fun getValue(p: Person, prop: KProperty<*>): Int = propValue
+    operator fun setValue(p: Person, prop: KProperty<*>, newValue: Int) {
+        val oldValue = propValue
+        propValue = newValue
+        changeSupport.firePropertyChange(prop.name, oldValue, newValue)
+    }
+}
+
+class Person (
+    val name: String, age: Int, salary: Int
+) : PropertyChangeAware() {
+    var age: Int by ObservableProperty(age, changeSupport)
+    var salary: Int by ObservableProperty(salary, changeSupport)
+}
+```
+
+- `by` 오른쪽에 오는 객체를 **위임 객체(delegate)** 라고 부릅니다.
+- 코틀린은 위임 객체를 감춰진 프로퍼티에 저장하고, 주 객체의 프로퍼티를 읽거나 쓸 때마다 위임 객체의 `getValue` 와 `setValue` 를 호출해줍니다.
+
+```kt
+// Delegates.observable을 사용해 프로퍼티 변경 통지 구현
+class Person (
+    val name: String, age: Int, salary: Int
+) : PropertyChangeAware() {
+    private val observer = {
+        prop: KProperty<*>, oldValue: Int, newValue: Int ->
+        changeSupport.firePropertyChange(prop.name, oldValue, newValue)
+    }
+    var age: Int by Delegates.observable(age, observer)
+    var salary: Int by Delegates.observable(salary, observer)
+}
+```
+
+- 위임 메커니즘을 모든 타입에 두루두루 사용할 수 있습니다.
+
 ### 7.5.4. 위임 프로퍼티 컴파일 규칙
+
+- 컴파일러는 모든 프로퍼티 접근자 안은 `getValue`와 `setValue` 호출을 생성해줍니다.
+  - `val x = c.prop` 는 `val x = <delegate>.getValue(c, <property>)`
+  - `c.prop = x` 는 `<delegate>.setValue(c, <property>, x)`
 
 ### 7.5.5. 프로퍼티 값을 맵에 저장
 
+- 자신의 프로퍼티를 동적으로 정의할 수 있는 객체를 만들 때 위임 프로퍼티를 활용하는 경우가 있으며 그런 객체를 **확장 가능한 객체(expando object)** 라고 합니다.
+
+```kt
+// 값을 맵에 저장하는 위임 프로퍼티
+class Person {
+    private val _attributes = hashMapOf<String, String>()
+    fun setAttribute(attrName: String, value: String) {
+        _attributes[attrName] = value
+    }
+    val name: String by _attributes
+}
+```
+
+- 표준 라이브러리가 `Map`과 `MutableMap` 인터페이스에 대해 `getValue`와 `setValue` 확장 함수를 제공합니다.
+
 ### 7.5.6. 프레임워크에서 위임 프로퍼티 활용
+
+```kt
+// 위임 프로퍼티를 사용해 데이터베이스 칼럼 접근
+object Users: IdTable() {
+    val name = varchar("name", length = 50).index()
+    val age = integer("age")
+}
+class User(id: EntityID) : Entity(id) {
+    var name: String by Users.name
+    var age: Int by Users.age
+}
+```
+
+- `User`의 상위 클래스인 `Entity` 클래스는 데이터베이스 칼럼을 엔티티의 속성(attribute) 값으로 연결해주는 매핑이 있습니다.
 
 <br/>
 
 ## 7.6 요약
+
+- 코틀린에서는 정해진 이름의 함수를 오버로딩암으로써 표준 수학 연산자를 오버로딩할 수 있습니다.
+- 비교 연산자는 `equals`와 `compareTo` 메서드로 변환됩니다.
+- 클래스에 `get, set, contains`라는 함수를 정의하면 그 클래스의 인스턴스에 대해 `[]`와 `in` 연산을 사용할 수 있고, 그 객체를 코틀린 컬렉션 객 체와 비슷하게 다룰 수 있습니다.
+- 미리 정해진 관례를 따라 `rangeTo, iterator` ㅎ마수를 정의하면 범위를 만들거나 컬렉션과 배열의 원소를 이터레이션할 수 있습니다.
+- 구조 분해 선언을 통해 한 객체의 상태를 분해해서 여러 변수에 대입할 수 있습니다.
+- 위임 프로퍼티를 통해 프로퍼티 값을 저장하거나 초기화하거나 읽거나 변경할 때 사용하는 로직을 재활용할 수 있습니다. 위임 프로퍼티는 프레임워크를 만들 때 아주 유용합니다.
+- 표준 라이브러리 함수인 `lazy`를 통해 지연 초기화 프로퍼티를 쉽게 구현할 수 있습니다.
+- `Delegates.observable` 함수를 사용하면 프로퍼티 변경을 관찰할 수 있는 관찰자를 쉽게 추가할 수 있습니다.
+- 맵을 위임 객체로 사용하는 위임 프로퍼티를 통해 다양한 속성을 제공하는 객체를 유연하게 다룰 수 있습니다.
