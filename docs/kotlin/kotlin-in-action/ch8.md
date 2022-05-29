@@ -4,9 +4,35 @@ sidebar_position: 8
 
 # 8. 고차 함수: 파라미터와  반환 값으로 람다 사용
 
+- 람다를 인자로 받거나 반환하는 함수인 고차원 함수(high order function)에 대해 이야기합니다.
+
 ## 8.1 고차 함수 정의
 
+- 고차 함수는 다른 함수를 인자로 받거나 함수를 반환하는 함수입니다.
+
 ### 8.1.1 함수 타입
+
+```kt
+val sum = { x: Int, y: Int -> x + y }
+val action = { println(42) }
+```
+
+- 코틀린 문법은 다음과 같습니다.
+
+```kt
+(Int, String) -> Unit
+// (Int, String) : 파라미터 타입
+// Unit : 반환 타입
+```
+
+- 다음과 같이 사용할 수 있습니다.
+
+```kt
+var canReturnNull: (Int, Int) -> Int? = { x, y -> null }
+var funOrNull: ((Int, Int) -> Int)? = null
+```
+
+- 파라미터 이름은 타입 검사 시 무시됩니다.
 
 ### 8.1.2 인자로 받은 함수 호출
 
