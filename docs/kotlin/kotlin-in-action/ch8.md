@@ -36,6 +36,32 @@ var funOrNull: ((Int, Int) -> Int)? = null
 
 ### 8.1.2 인자로 받은 함수 호출
 
+- filter의 선언은 다음과 같습니다.
+
+```kt
+fun String.filter(predicate: (Char) -> Boolean): String
+// String.filter    : 수신 객체 타입
+// predicate        : 파라미터 타입
+// (Char) -> Boolean: 파라미터 함수 타입
+// (Char)           : 파라미터로 받는 함수의 파라미터 타입
+// Boolean          : 파라미터로 받는 함수의 반환 타입
+```
+
+- filter를 구현하면 다음과 같습니다.
+
+```kt
+fun String.filter(predicate: (Char) -> Boolean): String {
+    val sb = StringBuilder()
+    for(index in 0 until length) {
+        val element = get(index)
+        if (predicate(element)) sb.append(element)
+    }
+    return sb.toString()
+}
+println("ab1c".filter { it in 'a'...'z' })  // abc
+```
+
+
 ### 8.1.3 자바에서 코틀린 함수 타입 사용
 
 ### 8.1.4 디폴트 값을 지정한 함수 타입 파라미터나 널이 될 수 있는 함수 타입 파라미터
