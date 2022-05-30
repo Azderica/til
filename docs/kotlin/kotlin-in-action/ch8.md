@@ -61,8 +61,31 @@ fun String.filter(predicate: (Char) -> Boolean): String {
 println("ab1c".filter { it in 'a'...'z' })  // abc
 ```
 
-
 ### 8.1.3 자바에서 코틀린 함수 타입 사용
+
+- 컴파일된 코드안에서 함수 타입은 일반 인터페이스로 바뀝니다.
+- 함수 타입을 사용하는 코틀린 함수를 자바에서도 쉽게 호출할 수 있습니다.
+
+```kt
+fun processTheAnswer(f: (Int) -> Int) {
+    println(f(42))
+}
+```
+
+```java
+processTheAnswer(number -> number + 1)  // 43
+```
+
+- 자바에서 코틀린 표준 라이브러리가 제공하는 람다를 인자로 받는 확장 함수를 쉽게 호출할 수는 있으나 코드가 깔끔하지는 않습니다.
+
+```java
+List<String> strings = new ArrayList<>();
+strings.add("42");
+CollectionsKt.forEach(strings. s -> {
+    System.out.println(s);
+    return Unit.INSTANCES;
+})
+```
 
 ### 8.1.4 디폴트 값을 지정한 함수 타입 파라미터나 널이 될 수 있는 함수 타입 파라미터
 
