@@ -89,9 +89,104 @@ CollectionsKt.forEach(strings. s -> {
 
 ### 8.1.4 디폴트 값을 지정한 함수 타입 파라미터나 널이 될 수 있는 함수 타입 파라미터
 
+- 호출마다 람다를 넘기게 되면, 함수 호출을 오히려 불편하게 되는 경우가 있으나, 이 때는 파라미터에 대한 디폴트 값을 지정하면 이런 문제를 해결할 수 있습니다.
+
+```kt
+fun <T> Collection<T>.joinToString (
+    separator: String = ", ",
+    prefix: String = "",
+    postfix: String = "",
+    transform: (T) -> String = { it.toString() }
+): String {
+    val result = StringBuilder(prefix)
+    for((index, element) in this.withIndex()) {
+        if(index > 0) result.append(separator)
+        result.append(transform(element))
+    }
+    result.append(postfix)
+    return result.toString()
+}
+val letters = listOf("Alpha", "Beta")
+println(letters.joinToString()) // Alpha, Beta
+println(letters.joinToString { it.toLowerCase() })  // alpha, beta
+println(letters.joinToString(separator = "!", postfix = "! ", ... transform = {it.toUpperCase() } ))    // ALPHA!, BETA!
+```
+
+- 안전 호출을 활용하면 다음과 같습니다.
+
+```kt
+fun <T> Collection<T>.joinToString (
+    separator: String = ", ",
+    prefix: String = "",
+    postfix: String = "",
+    transform: ((T) -> String)? = null
+): String {
+    val result = StringBuilder(prefix)
+    for((index, element) in this.withIndex()) {
+        if(index > 0) result.append(separator)
+        val str = transform?.invoke(element) ?: element.toString()
+        result.append(str)
+    }
+    result.append(postfix)
+    return result.toString()
+}
+```
+
 ### 8.1.5 함수를 함수에서 반환
 
+- 함수가 함수를 반환할 필요가 있는 경우보다는 함수가 함수를 인자로 받아야 할 필요가 있는 경우가 더 많습니다. 그렇지만 함수가 함수를 반환하는 유용합니다.
+
+```kt
+data class Person(
+    val firstName: String,
+    val lastName: String,
+    val phoneNumber: String?
+)
+
+class ContactListFilters {
+    var prefix: String = ""
+    var onlyWithPhoneNumber: Boolean = false
+    fun getPredicate(): (Person) -> Boolean {
+        val startsWithPrefix = { p: Person -> 
+            p.firstName.startsWith(prefix) || p.lastName.startsWith(prefix)
+        } 
+        if(!onlyWithPhoneNumber) {
+            return startsWithPrefix
+        }
+        return { startsWithPrefix(it) && it.phoneNumber != null }
+    }
+}
+val contacts = listOf(Person("Dmitry", "Jemerov", "123-4567"), Person("Svetlana", "Isakova", null))
+val contactListFilters = ContactListFilters()
+with (contactListFilters) {
+    prefix = "Dm"
+    onlyWithPhoneNumber = true    
+}
+println(contacts.filter(... contactListFilters.getPredicate()))
+// [Person(firstName=Dmitry, lastName=Jemerov, phoneNumber=123-4567)]
+```
+
+- 고차 함수는 코드 구조를 개선하고 중복을 없앨 때 쓸 수 있는 강력한 도구입니다.
+
 ### 8.1.6 람다를 활용한 중복 제거
+
+- 함수 타입과 람다 식은 재활용하기 좋은 코드를 만들 때 쓸 수 있는 좋은 도구입니다.
+- 람다는 복잡한 구조를 만들어야만 피할 수 있는 코드 중복도 람다를 활용하면 간결하고 쉽게 제거할 수 있습니다.
+
+```kt
+val averageMobileDuration = log
+    .filter { it.os in setOf(OS.IOS, OS.ANDROID) }
+    .map(SiteVisit::duration)
+    .average()
+println(averageMobileDuration)  // 12.15
+```
+
+```kt
+fun List<SiteVisit>.averageDurationFor(predicate: (SiteVisit) -> Boolean) =
+        filter(predicate).map(SiteVisit::duration).average()
+println(log.averageDurationFor { it.os in setOf(OS.ANDROID, OS.IOS) })  // 12.15
+println(log.averageDurationFor { it.os == OS.IOS && it.path == "/signup" }) // 8.0
+```
 
 <br/>
 
