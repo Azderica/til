@@ -317,10 +317,68 @@ fun readFirstLineFromFile(path: String): String {
 
 ### 8.3.1 람다 안의 return문: 람다를 둘러싼 함수로부터 반환
 
+```kt
+fun lookForAlice(people: List<Person>) {
+    people.forEach {
+        if (it.name == "Alice") {
+            println("Found!")
+            return
+        }
+    }
+    println("Alice is not found")
+}
+```
+
+- 자신을 둘러싸고 있는 블록보다 더 바깥에 있는 다른 블록을 반환하게 만드는 `return`문을 **넌로컬(non-local)return** 이라 부릅니다.
+- `return`이 바깥쪽 함수를 반환시킬 수 있는 때는 람다를 인자로 받는 함수가 인라인 함수인 경우일 뿐입니다.
+
 ### 8.3.2 람다로부터 반환: 레이블을 사용한 return
+
+- 람다식에서도 **로컬(local) return**을 사용할 수 있습니다.
+
+```kt
+fun lookForAlice(people: List<Person>) {
+    people.forEach {
+        if(it.name == "Alice") return@forEach   // return@forEach는 람다식으로부터 반환시킵니다.
+    }
+    println("Alice might be somewhere")
+}
+```
+
+- 람다 식에는 레이블이 2개 이상 붙을 수 없습니다.
+- 넌로컬 반환문은 장황하고, 람다 안의 여러 위치에 return 식이 들어가야하는 경우 사용하기 불편합니다. 이때는 무명 함수를 사용합니다.
 
 ### 8.3.3 무명 함수: 기본적으로 로컬 return
 
+```kt
+// 무명 함수 안에서 return 사용하기
+fun lookForAlice(people: List<Perosn>) {
+    people.forEach(fun (person) {
+        if (person.name == "Alice") return
+        println("${person.name} is not Alice")
+    })
+}
+lookForAlice (people)   // Bob is not Alice
+```
+
+- 무명 함수는 일반 함수와 비슷해 보이며, 차이는 함수 이름이나 파라미터 타입을 생략할 수 있다는 점입니다.
+
+```kt
+// filter에 무명 함수 넘기기
+people.filter(fun (person): Boolean {
+    return person.age < 30
+})
+```
+
+- 무명 함수도 일반 함수와 같은 반환 타입 지정 규칙을 따릅니다.
+
+```kt
+// 식이 본문인 무명 함수 사용하기
+people.filter(fun (person) = person.age < 30)
+```
+
+- 무명 함수 안에서 레이블이 붙지 않은 return 식은 무명 함수 자체를 반환시킬 뿐 무명 함수를 둘러싼 다른 함수를 반환시키지 않습니다.
+- 무명 함수 본문의 return은 무명 함수를 반환시키고, 무명 함수 밖의 다른 함수를 반환시키지 못합니다.
 
 <br/>
 
