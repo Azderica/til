@@ -6,13 +6,76 @@ sidebar_position: 9
 
 ## 9.1 제네릭 타입 파라미터
 
+- 제네릭스를 사용하면 **타입 파리미터(type parameter)** 를 받는 타입을 정의할 수 있습니다.
+- 제네릭 타입의 인스턴스를 만들려면 타입 파라미터를 구체적인 **타입 인자(type argument)** 로 치환해야 합니다.
+
 ### 9.1.1 제네릭 함수와 프로퍼티
+
+- 컬렉션을 다루는 라이브러리 함수는 대부분 제네릭 함수입니다.
+
+```kt
+fun <T> List<T>.slice(indicees: IntRange): List<T>
+// <T> : 타입 파라미터 선언
+// <T>. , <T> : 타입 파라미터가 수신 객체와 반환 타입에 씁니다.
+```
+
+- 클래스나 인터페이스 안에 정의된 메서드, 확장 함수 또는 최상위 함수에서 타입 파라미터를 선언할 수 있습니다.
+
+> 확장 프로퍼티만 제네릭하게 만들 수 있습니다.
+> - 일반 프로퍼티는 타입 파라미터를 가질 수 없습니다.
+> - `val <T> x: T = TODO()` // Error: type parameter of a property must be used in its receiver type
 
 ### 9.1.2 제네릭 클래스 선언
 
+- 자바와 마찬가지로 코틀린에서도 타입 파라미터를 넣은 `<>` 를 클래스(인터페이스) 이름 뒤에 붙이면 클래스(인터페이스)를 제네릭하게 만들 수 있습니다.
+- 제네릭 클래스를 확장하는 클래스를 정의하려면 기반 타입의 제네릭 파라미터에 대해 타입 인자를 지정해야 합니다.
+
+```kt
+interface Comparable<T> {
+    fun compareTo(other: T): Int
+}
+class String: Comparable<String> {
+    override fun compareTo(other: String): Int = /*...*/
+}
+```
+
+- 해당 건은 자바와 비슷합니다.
+
 ### 9.1.3 타입 파라미터 제약
 
+- **타입 파라미터 제약(type parameter constraint)** 은 클래스나 함수에 사용할 수 있는 타입 인자를 제한하는 기능입니다.
+- 어떤 타입을 제네릭 타입의 타입 파라미터에 대한 상한(upper bound)으로 지정하면 그 제네릭 타입을 인스턴스화할 때 사용하는 타입 인자는 반드시 그 상한 타입이거나 그 상한 타입의 하위 타입이어야 합니다.
+
+```kt
+fun <T : Number> List<T>.sum(): T
+// T : 타입 파라미터
+// Number : 상한 
+```
+
+```kt
+// 타입 파라미터를 제약하는 함수 선언
+fun <T: Comparable<T>> max(first: T, secont: T): T {
+    return if(first > second) first else second
+}
+println(max("kotlin", 42))  // Error: Type parameter bound for T is not satisfied
+```
+
+- 데이터에 접근하는 연산과 데이터를 변환하는 연산을 T 타입의 값에서 수행할 수 있습니다.
+
 ### 9.1.4 타입 파라미터를 널이 될 수 없는 타입으로 한정
+
+- 제네릭 클래스나 함수를 정의하고 그 타입을 인스턴스화할 때는 널이 될 수 있는 타입을 포함하는 어떤 타입으로 타입 인자를 지정해도 타입 파라미터를 치환할 수 있습니다.
+- 아무런 상한이 없는 경우, `Any?` 를 상한으로 정한 파라미터와 같습니다.
+
+```kt
+// null을 허용하는 경우
+class Processor<T> {}
+
+// null을 허용하지 않는 경우
+class Processor<T : Any> {}
+```
+
+- 널이 될 수 없는 타입을 통해 상한을 정할 수 있습니다.
 
 <br/>
 
