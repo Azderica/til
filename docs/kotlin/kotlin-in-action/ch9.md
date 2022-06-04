@@ -81,7 +81,46 @@ class Processor<T : Any> {}
 
 ## 9.2 실행 시 제네릭스의 동작: 소거된 타입 파라미터와 실체화된 타입 파라미터
 
+- JVM의 제네릭스는 보통 **타입 소거(type erasure)** 를 사용해서 구현됩니다.
+  - 이는 실행 시점에 제네릭 클래스의 인스턴스에 타입 인자 정보가 없다는 뜻입니다.
+- `inline` 을 통해 이러한 제약을 우회할 수 있습니다.
+
 ### 9.2.1 실행 시점의 제네릭: 타입 검사와 캐스트
+
+- 자바와 마찬가지로 코틀린 제네릭 타입 인자 정보는 런타임에 지워집니다.
+- 컴파일러가 타입 인자를 알고 올바른 타입의 값만 각 리스트에 넣도록 보장해주므로 큰 상관이 없습니다.
+- 타입인자를 따로 저장하지 않기 때문에 실행 시점에 타입 인자를 검사할 수 없습니다.
+
+```kt
+if (value is List<String>)  { ... }
+// Error: Cannot check for instnce of erased type
+```
+
+- 타입 정보의 크기를 줄여 전반적인 메모리 사용량이 줄어든다는 제네릭 타입 소거 나름의 장점이 있습니다.
+- 값이 집합이나 맵이 아니라 리스트라는 사실을 확인하는 방법은 **스타 프로젝션(star projection)** 을 사용하면 됩니다.
+
+```kt
+// 제네릭 타입으로 타입 캐스팅
+fun printSum(c: Collection<*>) {
+    val intList = c as? List<Int> ?: throw IllegalArgumentException("List is expected")
+    println(intList.sum())
+}
+printSum(listOf(1, 2, 3))   // 6
+printSum(setOf(1, 2, 3))    // IllegalArgumentException: List is expected
+printSum(listOf("a", "b", "c")) // ClassCastException: String cannot be cast to Number
+```
+
+- 코틀린 컴파일러는 컴파일 시점에 타입 정보가 주어진 경우에는 `is` 검사를 수행하게 허용할 수 있을 정도록 똑똑합니다.
+
+```kt
+fun printSum(c: Collection<T>) {
+    if(c is List<Int>) {    // 올바른 검사
+        println(c.sum())
+    }
+}
+```
+
+- 코틀린은 제네릭 함수의 본문에서 그 함수의 타입 인자를 가리킬 수 있는 특별한 기능을 제공하지 않습니다.
 
 ### 9.2.2 실체화된 타입 파라미터를 사용한 함수 선언
 
