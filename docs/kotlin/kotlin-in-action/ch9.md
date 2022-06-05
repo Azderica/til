@@ -149,8 +149,35 @@ println(items.filterIsInstance<String>) // [one, three]
 
 ### 9.2.3 실체화된 타입 파라미터로 클래스 참조 대신
 
+- 표준 자바 API인 `ServiceLoader`를 사용해 서비스를 읽으려면 다음처럼 호출해야 합니다.
+
+```kt
+val serviceImpl = ServiceLoader.load(Service::class.java)
+```
+
+- 이를 구체화한 타입 파라미터를 사용하면 다음과 같습니다.
+
+```kt
+inline fun <reified T> loadService() {
+    return ServiceLoader.load(T::class.java)
+}
+val serviceImple = loadService<Service>()
+```
+
 ### 9.2.4 실체화된 타입 파라미터의 제약
 
+- 다음의 경우, 실체화된 타입 파라미터를 사용할 수 있습니다.
+  - 타입 검사와 캐스팅(`is, !is, as, as?`)
+  - 코틀린 리플렉션 API(`::class`)
+  - 코틀린 타입에 대응하는 `java.lang.Class` (`::class.java`)
+  - 다른 함수를 호출할 때 타입 인자로 사용
+- 그러나 다음과 같은 일은 할 수 없습니다.
+  - 타입 파라미터 클래스의 인스턴스 생성
+  - 타입 파라미터 클래스의 동반 객체 메서드 호출
+  - 실체화한 타입 파라미터를요구하는 함수를 호출하면서 실체화하지 않는 타입 파라미터로 받은 타입을 타입 인자로 넘기기
+  - 클래스, 프로퍼티, 인라인 함수가 아닌 함수의 타입 파라미터를 `reified`로 지정
+- 실체화된 타입 파라미터를 인라인 함수에만 사용할 수 있으므로 실체화한 타입 파라미터를 사용하는 함수는 자신에게 전달되는 모든 람다와 함게 인라이닝
+- `noinline` 변경자를 함수 타입 파라미터에 붙여서 인라이닝을 금지할 수 있습니다.
 
 <br/>
 
