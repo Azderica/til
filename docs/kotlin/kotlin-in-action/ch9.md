@@ -215,6 +215,42 @@ fun test(i: Int) {
 
 ### 9.3.3 공변성: 하위 타입 관계를 유지
 
+- 코틀린에서 제네릭 클래스가 타입 파라미터에 대해 공변적임을 표시하려면 타입 파라미터 이름 앞에 `out`을 넣어야합니다.
+
+```kt
+interface Producer<out T> {
+    fun produce() : T
+}
+```
+
+- 클래스의 타입 파라미터를 공변적으로 만들면 함수 정의에 사용한 파라미터 타입과 타입 인자의 타입이 정확히 일치하지 않더라도 그 클래스의 인스턴스를 함수 인자나 반환 값으로 사용할 수 있습니다.
+
+```kt
+// 무공변 컬렉션 역할을 하는 클래스 사용
+class Herd<out T : Animal> {    // T는 공변적
+    ...
+}
+fun takeCareOfCats(cats: Herd<Cat>) {
+    for (i in 0 until cats.size) {
+        cats[i].cleanLitter()
+    }
+    feedAll(cats)   // 캐스팅 필요 없음.
+}
+```
+
+- 정리하면 다음과 같습니다.
+  - **공변성** : 하위 타입 관계가 유지
+  - **사용 제한** : T를 아웃 위치에서만 사용할 수 있습니다.
+- List는 T에 대해 공변적입니다.
+
+```kt
+interface List<out T> : Collection<T> {
+    operator fun get(index: Int) : T
+    fun subList(fromIndex: Int, toIndex: Int) : List<T>
+    // ...
+}
+```
+
 ### 9.3.4 반공변성: 뒤집힌 하위 타입 관계
 
 ### 9.3.5 사용 지점 변성: 타입이 언급되는 지점에서 변성 지정
