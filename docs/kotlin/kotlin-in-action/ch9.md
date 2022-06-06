@@ -253,7 +253,52 @@ interface List<out T> : Collection<T> {
 
 ### 9.3.4 반공변성: 뒤집힌 하위 타입 관계
 
+- 반공변성(contravariance)는 공변성의 반대적 개념입니다.
+- 공변성, 반공변성, 무공변성을 정리하면 다음과 같습니다.
+
+|공변성|반공변성|무공변선|
+|------------|------------|------------|
+|`Producer<out T>`|`Consumer<in T>`|`MutableList<T`|
+|타입 인자의 하위 타입관계가 제네릭 타입에서도 유지|타입 인자의 하위 타입 관계가 제네릭 타입에서 뒤집힘|하위 타입 관계가 성립하지 않음|
+|`Prodcuer<Cat>`은 `Producer<Animal>`의 하위 타입|`Consumer<Animal>`은 `Consumer<Cat>`의 하위 타입||
+|T를 아웃 위치에서만 사용|T를 인 위치에서만 사용|T를 아무위치에서나 사용|
+
+- 클래스나 인터페이스가 어떤 타입 파라미터에 대해서는 공변적이면서 다른 타입 파라미터에 대해서는 반공변적일 수도 있습니다.
+
 ### 9.3.5 사용 지점 변성: 타입이 언급되는 지점에서 변성 지정
+
+- 클래스를 선언하면서 변성을 지정하면 그 클래스를 사용하는 모든 장소에 변성 지정자가 영향을 미치므로 편리하며, 이런 방식을 **선언 지점 변성(declariation site variance)** 라고 부릅니다.
+- 자바에서는 타입 파라미터가 있는 타입으로 대치할 수 있는지 명시해야하며 이러한 방식을 **사용 지점 변성(use-site variance)** 라고 합니다.
+- 코틀린도 사용 지점 변성을 지원하며, 클래스 안에서 어떤 타입 파라미터가 공변적이거나 반공변적인지 선언할 수 없는 경우에서도 큭정 파입 파라미터가 나타나는 지점에서 변성을 정할 수 있습니다.
+
+```kt
+// 타입 파라미터가 둘인 데이터 복사 함수
+fun <T: R, R> copyData(source: MutableList<T>, destination: MutableList<R>) {
+    for (item in source) {
+        destination.add(item)
+    }
+}
+val ints = mutableListOf(1, 2, 3)
+val anyItems = mutableListOf<Any>()
+copyData(ints, anyItems)    // Int가 Any의 하위 타입이므로 이 함수를 호출할 수 있습니다.
+println(anyItems)   // [1, 2, 3]
+```
+
+- 타입 선언에서 타입 파라미터를 사용하는 위치라면 어디에나 변성 변경자를 붙일 수 있습니다. 즉, 파리미터 타입, 로컬 변수 타입, 함수 반환 타입 등에 타입 파라미터가 쓰이는 경우 `in`이나 `out` 변경자를 붙일 수 있으며, 이 때 `타입 프로젝션(type projection)`이 일어납니다.
+
+```kt
+// 아웃-프로젝션 타입 파라미터를 사용하는 데이터 복사 함수
+fun <T> copyData(source: MutableList<out T>, destination: MutableList<T>) {
+    for(item in source) { destination.add(item) }
+}
+```
+
+```kt
+// 인-프로젝션 타입 파라미터를 사용하는 데이터 복사 함수
+fun <T> copyData(source: MutableList<T>, destination: MutableList<in T>) {
+    for(item in source) { destination.add(item) }
+}
+```
 
 ### 9.3.6 스타 프로젝션: 타입 인자 대신 * 사용
 

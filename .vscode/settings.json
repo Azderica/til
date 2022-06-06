@@ -1,4 +1,7 @@
 {
   "diffEditor.wordWrap": "inherit",
-  "editor.wordWrap": "on"
+  "editor.wordWrap": "on",
+  "[markdown]": {
+    "diffEditor.wordWrap": "on"
+  }
 }
