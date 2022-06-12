@@ -20,8 +20,64 @@ sidebar_position: 1
 - 대규모 팀일수록 변경 가능한 부분에 의한 일관성(consistency) 문제, 복잡성(complexity) 증가와 관련된 문제에 익숙합니다.
 - 실제 프로젝트는 동기화를 잘 구현해야하며 이는 굉장히 어려운 부분입니다.
   - 따라서 변할 수 있는 지점을 줄이는 것이 핵심입니다.
+- 가변성은 시스템의 상태를 나타내기 위한 중요한 방법 중 하나이나, 변경이 일어나야 하는 부분은 신중하고 확실하게 결정해야 합니다.
 
 ### 코틀린에서 가변성 제한하기
+
+- 코틀린에서 가변성을 제한하는 방법은 다음과 같습니다. 
+  - 읽기 전용 프로퍼티 (val)
+  - 가변 컬렉션과 읽기 전용 컬렉션 구분
+  - 데이터 클래스의 copy
+
+#### 읽기 전용 프로퍼티 (val)
+
+- val에 대한 예제는 다음과 같습니다.
+
+```kt
+val name: String? = "Marton"
+val surname: String = "Braun"
+
+val fullName: String?
+    get() = name?.let { "$it $surname" }
+
+val fullName2: String? = name?.let { "$it $surname" }
+
+fun main() {
+  if(fullName != null) {
+    println(fullName.length)  // error
+  }
+  if(fullName2 != null) {
+    println(fullName2.length) // Marton Braun
+  }
+}
+```
+
+#### 가변 컬렉션과 읽기 전용 컬렉션 구분
+
+- 코틀린은 읽고 쓸 수 있는 컬렉션과 읽기 전용 컬렉션으로 구분됩니다.
+  - 읽기 전용 : `Iterable`, `Collection`, `Set`, `List`
+  - 읽기 쓰기 전용 : `MutableIterable`, `MutableCollection`, `MutableSet`, `MutableList`
+
+#### 데이터 클래스의 copy
+
+- 코틀린에서 내부적으로 상태를 변경하지 않는 이유는 다음의 장점이 있습니다.
+  - 한 번 정의된 상태가 유지되므로 코드를 이해하기 쉬움
+  - immutable 객체는 공유했을 때도 충돌이 없으므로 안전하고, 병렬 처리를 안전하게 할 수 있음
+  - immutable 객체에 대한 참조는 변경되지 않으므로, 쉽게 캐시할 수 있음
+  - immutable 객체는 방어적 복사본을 만들 필요가 없음, 깊은 복사의 필요가 없음
+  - immutable 객체는 다른 객체를 만들 때 활용하기 좋습니다.
+  - immutable 객체는 set나 map의 키로 사용할 수 있습니다.
+
+```kt
+data class User(
+  val name: String,
+  val surname: String
+)
+
+var user = User("Maja", "Markiewicz")
+user = user.copy(surname = "Moskala")
+print(user) // User(name=Maja, surname=Moskala)
+```
 
 ### 다른 지점의 변경 가능 지점
 
