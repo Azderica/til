@@ -81,6 +81,31 @@ print(user) // User(name=Maja, surname=Moskala)
 
 ### 다른 지점의 변경 가능 지점
 
+- 다음의 리스트는 두 가지 선택지가 있습니다.
+
+```kt
+val list1: MutableList<Int> = mutableListOf()
+val list2: List<Int> = listOf()
+
+// 동작은 같으나 방법이 다릅니다.
+list1.add(1)
+list2 = list2 + 1
+```
+
+- 위 두개는 정상적으로 동작하지만 장단점이 존재합니다.
+  - 첫번째는 구체적인 리스트 구현 내부에 변경 가능 지점이 있습니다. 다만 멀티스레드 처리가 이루어질 경우, 동기화를 알 수 없으므로 위험합니다.
+  - 두번째는 프로퍼티 자체가 변경 가능한 지점입니다. 즉, 멀티스레드의 안정성이 더 좋습니다.
+- mutable 컬렉션을 관찰할 수 있게 만들려면, 추가적인 구현이 필요합니다. 즉, 읽기 전용 컬렉션을 넣어 사용하는 것이 쉽습니다.
+
+```kt
+// 변경시 로그 출력
+var names by Delegates.observable(listOf<String>()) {_, old, new ->
+  println("Names changed from $old to $new")
+}
+names += "Fabio"  // names [] -> [Fabio]
+names += "Bill"   // names [Fabio] -> [Fabio, Bill]
+```
+
 ### 변경 가능 지점 노출하지 말기
 
 ### 정리
