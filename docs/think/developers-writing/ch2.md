@@ -242,9 +242,60 @@ userRegisterButNoPayer
 
 ### 이름을 잘 지으면 주석을 줄일 수 있다
 
+- 이름을 잘 지으면 주석을 대폭 줄일 수 있습니다.
+
+```java
+// 안좋은 예
+// 스크린 최대 높이를 480으로 지정함
+int h = 480
+
+// 좋은 예
+int screenHeightMax = 480
+```
+
+```java
+// 안좋은 예
+// 사용자 유형을 분류해서 등급 값을 리턴함
+levelUser()
+
+// 좋은 예
+classifyUserAndReturnClass()
+```
+
 ### 처음부터 주석 없이 코딩하는 연습을 하자.
 
+```json
+// 안좋은 예시
+"Ok": true
+
+// 좋은 예시
+"isRequestSuccess": true
+```
+
+```json
+// 안좋은 예시
+"success": [  구독자 추가 성공  ],
+"update": [  이미 있는 구독자, 나머지 필드를 업데이트함  ],
+"failDay": [  수신 거부 상태의 구독자, 추가하지 않음  ],
+"failWrongEmail": [  잘못된 이메일 주소 형식, 추가하지 않음  ],
+"failUnknown": [  알 수 없는 오류로 추가하지 않음  ]
+
+// 좋은 예시
+"created": [],
+"updatedInformationExceptEmail": [],
+"noCreatedBecauseUnsubscriber": [],
+"noCreatedBecauseWrongEamil": [],
+"noCreatedBecauseUnknownError": []
+```
+
 ### 주석이 필요한 때도 많다.
+
+```java
+checkUserNameUnder3Characters(); // 3글자 이하인지 체크
+```
+
+- 영어 실력이 낮으면 한글주석으로 한 번 더 설명함으로써 영작문이나 실수를 줄일 수 있습니다.
+- 주석이 코드의 정확성을 높이고 버그를 줄이는 계기가 된다는 얘기입니다.
 
 <br/>
 
@@ -252,8 +303,79 @@ userRegisterButNoPayer
 
 ### 코드의 의미를, 주석은 의도를
 
+- 주석은 다른 개발자를 배려하는 마음으로 작성합니다.
+  - 이유를 알려주는 것
+  - 개발자가 새롭게 발견한 것
+  - 예상 질문과 답
+  - 할 일이나 주의, 개선 아이디어를 주는 것
+  - 다른 사람에게보완을 요청하는 것
+  - 개발자의속마음을 표현한 것
+
 ### 주석의 반복
+
+- 특정 코드를 처음부터 읽지 않고, 필요할 때만 특정 함수를 검색하는 경우도 있으므로 **같은 주석이라도 반복해서 써야합니다.**
 
 ### 주석의 발췌와 요약
 
+- 대표적인 예시는 다음과 같습니다.
+
+```js
+dependencies {
+  // 카카오 로그인 sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+
+  // 카카오링크 sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+
+  // 카카오톡 sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
+
+  // 카카오내비 sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'kakaonavi', version: project.KAKAO_SDK_VERSION
+
+  // 카카오스토리 sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'kakaostory', version: project.KAKAO_SDK_VERSION
+
+  // push sdk를 사용하기 위해 필요
+  compile group: 'com.kakao.sdk', name: 'push', version: project.KAKAO_SDK_VERSION
+}
+```
+
+- 이를 수정하면 다음과 같습니다.
+
+```js
+dependencies {
+  // 카카오 로그인 SDK 사용
+  compile group: 'com.kakao.sdk', name: 'usermgmt', version: project.KAKAO_SDK_VERSION
+
+  // push SDK 사용
+  compile group: 'com.kakao.sdk', name: 'push', version: project.KAKAO_SDK_VERSION
+
+  // 그 외는 서비스 이름 사용
+  compile group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+  compile group: 'com.kakao.sdk', name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
+  compile group: 'com.kakao.sdk', name: 'kakaonavi', version: project.KAKAO_SDK_VERSION
+  compile group: 'com.kakao.sdk', name: 'kakaostory', version: project.KAKAO_SDK_VERSION
+}
+```
+
+- 마찬가지의 예시는 다음과 같습니다.
+
+```java
+// before
+// 사용자가 레벨업하려면 로그인을 10회 이상하고 게시물을 5개 이상 작성해야 합니다.
+if(user.getLoginCount() >= 10 && user.getOwnArticleCount() >= 5) {
+  int level = user.getLevel();
+  user.setLevel(level++);
+}
+
+// after
+if(user.enoughToLevelUp()) {
+  user.levelUp();
+}
+```
+
 ### 주석도 코드다.
+
+- 잘못 쓴 주석은 개발자가 신경 쓰지 않으면 결코 바로잡을 수 없습니다.
+- 주석의 악순환에서 벗어나는 가장 좋은 방법은 주석도 코드라고 생각하는 것입니다.
