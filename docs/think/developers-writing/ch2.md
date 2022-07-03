@@ -148,17 +148,93 @@ sidebar_position: 2
 
 ### 한 번에 좋은 이름을 지을 수도 없다
 
+- 처음 지어졌을 때는 이를 부를 명칭이 없어 좋은 이름을 못지을 수도 있습니다.
+
 ### 좋은 이름이 가진 5가지 특징
+
+- 좋은 이름인지를 확인하는 5가지 기준을 SMART라고 합니다.
+  - easy to Search: 검색하기 쉽게
+  - easy to Mix: 조합하기 쉽게
+  - easy to Agree: 수긍하기 쉽게
+  - easy to Remember: 기억하기 쉽게
+  - easy to Type: 입력하기 쉽게
 
 ### easy to Search: 검색하기 쉽게 이름 짓는 법
 
+- 검색하기 쉬운 이름은 고전적 범주화를 이용해 한 단계상위 범주의 이름을 태그처럼 덧붙이면 됩니다.
+
+```
+// 나쁜 예
+SERVER_TIMEOUT
+NO_RESULT
+BAD_REQUEST
+SERVER_ALLOWED_REQUESTS_EXCESS
+```
+
+```
+// 좋은 예
+ERROR_SERVER_TIMEOUT
+ERROR_NO_RESULT
+ERROR_BAD_REQUEST
+ERROR_SERVER_ALLOWED_REQUESTS_EXCESS
+
+user
+userBuyer
+userPayer
+userRegister
+userRegisterButNoPayer
+```
+
+- 회사의 네이밍 컨벤션에 위배되지 않는지 먼저 따져 본 뒤 사용해야 합니다.
+
 ### easy to Mix: 조합하기 쉽게 이름 짓는 법
+
+```html
+<html>
+<head>
+  <style>
+    .title { font-size: 2em... }
+  </style>
+</head>
+<body>
+  <div class="title">개발자의 글쓰기</div>
+  <div class="subtitle">소프트웨어 엔지니어를 위한 테크니컬 라이팅</div>
+  <div class="slogan">개발자라면 이거 모르고 쓰지 마오!</div>
+</body>
+</html>
+```
+
+- 가장 좋은 방법은 개발 언어의 문법과 조합해 이름을 짓는 것입니다.
+
+```html
+<html>
+<head>
+  <style>
+    h1.title { font-size: 2em... }
+  </style>
+</head>
+<body>
+  <h1 class="title">개발자의 글쓰기</h1>
+  <h2 class="title">소프트웨어 엔지니어를 위한 테크니컬 라이팅</h2>
+  <p class="title">개발자라면 이거 모르고 쓰지 마오!</p>
+</body>
+</html>
+```
 
 ### easy to Agree: 수긍하기 쉽게 이름 짓는 법
 
+- 이름을 쓰는 것이 아무렇지도 않아야 합니다.
+- 일을 효율적으로 해야 하는 것처럼 이름 짓기도 효율적으로 해야합니다.
+
 ### easy to Remember: 기억하기 쉽게 이름 짓는 법
 
+- 뇌는 감각적인 것을 좋아합니다.
+- 약자 등을 쓸 때 시청각적으로 완결시키면 더 잘 기억합니다.
+- 이미 널리 알려진 용어는 그냥 쓰는 것이 효율적입니다.
+
 ### easy to Type: 입력하기 쉽게 이름 짓는 법
+
+- 자주 쓰거나 중요한 이름이라면 입력하기 쉬운지, 오타를 낼 가능성이 작은지, 다른 사람에게 말로 전달하기 쉬운지 검토해 보는 것이 좋습니다.
 
 <br/>
 
