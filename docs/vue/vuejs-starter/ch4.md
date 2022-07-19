@@ -258,7 +258,7 @@ computed: {
 
 ## Watch
 
-watch 속성은 **특정 데이터의 변화를 감지해서 자동으로 특정 로직을 수행해주는 속성**입니다.
+watch 속성은 **특정 데이터의 변화를 감지해서 자동으로 특정 로직을 수행해주는 속성** 입니다.
 
 코드 구현 형식은 다음과 같습니다.
 
@@ -327,6 +327,8 @@ new Vue({
 
 - [watch.html](https://github.com/Azderica/Study-lean-vue-js/blob/master/playground-complete/watch.html)
 
+<br/>
+
 ## Computed vs Watch
 
 공식 document를 보면 `computed`와 `watch property`에 대한 이야기가 있습니다.
@@ -379,11 +381,11 @@ var vm = new Vue({
 })
 ```
 
-<br>
+<br/>
 
 ## Filter
 
-뷰 필터는 **화면에 표시되는 텍스트의 형식을 쉽게 변환해주는 기능**입니다. 간단하게 단어의 대문자화부터 다국어, 국제 통화 표시 드으로 다양하게 사용할 수 있습니다.
+뷰 필터는 **화면에 표시되는 텍스트의 형식을 쉽게 변환해주는 기능**입니다. 간단하게 단어의 대문자화부터 다국어, 국제 통화 표시 등으로 다양하게 사용할 수 있습니다.
 
 ### 필터 사용 방법
 
@@ -426,6 +428,7 @@ export function translate() {
 }
 ```
 
+
 ```js
 // main.js
 import Vue from 'vue'
@@ -442,7 +445,7 @@ new Vue({
 
 다음과 같은 구조를 가지게 됩니다.
 
-<br>
+<br/>
 
 ## Form handling
 
@@ -487,4 +490,4 @@ new Vue({
 
 이에 따른 설명은 아래의 원본 링크에서 더 자세히 볼 수 있습니다.
 
-- [원본 링크](https://joshua1988.github.io/vue-camp/legacy/form.html)
+- [원본 링크](https://joshua1988.github.io/vue-camp/syntax/form.html#form-%EC%A0%9C%EC%9E%91%ED%95%98%EA%B8%B0)
