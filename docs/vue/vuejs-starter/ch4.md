@@ -487,4 +487,4 @@ new Vue({
 
 이에 따른 설명은 아래의 원본 링크에서 더 자세히 볼 수 있습니다.
 
-- [원본 링크](https://joshua1988.github.io/vue-camp/syntax/form.html#form-%EC%A0%9C%EC%9E%91%ED%95%98%EA%B8%B0)
+- [원본 링크](https://joshua1988.github.io/vue-camp/legacy/form.html)
