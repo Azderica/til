@@ -397,10 +397,10 @@ val l: Long = i.toLong()
 
 ### 6.2.5 Unit 타입: 코틀린의 void
 
-- 코틀린 `Unit` 타입은 자바 패ㅑㅇdhk rkxdms rlsmddmf gkqslek.
+- 코틀린 `Unit` 타입은 자바 `void`와 기능은 합니다.
 
 ```kt
-// 아래는 같은 의미힙ㄴ디ㅏ.
+// 아래는 같은 의미합니다.
 fun f(): Unit { ... }
 fun f() { ... }
 ```
