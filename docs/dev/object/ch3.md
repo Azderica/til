@@ -6,7 +6,7 @@ sidebar_position: 3
 
 - 객체지향 설계의 핵심은 **역할(role), 책임(responsibility), 협력(collaboration)** 입니다.
 
-## 1. 협력
+## 01. 협력
 
 ### 영화 예매 시스템 돌아가기
 
@@ -26,7 +26,7 @@ sidebar_position: 3
 
 <br/>
 
-## 2. 책임
+## 02. 책임
 
 ### 책임이란 무엇인가
 
@@ -62,7 +62,7 @@ sidebar_position: 3
 
 <br/>
 
-## 3. 역할
+## 03. 역할
 
 ### 역할과 협력
 
