@@ -4,7 +4,17 @@ sidebar_position: 7
 
 # 7. 객체 분해
 
+- 문제 해결에 필요한 요소의 수가 단기 기억의 용량을 초과하는 순간 문제 해결 능력은 급격하게 떨어집니다. 이를 **인지 과부하(cognitive overload)** 라고 합니다.
+- 불필요한 정보를 제거하고 현재의 문제 해결에 필요한 핵심만 남기는 작업을 **추상화**라고 합니다.
+- 큰 문제를 해결 가능한 작은 문제로 나누는 작업을 **분해(decomposition)** 이라고 부릅니다.
+
 ## 01. 프로시저 추상화와 데이터 추상화
+
+- 현대적인 프로그래밍 언어를 특징 짓는 중요한 두 가지 추상화 메커니즘은 **프로시저 추상화(procedure abstraction)** 과 **데이터 추상화(data abstraction)** 입니다.
+- 프로시저 추상화를 중심으로 시스템을 분해하기로 결정했다면 기능 분해(functional decomposition)의 길로 들어서는 것이며, 알고리즘 분해(algorithmic decomposition) 이라고 부릅니다.
+- 데이터 충사화를 중심으로 시스템을 분해하기로 결정했다면 두 가지 중 하나를 선택해야 합니다.
+  - 데이터를 중심으로 **타입을 추상화(type abstraction)** 하는 것입니다. (추상 데이터 타입, Abstract Data Type)
+  - 데이터를 중심으로 **프로시저를 추상화(procedure abstraction)** 하는 것입니다. (객체지향, Object-Oriented)
 
 <br/>
 
