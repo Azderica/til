@@ -7,27 +7,30 @@ on:
 jobs:
   gh-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           lfs: true
-          token: ${{ secrets.ACCESS_TOKEN }}
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '16.x'
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: '0.85.0'
       - name: Install and Build
         run: |
-          git config --global user.email "mh97888@gmail.com"
           git config --global user.name "Azderica"
+          git config --global user.email mh97888@gmail.com
           # npm ci
-          yarn install
-          yarn run build
+          npm install
+          npm run build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
