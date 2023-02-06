@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # 간단한 To-Do 앱 만들며 리액트 익히기
