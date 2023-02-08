@@ -95,3 +95,35 @@ sidebar_position: 3
 ![객체 구조 분해 할당 심화](https://user-images.githubusercontent.com/42582516/217107382-f91857f0-7f43-497a-910a-287be9dab24e.png)
 
 ![배열 구조 분해 할당](https://user-images.githubusercontent.com/42582516/217107431-3b28b265-3c49-433e-b165-91babea6a5e8.png)
+
+<br/>
+
+## 리액트 모듈 종속성 에러 해결 방법
+
+- `--legacy-peer-deps` :  기존 버전 다 무시하고 일단 설치.
+- `--force` : package-lock.json에 몇가지의 다른 의존 버전들을 추가하면서 설치.
+
+<br/>
+
+## TailWindCSS
+
+### TailWindCSS란 무엇인가요?
+
+- HTML 안에서, CSS 스타일을 만들 수 있게 해주는 CSS 프레임 워크 입니다.
+
+###  CSS 프레임 워크는 무엇인가요?
+
+- CSS 프레임워크는 레이아웃 및 여러 컴포넌트 구성, 브라우저 호환성을 보장하는데 소요되는 시간을 최소화하기 위해 여러 웹 개발/디자인 프로젝트에 적용할 수 있는 CSS 파일 모음입니다.
+
+### Tailwind CSS의 장점
+Tailwind CSS는 부트스트랩과 비슷하게 m-1, flex와 같이 미리 세팅된 Uitility Class 를 활용하는 방식으로 HTML 에서 스타일링을 할 수 있다. 
+
+1. 빠른 스타일링 작업이 가능합니다.
+2. class 혹은 id 명을 작성하기 위한 고생을 하지 않아도 ehlqslek..
+3. 유틸리티 클래스가 익숙해지는 시간이 필요할 수 있지만 IntelliSense 플러그인이 제공돼서 금방 익숙해질 수 있습니다.
+
+> react-beautiful-dnd react 18 버전 에러 해결 방법
+>
+> - 리액트 18버전을 사용할 때 드래그 앤 드랍 기능을 사용하면 이러한 에러가 나옵니다.
+> - 해결방법은 리액트의 StricMode를 제거합니다.
+
