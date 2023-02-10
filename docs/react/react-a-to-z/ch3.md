@@ -201,3 +201,10 @@ Tailwind CSS는 부트스트랩과 비슷하게 m-1, flex와 같이 미리 세�
 ### useMemo 적용하기
 
 - useMemo로 감싸준 후에 첫번째 인수에 의존성 배열에 compute 함수에서 사용하는 값을 넣어 줍니다.
+
+<br/>
+
+## localStorage에 todoData 값 담기
+
+- localStorage에 todoData 값을 담아서 페이지를 refresh 해도 todoData가 계속 남아 있을 수 있게 해 주기
+- 객체나 배열을 저장해줄시에는 JSON.stringfy 를 이용해서 텍스트로 변환해준후에 저장을 해주면 됩니다.
