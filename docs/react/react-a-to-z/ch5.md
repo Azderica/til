@@ -73,3 +73,12 @@ sidebar_position: 5
 ### useRoutes
 
 - useRoutes Hooks는 와 `<Routes>`와 기능적으로 동일하지만 `<Route>` 요소 대신 JavaScript 객체를 사용하여 경로를 정의합니다. 이러한 객체는 일반 `<Route>` 요소와 동일한 속성을 갖지만 JSX가 필요하지 않습니다.
+
+<br/>
+
+## useDebounce Custom Hooks 만들기
+
+### Debounce가 무엇인가요?
+
+- 아래 그림을 보면 검색 입력에 입력할 때 입력 결과가 나타날 때까지 지연이 있습니다. 이 기능은 debounce디바운스라는 function에 의해 제어됩니다. debounce function 은 사용자가 미리 결정된 시간 동안 타이핑을 멈출 때까지 keyup 이벤트의 처리를 지연시킵니다.
+- 이렇게 하면 UI 코드가 모든 이벤트를 처리할 필요가 없고 서버로 전송되는 API 호출 수도 크게 줄어듭니다. 입력된 모든 문자를 처리하면 성능이 저하되고 백엔드에 불필요한 로드가 추가될 수 있습니다.
