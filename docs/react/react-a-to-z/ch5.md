@@ -88,3 +88,9 @@ sidebar_position: 5
 ## 모달 창 외부 클릭 시 모달 닫게 만드는 Custom Hooks 생성
 
 ![useRef](https://user-images.githubusercontent.com/42582516/219687596-2e635bd4-4c7a-4719-979f-8134e393e922.png)
+
+<br/>
+
+## swiper 모듈을 이용한 터치 슬라이드 구현하기
+
+- [swiperjs](https://swiperjs.com/react#usage)
