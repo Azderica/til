@@ -34,5 +34,33 @@ sidebar_position: 6
 npm install --save-dev @testing-library/react
 ```
 
+<br/>
+
 ## Jest란?
+
+### Jest란 무엇인가요?
+
+- FaceBook에 의해서 만들어진 테스팅 프레임 워크입니다.
+- 최소한의 설정으로 동작하며 Test Case 를 만들어서 어플리케이션 코드가 잘 돌아가는지 확인해줍니다.
+- 단위 (Unit) 테스트를 위해서 이용합니다.
+
+### Jest 시작하기
+
+1. Jest 라이브러리 설치 npm install jest --save-dev
+2. Test 스크립트 변경 "test" : "jest" or "jest --watchAll
+3. 테스트 작성할 폴더 및 파일 기본 구조 생성
+
+<br/>
+
+## React Testing Library 주요 API
+
+`npx create-react-app react-testing-app`
+
+> "render" 함수
+>
+> - DOM에 컴포넌트를 랜더링하는 함수
+> - 인자로 랜더링할 React 컴포넌트가 들어감
+> Return은 RTL에서 제공하는 쿼리 함수와 기타 유틸리티 함수를 담고 있는 객체를 리턴(Destructuring 문법으로 원하는 쿼리 함수만 얻어올 수 있다.)
+> - 소스 코드가 복잡해지면 비추천 !!! screen 객체를 사용하기
+> - 왜냐면 사용해야 할 쿼리가 많아질수록 코드가 복잡해질 수 있음
 
