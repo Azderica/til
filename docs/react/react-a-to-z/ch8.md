@@ -160,3 +160,9 @@ yarn create next-app --typescript
 - TypeScript를 사용하면 일반 JavaScript보다 크게 개선할 수 있습니다.
 - TypeScript는 ES6(ECMAScript 6)의 모든 이점과 더 많은 생산성을 제공합니다.
 - **TypeScript는 코드 유형 검사를 통해 JavaScript를 작성할 때 개발자가 일반적으로 겪는 고통스러운 버그를 피하는 데 도움이 될 수 있습니다.**
+
+<br/>
+
+## 마크다운 파일을 데이터로 추출하기
+
+- [gray-matter](https://www.npmjs.com/package/gray-matter)
