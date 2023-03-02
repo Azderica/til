@@ -232,6 +232,13 @@ yarn create next-app --typescript
 - `Void VS Never`
   - Void 유형은 값으로 undefind 이나 null 값을 가질 수 있으며 Never 는 어떠한 값도 가질 수 없습니다.
 
+<br/>
+
+## type annotation, type inference
+
+- `type annotation` : 개발자가 타입을 타입스크립트에게 직접 말해주는 것
+- `type inference` : 타입스크립트가 알아서 타입을 추론하는 것
+
 ### 타입을 추론하지 못해서 타입 annotation을 꼭 해줘야하는 경우
 
 - any 타입을 리턴하는 경우
