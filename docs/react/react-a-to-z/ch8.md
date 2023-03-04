@@ -260,3 +260,22 @@ yarn create next-app --typescript
 ### `as Foo , <Foo>`
 
 - 타입 표명은 위에 두가지 방식으로 표현할 수 있습니다. 하지만 리액트를 사용할 때는 `<Foo>` 키워드는 JSX의 문법과 겹치기 때문에 `as Foo`를 공통적으로 사용하는게 추천됩니다.
+
+<br/>
+
+## 포스트 자세히 보기 페이지로 이동(file system 기반의 라우팅)
+
+### 파일기반 네비게이션 기능
+- 리액트에서는 route를 위해서 react-router라는 라이브러리를 사용하지만 Next.js에는 페이지 개념을 기반으로 구축된 파일 시스템 기반 라우터가 있습니다.
+- 파일이 페이지 디렉토리에 추가되면 자동으로 경로로 사용할 수 있습니다.
+- 페이지 디렉토리 내의 파일은 가장 일반적인 패턴을 정의하는 데 사용할 수 있습니다.
+
+### 파일 생성 예시
+
+- `pages/index.js → /`
+- `pages/blog/index.js → /blog`
+- `pages/blog/first-post.js → /blog/first-post`
+- `pages/dashboard/settings/username.js → /dashboard/settings/username`
+- `pages/blog/[slug].js → /blog/:slug (/blog/hello-world)`
+- `pages/[username]/settings.js → /:username/settings (/foo/settings)`
+- `pages/post/[...all].js → /post/* (/post/2020/id/title)`
