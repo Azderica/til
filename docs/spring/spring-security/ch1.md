@@ -94,3 +94,44 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 }
 ```
+
+- 해결한 문제
+  - 요청 URL별 인증 설정
+- 남아있는 문제
+  - 여전히 계정은 하나 뿐. 
+  - ADMIN 계정도 없음.
+  - 비밀번호도 여전히 로그에 남는다.
+
+<br/>
+
+## 5. 스프링 시큐리티 커스터마이징: 인메모리 유저 추가
+
+- 지금까지 스프링 부트가 만들어 주던 유저 정보는?
+  - UserDetailsServiceAutoConfiguration
+  - SecurityProperties
+- SecurityProperties를 사용해서 기본 유저 정보 변경할 수 있긴 하지만...
+- SecurityConfig에 다음 설정 추가
+
+```java
+@Override
+protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.inMemoryAuthentication()
+            .withUser("keesun").password("{noop}123").roles("USER").and()
+            .withUser("admin").password("{noop}!@#").roles("ADMIN");
+}
+
+@Bean
+@Override
+public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+}
+```
+
+- 인메모리 사용자 추가
+  - 로컬 AuthenticationManager를 빈으로 노출
+- 해결한 문제
+  - 계정 여러개 사용할 수 있음.
+  - ADMIN 계정도 있음
+- 남아있는 문제
+  - 비밀번호가 코드에 보인다. 
+  - 데이터베이스에 들어있는 유저 정보를 사용하고 싶다.
