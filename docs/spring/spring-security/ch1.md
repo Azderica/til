@@ -25,3 +25,8 @@ sidebar_position: 1
   - 이 페이지는 반드시 ADMIN 권한을 가진 사용자만 접근할 수 있습니다.
   - 인증하지 않은 사용자가 접근할 시 로그인 페이지로 이동합니다.
   - 인증은 거쳤으나, 권한이 충분하지 않은 경우 에러 메시지를 출력합니다.
+
+참고할 사이트
+
+- [PasswordEncoder](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/password-encoder.html)
+- [PasswordEncoder](https://velog.io/@corgi/Spring-Security-PasswordEncoder%EB%9E%80-4kkyw8gi)
