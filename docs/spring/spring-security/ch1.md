@@ -142,3 +142,11 @@ public AuthenticationManager authenticationManagerBean() throws Exception {
 
 - [PasswordEncoder](https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/password-encoder.html)
 - [PasswordEncoder](https://velog.io/@corgi/Spring-Security-PasswordEncoder%EB%9E%80-4kkyw8gi)
+
+<br/>
+
+## 시프링 시큐리티 테스트
+
+- 두 가지 방법
+  - 코드 mocking
+  - annotation 을 통한 방법
