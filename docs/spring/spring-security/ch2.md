@@ -101,3 +101,26 @@ UsernamePasswordAuthenticationFilter
 SecurityContextPersisenceFilter
 - SecurityContext를 HTTP session에 캐시(기본 전략)하여 여러 요청에서 Authentication을 공유할 수 있 공유하는 필터.
 - SecurityContextRepository를 교체하여 세션을 HTTP session이 아닌 다른 곳에 저장하는 것도 가능하다.
+
+<br/>
+
+## 14. 스프링 시큐리티 Filter와 FilterChainProxy
+
+스프링 시큐리티가 제공하는 필터들
+1. WebAsyncManagerIntergrationFilter
+2. **SecurityContextPersistenceFilter**
+3. HeaderWriterFilter
+4. CsrfFilter
+5. LogoutFilter
+6. **UsernamePasswordAuthenticationFilter** 
+7. DefaultLoginPageGeneratingFilter
+8. DefaultLogoutPageGeneratingFilter
+9. BasicAuthenticationFilter
+10. RequestCacheAwareFtiler
+11. SecurityContextHolderAwareReqeustFilter 
+12. AnonymouseAuthenticationFilter
+13. SessionManagementFilter  
+14. ExeptionTranslationFilter
+15. FilterSecurityInterceptor
+
+이 모든 필터는 **FilterChainProxy**가 호출합니다.
