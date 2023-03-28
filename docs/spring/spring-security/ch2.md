@@ -124,3 +124,19 @@ SecurityContextPersisenceFilter
 15. FilterSecurityInterceptor
 
 이 모든 필터는 **FilterChainProxy**가 호출합니다.
+
+<br/>
+
+## 15. DelegatingFilterProxy와 FilterChainProxy
+
+DelegatingFilterProxy
+- 일반적인 서블릿 필터.
+- 서블릿 필터 처리를 스프링에 들어있는 빈으로 위임하고 싶을 때 사용하는 서블릿 필터.
+- 타겟 빈 이름을 설정합니다.
+- 스프링 부트 없이 스프링 시큐리티 설정할 때는 AbstractSecurityWebApplicationInitializer를 사용해서 등록합니다..
+- 스프링 부트를 사용할 때는 자동으로 등록됩니다. (SecurityFilterAutoConfiguration)
+
+FilterChainProxy
+- 보통 “springSecurityFilterChain” 이라는 이름의 빈으로 등록된다.
+
+![FilterChainProxy](https://user-images.githubusercontent.com/42582516/228289515-8506d940-cd77-4a86-98df-95e23967ee6d.png)
