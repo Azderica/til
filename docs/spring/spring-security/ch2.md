@@ -140,3 +140,19 @@ FilterChainProxy
 - 보통 “springSecurityFilterChain” 이라는 이름의 빈으로 등록된다.
 
 ![FilterChainProxy](https://user-images.githubusercontent.com/42582516/228289515-8506d940-cd77-4a86-98df-95e23967ee6d.png)
+
+<br/>
+
+## 16. AccessDecisionManager 1부
+
+Access Control 결정을 내리는 인터페이스로, 구현체 3가지를 기본으로 제공합니다.
+
+- **AffirmativeBased**: 여러 Voter중에 한명이라도 허용하면 허용. 기본 전략.
+- ConsensusBased: 다수결
+- UnanimousBased: 만장일치
+
+AccessDecisionVoter
+- 해당 Authentication이 특정한 Object에 접근할 때 필요한 ConfigAttributes를 만족하는지 확인합니다.
+- **WebExpressionVoter**: 웹 시큐리티에서 사용하는 기본 구현체, ROLE_Xxxx가 매치하는지 확인합니다.
+- RoleHierarchyVoter: 계층형 ROLE 지원. ADMIN > MANAGER > USER
+- ...
