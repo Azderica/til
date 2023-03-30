@@ -156,3 +156,39 @@ AccessDecisionVoter
 - **WebExpressionVoter**: 웹 시큐리티에서 사용하는 기본 구현체, ROLE_Xxxx가 매치하는지 확인합니다.
 - RoleHierarchyVoter: 계층형 ROLE 지원. ADMIN > MANAGER > USER
 - ...
+
+<br/>
+
+## 17. AccessDecisionManager 2부
+
+AccessDecisionManager 또는 Voter를 커스터마이징 하는 방법 
+
+계층형 ROLE 설정
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+  public SecurityExpressionHandler expressionHandler() {
+    RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+    roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+
+    DefaultWebSecurityExpressionHandler handler = new DefaultWebSecurityExpressionHandler();
+    handler.setRoleHierarchy(roleHierarchy);
+    return handler;
+  }
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+      .mvcMatchers("/", "/info", "/account/**").permitAll()
+      .mvcMatchers("/admin").hasRole("ADMIN")
+      .mvcMatchers("/user").hasRole("USER")
+      .anyRequest().authenticated()
+      .expressionHandler(expressionHandler());
+    http.formLogin();
+    http.httpBasic(); 
+  }
+}
+```
