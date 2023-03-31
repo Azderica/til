@@ -192,3 +192,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 }
 ```
+
+<br/>
+
+## 18. FilterSecurityInterceptor
+
+AccessDecisionManager를 사용하여 Access Control 또는 예외 처리 하는 필터이며, 대부분의 경우 FilterChainProxy에 제일 마지막 필터로 들어있다.
+
+![FileterSecurityInterceptor](https://user-images.githubusercontent.com/42582516/229154123-0ad39600-5c76-4cfc-abe7-0f69065b8477.png)
