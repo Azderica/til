@@ -27,3 +27,13 @@ public void configure(WebSecurity web) throws Exception {
 이런 설정으로도 같은 결과를 볼 수는 있지만 스프링 시큐리티 필터가 적용된다는 차이가 있습니다.
 - 동적 리소스는 `http.authorizeRequests()`에서 처리하는 것을 권장합니다.
 - 정적 리소스는 `WebSecurity.ignore()`를 권장하며 예외적인 정적 자원 (인증이 필요한 정적자원이 있는 경우)는 `http.authorizeRequests()`를 사용할 수 있습니다.
+
+<br/>
+
+## 23. Async 웹 MVC를 지원하는 필터: WebAsyncManagerIntegrationFilter
+
+스프링 MVC의 Async 기능(핸들러에서 Callable을 리턴할 수 있는 기능)을 사용할 때에도 SecurityContext를 공유하도록 도와주는 필터입니다.
+
+- PreProcess: SecurityContext를 설정한다.
+- Callable: 비록 다른 쓰레드지만 그 안에서는 동일한 SecurityContext를 참조할 수 있다.
+- PostProcess: SecurityContext를 정리(clean up)한다.
