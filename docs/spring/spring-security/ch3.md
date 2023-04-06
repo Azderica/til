@@ -37,3 +37,21 @@ public void configure(WebSecurity web) throws Exception {
 - PreProcess: SecurityContext를 설정한다.
 - Callable: 비록 다른 쓰레드지만 그 안에서는 동일한 SecurityContext를 참조할 수 있다.
 - PostProcess: SecurityContext를 정리(clean up)한다.
+
+<br/>
+
+## 24. 스프링 시큐리티와 @Async
+
+`@Async`를 사용한 서비스를 호출하는 경우
+
+- 쓰레드가 다르기 때문에 SecurityContext를 공유받지 못한다.
+
+```java
+SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHRE ADLOCAL);
+```
+
+- SecurityContext를 자식 쓰레드에도 공유하는 전략.
+- `@Async`를 처리하는 쓰레드에서도 SecurityContext를 공유받을 수 있다.
+
+참고
+- [InheritableThreadLocal](https://docs.oracle.com/javase/7/docs/api/java/lang/InheritableThreadLocal.html)
