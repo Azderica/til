@@ -63,3 +63,37 @@ SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHRE
 SecurityContextRepository를 사용해서 기존의 SecurityContext를 읽어오거나 초기화 합니다.
 - 기본으로 사용하는 전략은 HTTP Session을 사용합니.
 - Spring-Session과 연동하여 세션 클러스터를 구현할 수 있습니다.
+
+<br/>
+
+## 26. 시큐리티 관련 헤더 추가하는 필터: HeaderWriterFilter 
+
+응답 헤더에 시큐리티 관련 헤더를 추가해주는 필터
+
+- XContentTypeOptionsHeaderWriter : 마임 타입 스니핑 방어.
+- XXssProtectionHeaderWriter : 브라우저에 내장된 XSS 필터 적용
+- CacheControlHeadersWriter : 캐시 히스토리 취약점 방어
+- HstsHeaderWriter : HTTPS로만 소통하도록 강제.
+- XFrameOptionsHeaderWriter: clickjacking 방어.
+
+``` 
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Content-Language: en-US
+Content-Type: text/html;charset=UTF-8 
+Date: Sun, 04 Aug 2019 16:25:10 GMT
+Transfer-Encoding: chunked
+Expires: 0
+Pragma: no-cache
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+```
+
+참고
+- [X-Content-Type-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-O)
+- [Cache-Control](https://www.owasp.org/index.php/Testing_for_Browser_cache_weakness_(OTG-AUTHN-006))
+- [X-XSS-Protection - 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection)
+- [X-XSS-Protection - 2](https://github.com/naver/lucy-xss-filter)
+- [HSTS](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html)
+- [X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)HTTP_Strict_Transport_Security
+- [웹 보안, 웹 취약점을 간단한 설정으로 막자](https://cyberx.tistory.com/171)
