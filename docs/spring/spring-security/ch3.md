@@ -95,5 +95,28 @@ X-XSS-Protection: 1; mode=block
 - [X-XSS-Protection - 1](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection)
 - [X-XSS-Protection - 2](https://github.com/naver/lucy-xss-filter)
 - [HSTS](https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html)
-- [X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)HTTP_Strict_Transport_Security
+- [X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)
 - [웹 보안, 웹 취약점을 간단한 설정으로 막자](https://cyberx.tistory.com/171)
+
+<br/>
+
+27. CSRF 어택 방지 필터: CsrfFilter
+
+CSRF
+- 원치않는 공격
+
+CSRF 어택 방지 필터
+- 인증된 유저의 계정을 사용해 악의적인 변경 요청을 만들어 보내는 기법.
+- [CSRF](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_(CSRF)) 
+- [CSRF](https://namu.wiki/w/CSRF)
+- CORS를사용할때특히주의해야함.
+  - 타 도메인에서 보내오는 요청을 허용하기 때문에...
+  - [Cross-origin](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
+
+![CSRF](https://user-images.githubusercontent.com/42582516/230754312-f40e3948-3d4b-45b1-9df3-2a37b265f28e.png)
+
+
+의도한 사용자만 리소스를 변경할 수 있도록 허용하는 필터 
+- CSRF 토큰을 사용하여 방지.
+ 
+ ![CsrfFilter](https://user-images.githubusercontent.com/42582516/230754323-8428da98-07c5-43c9-b2d8-df5ad1c7cf34.png)
