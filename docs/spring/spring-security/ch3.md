@@ -120,3 +120,87 @@ CSRF 어택 방지 필터
 - CSRF 토큰을 사용하여 방지.
  
  ![CsrfFilter](https://user-images.githubusercontent.com/42582516/230754323-8428da98-07c5-43c9-b2d8-df5ad1c7cf34.png)
+
+<br/>
+
+## 28. CSRF 토큰 사용 예제
+
+JSP에서 스프링 MVC가 제공하는 `<form:form>` 태그 또는 타임리프 2.1+ 버전을 사용할 때 폼에 CRSF 히든 필드가 기본으로 생성 됨.
+
+Signup.html
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> <head>
+  <meta charset="UTF-8">
+  <title>SignUp</title> 
+</head>
+<body>
+  <h1>Sign Up</h1>
+  <form action="/signup" th:action="@{/signup}" th:object="${account}" method="post">
+    <p>Username: <input type="text" th:field="*{username}" /></p> 
+    <p>Password: <input type="text" th:field="*{password}" /></p> 
+    <p><input type="submit" value="Submit" /></p>
+  </form> 
+</body>
+</html>
+```
+
+SignUpController
+```java
+package me.whiteship.demospringsecurityform.account;
+
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.ModelAttribute; 
+import org.springframework.web.bind.annotation.PostMapping;
+
+@Controller
+public class SignUpController {
+
+  @Autowired
+  AccountService accountService;
+
+  @GetMapping("/signup")
+  public String signUpForm(Model model) {
+    model.addAttribute("account", new Account());
+    return "signup"; 
+  }
+
+  @PostMapping("/signup")
+  public String processSignUp(@ModelAttribute Account account) {
+    account.setRole("USER"); 
+    accountService.createNew(account); 
+    return "redirect:/";
+  } 
+}
+```
+
+SignUpControllerTest
+```java
+@RunWith(SpringRunner.class) 
+@SpringBootTest 
+@AutoConfigureMockMvc
+public class SignUpControllerTest {
+
+  @Autowired 
+  MockMvc mockMvc;
+
+  @Test
+  public void signUpForm() throws Exception {
+    mockMvc.perform(get("/signup")) 
+      .andDo(print())
+      .andExpect(content().string(containsString("_csrf")));
+  }
+
+  @Test
+  public void procesSignUp() throws Exception {
+    mockMvc.perform(post("/signup") 
+      .param("username", "keesun") 
+      .param("password", "123") 
+      .with(csrf()))
+        .andExpect(status().is3xxRedirection()); 
+  }
+}
+```
