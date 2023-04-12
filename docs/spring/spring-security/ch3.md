@@ -241,3 +241,20 @@ http.logout()
 - AuthenticationManager (ProviderManager)는 여러 AuthenticationProvider를 사용하여 인증을 시도하는데, 그 중에 DaoAuthenticationProvider는 UserDetailsServivce를 사용하여 UserDetails 정보를 가져와 사용자가 입력한 password와 비교합니다.
 
 ![UsernamePasswordAuthenticationFilter](https://user-images.githubusercontent.com/42582516/231177042-885a7a60-03e7-4bcc-8f88-209ad5ee24a3.png)
+
+<br/>
+
+## 31. DefaultLoginPageGeneratingFilter
+
+기본 로그인 폼 페이지를 생성해주는 필터 
+- GET /login 요청을 처리하는 필터.
+
+로그인 폼 커스터마이징
+
+```java
+http.formLogin() 
+  .usernameParameter("my-username") 
+  .passwordParameter("my-password");
+```
+
+![로그인 폼 커스터마이징](https://user-images.githubusercontent.com/42582516/231498172-34ea75d2-16c5-4090-b039-9139c16d17b9.png)
