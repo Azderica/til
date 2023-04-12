@@ -258,3 +258,58 @@ http.formLogin()
 ```
 
 ![로그인 폼 커스터마이징](https://user-images.githubusercontent.com/42582516/231498172-34ea75d2-16c5-4090-b039-9139c16d17b9.png)
+
+<br/>
+
+## 32. 로그인/로그아웃 폼 커스터마이징 
+
+[jc-form](https://docs.spring.io/spring-security/site/docs/current/reference/html5/#jc-form)
+
+Signin.html
+```html 
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> 
+<head>
+  <meta charset="UTF-8">
+  <title>SignIn</title> 
+</head>
+<body>
+  <h1>Sign In</h1>
+  <div th:if="${param.error}">
+    <div class="alert alert-danger"> 
+      Invalid username or password.
+    </div> 
+  </div>
+  <form action="/signin" th:action="@{/signin}" method="post"> 
+    <p>Username: <input type="text" name="username" /></p> 
+    <p>Password: <input type="password" name="password" /></p> 
+    <p><input type="submit" value="SignIn" /></p>
+  </form> 
+</body>
+</html>
+```
+
+Logout.html
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> 
+<head>
+  <meta charset="UTF-8">
+  <title>SignIn</title> 
+</head>
+<body>
+  <h1>Logout</h1>
+  <form action="/logout" th:action="@{/logout}" method="post">
+    <p><input type="submit" value="Logout" /></p> 
+  </form>
+</body> 
+</html>
+```
+
+시큐리티 설정
+```java
+http.formLogin()
+  .loginPage("/signin") 
+  .permitAll();
+```
+ 
