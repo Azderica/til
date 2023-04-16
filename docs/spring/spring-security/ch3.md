@@ -361,7 +361,7 @@ http.anonymous()
 ```
 
 참고
-- https://en.wikipedia.org/wiki/Null_object_pattern
+- [Null_object_pattern](https://en.wikipedia.org/wiki/Null_object_pattern)
 
 <br/>
 
