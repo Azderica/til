@@ -389,3 +389,39 @@ http.anonymous()
 - NEVER
 - STATELESS
 - ALWAYS
+
+<br/>
+
+## 38. 인증/인가 예외 처리 필터: ExceptionTranslationFilter 
+
+[exception-translation-filter](https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/htmlsingle/#exception-translation-filter)
+
+인증, 인가 에러 처리를 담당하는 필터 
+- AuthenticationEntryPoint
+- AccessDeniedHandler
+
+Access-denied.html
+```html  
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"> 
+<head>
+  <meta charset="UTF-8">
+  <title>Access Denied</title> 
+</head>
+<body>
+  <h1><span th:text="${name}">Name</span>, you can't access to the resource.</h1>
+  </body>
+</html>
+```
+
+ExceptionHandler 설정
+```java
+http.exceptionHandling()
+  .accessDeniedHandler((request, response, accessDeniedException) -> { 
+    UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String username = principal.getUsername();
+    String servletPath = request.getServletPath(); 
+    System.out.println(username + " is denied to access to " + servletPath); 
+    response.sendRedirect("/access-denied");
+});
+```
