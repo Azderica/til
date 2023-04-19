@@ -425,3 +425,24 @@ http.exceptionHandling()
     response.sendRedirect("/access-denied");
 });
 ```
+
+<br/>
+
+## 39. 인가 처리 필터: FilterSecurityInterceptor 
+
+[filter-security-interceptor](https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/htmlsingle/#filter-security-interceptor)
+
+HTTP 리소스 시큐리티 처리를 담당하는 필터. AccessDecisionManager를 사용하여 인가를 처리한다.
+
+HTTP 리로스 시큐리티 설정
+
+```java  
+http.authorizeRequests()
+  .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll() 
+  .mvcMatchers("/admin").hasAuthority("ROLE_ADMIN") 
+  .mvcMatchers("/user").hasRole("USER") 
+  .anyRequest().authenticated() 
+  .expressionHandler(expressionHandler());
+```
+
+![FilterSecurityInterceptor](https://user-images.githubusercontent.com/42582516/233118032-5f4a3df4-514f-4ed1-b1ca-e954a8fad4b2.png)
