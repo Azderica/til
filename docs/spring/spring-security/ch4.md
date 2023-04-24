@@ -48,3 +48,40 @@ Sec 네임스페이스 사용하기
   <a href="/login" th:href="@{/login}">Login</a> 
 </div>
 ```
+
+<br/>
+
+## 44. 메소드 시큐리티 
+
+- [jc-method](https://docs.spring.io/spring-security/site/docs/5.1.5.RELEASE/reference/htmlsingle/#jc-method)
+- [spring-security-method-security](https://www.baeldung.com/spring-security-method-security)
+
+`@EnableGlobalMethodSecurity`
+
+```java
+@EnableGlobalMethodSecurity(jsr250Enabled = true, prePostEnabled = true, securedEnabled = true)
+```
+
+`@Secured`와 `@RollAllowed`
+- 메소드 호출 이전에 권한을 확인한다.
+- 스프링 EL을 사용하지 못한다.
+
+`@PreAuthorize`와 `@PostAuthorize`
+- 메소드 호출 이전 @있다.
+
+MethodSecurityConfig.java
+     
+```java 
+@Configuration
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true, jsr250Enabled = true)
+public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
+
+  @Override
+  protected AccessDecisionManager accessDecisionManager() {
+    RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl(); roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER"); 
+    AffirmativeBased accessDecisionManager = (AffirmativeBased)
+    super.accessDecisionManager(); accessDecisionManager.getDecisionVoters().add(new
+    RoleHierarchyVoter(roleHierarchy)); return accessDecisionManager;
+  } 
+}
+```
