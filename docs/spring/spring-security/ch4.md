@@ -190,3 +190,23 @@ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundEx
   <td><span th:text="${book.title}"> Title </span></td>
 </tr>
 ```
+
+<br/>
+
+## 47. 스프링 시큐리티 마무리
+
+이번 강좌에서 다룬 내용
+- 스프링 시큐리티 아키텍처
+- 폼기반웹애플리케이션인증기능
+- 로그인/로그아웃 페이지 커스터마이징
+- 여러인증관련응답헤더
+- CSRF
+- 세션관리
+- 타임리프 연동
+- 스프링 데이터 연동
+
+다루지 않은 내용
+- ACL
+- WebSocket
+- OAuth 2.0
+- Reactive
