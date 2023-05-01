@@ -40,6 +40,13 @@ sidebar_position: 0
 
 ## Cloud Native Application
 
+- CI/CD
+  - 지속적인 통합 (CI)
+  - 지속적 배포 (Continuous Delivery)
+- DevOps
+- Microservices
+- Containers
+
 <br/>
 
 ## 12 Factors
