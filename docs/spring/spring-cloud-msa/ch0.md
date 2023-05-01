@@ -43,9 +43,12 @@ sidebar_position: 0
 - CI/CD
   - 지속적인 통합 (CI)
   - 지속적 배포 (Continuous Delivery)
+  - 카나리 배포와 블루 그린 배포
 - DevOps
-- Microservices
+  - Development & QA & Operation
 - Containers
+  - 가상화
+- Microservices
 
 <br/>
 
