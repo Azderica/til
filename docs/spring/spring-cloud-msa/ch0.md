@@ -56,41 +56,30 @@ sidebar_position: 0
 
 - [12Factors](https://12factor.net/)
 
-I. 코드베이스, Codebase
-- One codebase tracked in revision control, many deploys
-
-II. 종속성, Dependencies
-- Explicitly declare and isolate dependencies
-
-III. 구성, Config
-- Store config in the environment
-
-IV. 백업서비스, Backing services
-- Treat backing services as attached resources
-
-V. 빌드, 릴리스, 실행 (Build, release, run)
-- Strictly separate build and run stages
-
-VI. 프로세스, Processes
-- Execute the app as one or more stateless processes
-
-VII. 포트 바인딩, Port binding
-- Export services via port binding
-
-VIII. 동시성, Concurrency
-- Scale out via the process model
-
-IX. 폐기 가능성, Disposability
-- Maximize robustness with fast startup and graceful shutdown
-
-X. 개발/프로덕션 패리티, Dev/prod parity
-- Keep development, staging, and production as similar as possible
-
-XI. 로그, Logs
-- Treat logs as event streams
-
-XII. 관리 프로세스, Admin processes
-- Run admin/management tasks as one-off processes
+- 코드베이스(Codebase)
+  - One codebase tracked in revision control, many deploys
+- 종속성(Dependencies)
+  - Explicitly declare and isolate dependencies
+- 구성, Config
+  - Store config in the environment
+- 백업서비스, Backing services
+  - Treat backing services as attached resources
+- 빌드, 릴리스, 실행 (Build, release, run)
+  - Strictly separate build and run stages
+- 프로세스, Processes
+  - Execute the app as one or more stateless processes
+- 포트 바인딩, Port binding
+  - Export services via port binding
+- 동시성, Concurrency
+  - Scale out via the process model
+- 폐기 가능성, Disposability
+  - Maximize robustness with fast startup and graceful shutdown
+- 개발/프로덕션 패리티, Dev/prod parity
+  - Keep development, staging, and production as similar as possible
+- 로그, Logs
+  - Treat logs as event streams
+- 관리 프로세스, Admin processes
+  - Run admin/management tasks as one-off processes
 
 <br/>
 
