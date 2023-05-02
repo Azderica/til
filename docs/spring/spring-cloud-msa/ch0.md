@@ -56,40 +56,40 @@ sidebar_position: 0
 
 - [12Factors](https://12factor.net/)
 
-I. Codebase
+I. 코드베이스, Codebase
 - One codebase tracked in revision control, many deploys
 
-II. Dependencies
+II. 종속성, Dependencies
 - Explicitly declare and isolate dependencies
 
-III. Config
+III. 구성, Config
 - Store config in the environment
 
-IV. Backing services
+IV. 백업서비스, Backing services
 - Treat backing services as attached resources
 
-V. Build, release, run
+V. 빌드, 릴리스, 실행 (Build, release, run)
 - Strictly separate build and run stages
 
-VI. Processes
+VI. 프로세스, Processes
 - Execute the app as one or more stateless processes
 
-VII. Port binding
+VII. 포트 바인딩, Port binding
 - Export services via port binding
 
-VIII. Concurrency
+VIII. 동시성, Concurrency
 - Scale out via the process model
 
-IX. Disposability
+IX. 폐기 가능성, Disposability
 - Maximize robustness with fast startup and graceful shutdown
 
-X. Dev/prod parity
+X. 개발/프로덕션 패리티, Dev/prod parity
 - Keep development, staging, and production as similar as possible
 
-XI. Logs
+XI. 로그, Logs
 - Treat logs as event streams
 
-XII. Admin processes
+XII. 관리 프로세스, Admin processes
 - Run admin/management tasks as one-off processes
 
 <br/>
