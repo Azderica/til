@@ -91,6 +91,18 @@ sidebar_position: 0
 
 ## Microservice Architecture란?
 
+Microservice의 특징
+
+- Challenges
+- Small Well Chosen Deployable Units
+- Bounded Context
+- RESTful
+- Configuartion Management
+- Cloud Enabled
+- Dyanmic Scale Up And Scale Down
+- CI/CD
+- Visibility
+
 <br/>
 
 ## SOA vs MSA
