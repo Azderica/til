@@ -54,7 +54,7 @@ sidebar_position: 0
 
 ## 12 Factors
 
-- [12Factors](https://12factor.net/)
+[12Factors](https://12factor.net/)
 
 - 코드베이스(Codebase)
   - One codebase tracked in revision control, many deploys
