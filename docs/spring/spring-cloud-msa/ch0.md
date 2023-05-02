@@ -85,6 +85,8 @@ sidebar_position: 0
 
 ## Monolithic vs Microservice
 
+- **Monolith** vs **Font & Back** vs **Microservice Architecture**
+
 <br/>
 
 ## Microservice Architecture란?
