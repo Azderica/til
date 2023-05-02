@@ -103,6 +103,15 @@ Microservice의 특징
 - CI/CD
 - Visibility
 
+고려 사항
+
+- Multiple Rates of Change
+- Independent Life Cycles
+- Independent Scalability
+- Isolated Failure
+- Simplify Interactions with External Dependencies
+- Polyglot Technology
+
 <br/>
 
 ## SOA vs MSA
