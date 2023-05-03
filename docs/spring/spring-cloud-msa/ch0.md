@@ -116,6 +116,15 @@ Microservice의 특징
 
 ## SOA vs MSA
 
+- SOA : 재사용을 통한 비용 절감
+- MSA : 서비스 간의 결합도를 낮추어 변화에 능동적으로 대응
+
+MSA <-(서비스 공유 최소화)- Service -(서비스 공유 최대화)-> SOA
+
+기술방식
+- SOA : 공통의 서비스를 ESB에 모아 사업 측면에서 공통 서비스 형식으로 서비스 제공
+- MSA : 각 독립된 서비스가 노출된 REST API를 사용
+
 <br/>
 
 ## Microservice Architecture Structures
