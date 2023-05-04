@@ -143,3 +143,20 @@ MSA <-(서비스 공유 최소화)- Service -(서비스 공유 최대화)-> SOA
 <br/>
 
 ## Spring Cloud란?
+
+[spring cloud](https://spring.io/projects/spring-cloud)
+
+- Centralized configuration management
+  - Spring Cloud Config Server
+- Location transparency
+  - Naming Server (Eureka)
+- Laod Distribution
+  - Ribbon (Clident Side)
+  - Spring Cloud Gateway
+- Easier REST Clients
+  - FeignClient
+- Visibility and monitoring
+  - Zipkin Distributed Tracing
+  - Netflix API gateway
+- Fault Tolerance
+  - Hystrix
