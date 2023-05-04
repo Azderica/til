@@ -129,6 +129,17 @@ MSA <-(서비스 공유 최소화)- Service -(서비스 공유 최대화)-> SOA
 
 ## Microservice Architecture Structures
 
+![Microservice Architecture Structures](https://user-images.githubusercontent.com/42582516/236219460-e15936e8-261c-4a28-9844-e0cc5b10b861.png)
+
+### Service Mesh Capabilites
+
+- MSA 인프라 -> 미들웨어
+  - 프록시 역할, 인증, 권한 부여, 암호화, 서비스 검색, 요청 라우팅, 로드 밸런싱
+  - 자가 치유 복구 서비스
+- 서비스간의 통신과 관련된 기능을 자동화
+
+### CNCF(Cloud Native Computing Foundation)
+
 <br/>
 
 ## Spring Cloud란?
